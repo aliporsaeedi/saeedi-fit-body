@@ -918,75 +918,13 @@ html[data-theme="pink"] .sf4-lock .ic{background:#ffe3ef;color:#b02b66}
     } catch (e) {}
   }
 
-  /* ---- sfaAdminChrome: پوستهٔ دسکتاپ پنل ادمین (سایدبار + 3 کارت آمار) ---- */
-  function sfaAdminStats(){
-    try {
-      var stat = document.querySelectorAll('.sfa-adm-stat b');
-      if (stat.length < 3) return;
-      var users = [];
-      try { users = (typeof state !== 'undefined' && state && state.admUsers) || []; } catch (e) { users = []; }
-      var adm = 0;
-      for (var i = 0; i < users.length; i++) { if (users[i].role === 'admin' || users[i].role === 'coach') adm++; }
-      var exN = 0;
-      try { exN = (typeof SF !== 'undefined' && SF.meta && SF.meta.exercises) ? SF.meta.exercises.length : 0; } catch (e) {}
-      var vals = [users.length, adm, exN];
-      for (var q = 0; q < 3; q++) { var sv = String(vals[q]); if (stat[q].textContent !== sv) stat[q].textContent = sv; }
-    } catch (e) {}
-  }
-  function sfaAdminChrome(){
-    try {
-      var m = mainEl(); if (!m) return;
-      if (!document.getElementById('sfAdmUsers')) return;
-      if (m.querySelector('.sfa-adm-shell') || (m.closest && m.closest('.sfa-adm-shell'))) { sfaAdminStats(); return; }
-      var kids = [];
-      while (m.firstChild) kids.push(m.removeChild(m.firstChild));
-      var shell = document.createElement('div');
-      shell.className = 'sfa-adm-shell';
-      var side = document.createElement('aside');
-      side.className = 'sfa-adm-side';
-      var src = '';
-      try { var bm = document.querySelector('.brand-mark img'); if (bm) src = bm.getAttribute('src') || ''; } catch (e) {}
-      side.innerHTML = '<div class="sfa-adm-brand">' + (src ? '<img src="' + src + '" alt="">' : '') +
-        '<div><b>SAEEDI</b><span>FIT BODY</span><small>Admin portal</small></div></div>' +
-        '<nav class="sfa-adm-nav">' +
-        '<a data-adm-go="top" class="on">داشبورد</a>' +
-        '<a data-adm-go="sfAdmUsers">شاگردها و کاربران</a>' +
-        '<a data-adm-go="rankCard">رتبه‌بندی</a>' +
-        '</nav>';
-      var main = document.createElement('div');
-      main.className = 'sfa-adm-main';
-      for (var j = 0; j < kids.length; j++) main.appendChild(kids[j]);
-      var stats = document.createElement('div');
-      stats.className = 'sfa-adm-stats';
-      stats.innerHTML = '<div class="sfa-adm-stat"><small>کل کاربران</small><b>0</b><i>نفر</i></div>' +
-        '<div class="sfa-adm-stat cyan"><small>مربی / ادمین</small><b>0</b><i>نفر</i></div>' +
-        '<div class="sfa-adm-stat orange"><small>کتابخانهٔ حرکات</small><b>0</b><i>حرکت</i></div>';
-      main.insertBefore(stats, main.firstChild);
-      shell.appendChild(side);
-      shell.appendChild(main);
-      m.appendChild(shell);
-      var links = side.querySelectorAll('[data-adm-go]');
-      for (var li = 0; li < links.length; li++) {
-        links[li].addEventListener('click', function (ev) {
-          ev.preventDefault();
-          var id = this.getAttribute('data-adm-go');
-          for (var q = 0; q < links.length; q++) links[q].className = '';
-          this.className = 'on';
-          var target = id === 'top' ? main : document.getElementById(id);
-          if (target && target.scrollIntoView) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        });
-      }
-      sfaAdminStats();
-    } catch (e) {}
-  }
-
   function sync(){
     var m = mainEl();
     if (!m) return;
     rings(m);
     sfaWaterSegments();
     sfaMealTimeline();
-    sfaAdminChrome();
+
     var tab = '';
     try { tab = (typeof state !== 'undefined' && state && state.tab) ? state.tab : ''; } catch (e) {}
     if (tab && tab !== lastTab) {
@@ -1447,91 +1385,6 @@ body.sfa-adm-mode .sf-ex2 .ex-thumb { display: none; }
     loadMedia();
   }
 
-  /* =====================  COACH / ADMIN SHELL (right sidebar)  ===================== */
-  function tabTitle(t) {
-    var m = {
-      home: 'داشبورد', coach: 'داشبورد مربی', students: 'شاگردان', student: 'پروندهٔ شاگرد',
-      workout: 'برنامه تمرینی', diet: 'برنامه غذایی', supp: 'مکمل',
-      lib: 'کتابخانه', chat: 'پیام‌ها', tools: 'ابزار', admin: 'پنل ادمین'
-    };
-    return m[t] || 'کنسول مربی';
-  }
-  function coachShell2() {
-    try { sf7CoachCss(); } catch (e) {}
-    D.documentElement.setAttribute('data-mode', 'coach');
-    var d = state.data || {}, nav = (typeof SF7_NAV !== 'undefined') ? SF7_NAV : [];
-    if (W.sf3Nav) { try { nav = W.sf3Nav(nav); } catch (e) {} }
-    var bot = (state.coachBoard && state.coachBoard.bot) || (d.reminders || {});
-    var botTxt = bot.configured ? (bot.linked ? 'ربات وصل ✅' : 'ربات: اتصال نزده') : 'ربات تنظیم نشده';
-
-    var navHtml = nav.map(function (n) {
-      return '<a data-sf7-nav="' + n[0] + '" class="' + (state.tab === n[0] ? 'on' : '') + '">' +
-        icon(n[2]) + ' <span>' + n[1] + '</span></a>';
-    }).join('');
-
-    $('root').innerHTML =
-      '<div class="sfa-adm-shell">' +
-        '<aside class="sfa-adm-side">' +
-          '<div class="sfa-adm-brand">' + brandLogo() +
-            '<div><b>SAEEDI</b><span>FIT BODY</span><small>کنسول مربی</small></div></div>' +
-          '<nav class="sfa-adm-nav">' + navHtml + '</nav>' +
-          '<div class="sfa-adm-foot">' +
-            '<a id="coachToStudent">نمای شاگردی من</a>' +
-            '<a id="coachThemeBtn">تغییر پوسته</a>' +
-            '<a id="coachAI">هوش مصنوعی</a>' +
-            '<a id="coachOut">خروج</a>' +
-          '</div>' +
-        '</aside>' +
-        '<div class="sfa-adm-main">' +
-          '<div class="sfa-adm-intro card" style="margin-bottom:16px;padding:12px;border:1px solid var(--line);border-radius:8px;background:color-mix(in srgb,var(--s1) 5%,var(--s2));">' +
-            '<div class="section-title"><h2>' + icon("grid") + ' خوش امدید</h2></div>' +
-            '<p style="margin:8px 0 0;color:var(--muted);font-size:13px">پنل مدیریت Saeedi Fit Body — مرکز کنترل برنامه‌های تمرینی و تغذیه</p>' +
-            '<p style="margin:4px 0 0;color:var(--muted);font-size:12px">کاربران · برنامه‌ها · حرکات · تنظیمات</p>' +
-          '</div>' +
-          '<div class="sfa-adm-hrow">' +
-            '<div style="flex:1;min-width:180px"><span class="cap">' + esc(botTxt) + '</span>' +
-              '<div class="sfa-adm-title">' + esc(tabTitle(state.tab)) + '</div></div>' +
-            '<button class="btn secondary small" id="coachRefresh">' + icon('sync') + ' بروزرسانی</button>' +
-          '</div>' +
-          '<main id="main"></main>' +
-          '<div id="restTimerHost"></div>' +
-        '</div>' +
-      '</div>';
-
-    var links = D.querySelectorAll('[data-sf7-nav]');
-    for (var i = 0; i < links.length; i++) {
-      links[i].onclick = function (ev) {
-        ev.preventDefault();
-        state.tab = this.getAttribute('data-sf7-nav');
-        render();
-      };
-    }
-    if ($('coachThemeBtn')) $('coachThemeBtn').onclick = function () { toggleTheme(); };
-    if ($('coachToStudent')) $('coachToStudent').onclick = function () { state.mode = 'student'; state.tab = 'home'; render(); };
-    if ($('coachOut')) $('coachOut').onclick = async function () {
-      try { await server('logout', [state.token]); } catch (e) {}
-      try { localStorage.removeItem('fc_session'); } catch (e) {}
-      state.token = ''; state.data = null; loginView();
-    };
-    if ($('coachRefresh')) $('coachRefresh').onclick = function () { state.coachBoard = null; render(); };
-
-    var views = {
-      coach: sf7CoachDash, students: sf7CoachStudents, student: sf7CoachStudent,
-      workout: function () { sf7CoachStudio('workout'); },
-      diet: function () { sf7CoachStudio('diet'); },
-      supp: function () { sf7CoachStudio('supp'); },
-      lib: sf7CoachLib, chat: sf7CoachChat, tools: sf7CoachTools
-    };
-    (views[state.tab] || sf7CoachDash)();
-    try { sf7AfterRender(); } catch (e) {}
-    if (!state.coachBoard) {
-      sf7Board().then(function () { if (state.tab !== 'payments' && state.tab !== 'plans') render(); }).catch(function (e) {
-        var m = $('main');
-        if (m) m.insertAdjacentHTML('afterbegin', '<div class="notice">بارگذاری فهرست شاگردان ناموفق بود: ' + esc(e.message || '') + '</div>');
-      });
-    }
-  }
-
   /* =====================  FIXES  ===================== */
   /* sfItemName خودش را بینهایت صدا میزد (وقتی آیتم name نداشت) → RangeError
      و در نتیجه لیست حرکات برنامهساز بعد از انتخاب حرکت خالی میماند. */
@@ -1624,9 +1477,6 @@ body.sfa-adm-mode .sf-ex2 .ex-thumb { display: none; }
       var top = D.querySelector('.topbar');
       dock.style.display = top ? '' : 'none';
       D.body.style.paddingBottom = top ? '74px' : '';
-      var adm = false;
-      try { adm = (typeof state !== 'undefined' && state && state.tab === 'admin'); } catch (e) {}
-      D.body.classList.toggle('sfa-adm-mode', !!adm);
     } catch (e) {}
   }
 
@@ -1639,7 +1489,7 @@ body.sfa-adm-mode .sf-ex2 .ex-thumb { display: none; }
     W.sfaMacroRings = function (Dd, p) { return macroRings2(Dd, p); };
     W.sfAdminHome = function () { location.replace(location.pathname + '?page=admin'); };
     W.sfItemName = itemName2;
-    if (typeof W.sf7CoachShell === 'function') W.sf7CoachShell = coachShell2;
+    if (typeof W.sf7CoachShell === 'function') W.sf7CoachShell = function () { location.replace(location.pathname + '?page=admin'); };
     chrome();
     return true;
   }

@@ -43,7 +43,7 @@ function sfErrChats_() {
 function sfErrFmt_(data) {
   data = data || {};
   var role = String(data.role || '').toLowerCase();
-  var who = String(data.username || '').trim() || (role ? '(' + role + ')' : 'ناشناس');
+    var who = String(data.username || '').replace(/[<>]/g, '').trim() || (role ? '(' + role + ')' : 'ناشناس');
   var lines = [];
   lines.push('🚨 <b>خطا در ' + (data.app === 'admin' ? 'پنل ادمین' : (data.app === 'server' ? 'سرور' : 'اپ شاگرد')) + '</b>');
   lines.push('👤 ' + who);
@@ -61,7 +61,7 @@ function sfErrFmt_(data) {
 /** ثبت در شیت لاگ (سبک، حداکثر ۵۰۰ ردیف نگه داشته می‌شود) */
 function sfErrLog_(data) {
   try {
-    var ss = SpreadsheetApp.getActive();
+    var ss = (typeof getSS_ === 'function') ? getSS_() : SpreadsheetApp.getActive();
     var sh = ss.getSheetByName(SF_ERR_BUCKET);
     if (!sh) {
       sh = ss.insertSheet(SF_ERR_BUCKET);
@@ -136,6 +136,7 @@ function sfErrNotify_(where, err, extra) {
     var text = '🛠 <b>خطای سرور</b>\n📍 ' + where + '\n📝 ' + msg +
       (extra ? '\n➕ ' + sfErrSafe_(extra, 250) : '') +
       '\n🕒 ' + Utilities.formatDate(new Date(), 'Asia/Tehran', 'yyyy-MM-dd HH:mm:ss');
+    sfErrLog_({ app: 'server', action: sfErrSafe_(where, 120), message: msg, extra: sfErrSafe_(extra, 250) });
     sfErrChats_().forEach(function (chat) { try { sfTgSend_(chat, text, null); } catch (e1) {} });
   } catch (e) {}
 }

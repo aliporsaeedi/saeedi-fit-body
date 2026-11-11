@@ -204,6 +204,10 @@ function reportErr(message, opts) {
 }
 window.addEventListener('error', function (e) { reportErr((e && e.message) || 'JS error', { stack: e && e.error && e.error.stack, action: 'admin.window.error' }); });
 window.addEventListener('unhandledrejection', function (e) { var r = e && e.reason; reportErr((r && r.message) || String(r || 'rejection'), { stack: r && r.stack, action: 'admin.unhandled' }); });
+window.addEventListener('offline', function () { try { localStorage.setItem('adm_net_was_offline', '1'); } catch (e) {} });
+window.addEventListener('online', function () {
+  try { if (localStorage.getItem('adm_net_was_offline') === '1') { localStorage.removeItem('adm_net_was_offline'); reportErr('اتصال اینترنت قطع و دوباره برقرار شد', { action: 'admin.network.reconnected' }); } } catch (e) {}
+});
 function store(k, v) { try { if (v == null) localStorage.removeItem(k); else localStorage.setItem(k, v); } catch (e) {} }
 function load(k) { try { return localStorage.getItem(k) || ''; } catch (e) { return ''; } }
 
@@ -1668,6 +1672,20 @@ R['comms.telegram'] = function () {
 
 /* ---------- سیستم ---------- */
 function logBox(id, v) { $(id).textContent = typeof v === 'string' ? v : JSON.stringify(v, null, 2); }
+R['system.errors'] = function () {
+  view('<div class="hero-band"><p class="hb-sec">SYSTEM · ERROR CENTER</p><h2>گزارش خطاها</h2><p>خطاهای صفحه، سرور و قطع‌ووصلی که برای بررسی ذخیره شده‌اند.</p></div><div class="card"><div class="bar"><input id="errSearch" placeholder="جستجو در خطاها"><button class="btn sec" id="errReload">به‌روزرسانی</button></div><div id="errRows" class="note">در حال خواندن گزارش‌ها…</div></div>');
+  var target = $('errRows');
+  call('adm_errorsList', 100).then(function (r) {
+    var rows = r.rows || [];
+    if (!rows.length) { target.innerHTML = '<div class="note ok">هنوز خطایی ثبت نشده است.</div>'; return; }
+    target.innerHTML = '<div class="tbl-wrap"><table class="wrap"><thead><tr><th>زمان</th><th>بخش</th><th>کاربر</th><th>عملیات</th><th>پیام</th></tr></thead><tbody>' + rows.map(function (e, i) {
+      return '<tr data-error-row="' + i + '"><td class="ltr">' + esc(e.time) + '</td><td>' + esc(e.app) + '</td><td class="ltr">' + esc(e.username) + '</td><td>' + esc(e.action || e.fn) + '</td><td><details><summary>' + esc(e.message) + '</summary><div class="pre">' + esc([e.fn, e.extra, e.url, e.stack].filter(Boolean).join('\n')) + '</div></details></td></tr>';
+    }).join('') + '</tbody></table></div><small class="sub">' + fa(rows.length) + ' گزارش اخیر</small>';
+    $('errSearch').oninput = function () { var q = this.value.toLowerCase(); document.querySelectorAll('[data-error-row]').forEach(function (tr) { tr.style.display = !q || tr.textContent.toLowerCase().indexOf(q) >= 0 ? '' : 'none'; }); };
+  }).catch(function (e) { target.innerHTML = '<div class="note">خواندن گزارش خطا ناموفق بود: ' + esc(e.message) + '</div>'; });
+  $('errReload').onclick = function () { render(); };
+};
+
 R['system.media'] = function () {
   view('<div class="card"><h3>ابزار رسانهٔ حرکات (دانلود به Google Drive)</h3><div class="bar"><button class="btn sec" id="m1">وضعیت</button><button class="btn sec" id="m2">دانلود تصاویر/گیف</button><button class="btn sec" id="m3">تلاش مجدد خطاها</button><button class="btn sec" id="m4">پر کردن لینک یوتیوب</button></div><div class="log" id="lg">—</div></div>');
   [['m1', 'sfAdminMediaStatus', []], ['m2', 'sfAdminMediaDownload', []], ['m3', 'sfAdminMediaRetry', []], ['m4', 'sfAdminYoutubeFill', [30]]].forEach(function (x) {

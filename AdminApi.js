@@ -48,6 +48,7 @@ const ADM_MENU = [
     { id: 'comms.telegram', title: 'تلگرام' }
   ] },
   { id: 'system', title: 'سیستم', icon: '⚙', roles: ['admin'], sub: [
+    { id: 'system.errors', title: 'گزارش خطاها' },
     { id: 'system.media', title: 'ابزار رسانه' },
     { id: 'system.sheets', title: 'شیت‌ها' }
   ] }
@@ -371,6 +372,25 @@ function adm_dashboard(token) {
   try { out.pending = sf3AdminOverview(token).stats.pending; } catch (e) {}
   try { out.alerts = (sfCoachAlerts(token) || []).length; } catch (e) {}
   return out;
+}
+
+/** فهرست خطاهای ثبت‌شده، فقط برای ادمین */
+function adm_errorsList(token, limit) {
+  adm_who_(token, true);
+  var sh = getSS_().getSheetByName('SF_ErrorLog');
+  if (!sh || sh.getLastRow() < 2) return { ok: true, rows: [] };
+  var values = sh.getDataRange().getDisplayValues();
+  var headers = values.shift().map(function (h) { return normalize_(h); });
+  var max = Math.max(1, Math.min(150, Number(limit) || 80));
+  var rows = values.slice(-max).reverse().map(function (r) {
+    var o = {};
+    headers.forEach(function (h, i) { o[h] = r[i] || ''; });
+    return {
+      time: o.Time, app: o.App, username: o.User, role: o.Role, action: o.Action,
+      fn: o.Function, message: o.Message, extra: o.Extra, url: o.URL, stack: o.Stack
+    };
+  });
+  return { ok: true, rows: rows };
 }
 
 /* ------------------------------------------------------------ کاربران --- */

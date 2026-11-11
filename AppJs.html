@@ -154,8 +154,15 @@ window.addEventListener('unhandledrejection', function (e) {
   var r = e && e.reason;
   sfReportError((r && r.message) || String(r || 'rejection'), { stack: r && r.stack, action: 'unhandledrejection' });
 });
-window.addEventListener('offline', function () { sfReportError('اتصال اینترنت قطع شد', { action: 'network.offline' }); });
-window.addEventListener('online', function () { sfReportError('اتصال اینترنت دوباره برقرار شد', { action: 'network.online' }); });
+window.addEventListener('offline', function () { try { localStorage.setItem('sf_net_was_offline', '1'); } catch (e) {} });
+window.addEventListener('online', function () {
+  try {
+    if (localStorage.getItem('sf_net_was_offline') === '1') {
+      localStorage.removeItem('sf_net_was_offline');
+      sfReportError('اتصال اینترنت قطع و دوباره برقرار شد', { action: 'network.reconnected' });
+    }
+  } catch (e) {}
+});
 
 /* -------------------------------------------------------------------------
  * Login / bootstrap
