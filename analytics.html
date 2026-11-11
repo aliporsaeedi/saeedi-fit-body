@@ -1,0 +1,46 @@
+<div class="analytics-card">
+  <div class="analytics-title">📈 نمودار پیشرفت وزن</div>
+  <div class="chart-container">
+    <canvas id="weightChart"></canvas>
+  </div>
+</div>
+
+<script>
+function renderWeightChart(data) {
+  const ctx = document.getElementById("weightChart");
+  if (!ctx) return;
+  
+  if (window.myWeightChart) {
+    window.myWeightChart.destroy();
+  }
+
+  window.myWeightChart = new Chart(ctx, {
+    type: "line",
+    data: {
+      labels: data.dates,
+      datasets: [{
+        label: "وزن (kg)",
+        data: data.weights,
+        borderColor: "#b7ff00",
+        backgroundColor: "rgba(183, 255, 0, 0.1)",
+        borderWidth: 3,
+        tension: 0.4,
+        fill: true,
+        pointBackgroundColor: "#b7ff00",
+        pointRadius: 4
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false }
+      },
+      scales: {
+        x: { grid: { display: false }, ticks: { color: "#8a9bb0" } },
+        y: { grid: { color: "rgba(255,255,255,0.05)" }, ticks: { color: "#8a9bb0" } }
+      }
+    }
+  });
+}
+</script>
