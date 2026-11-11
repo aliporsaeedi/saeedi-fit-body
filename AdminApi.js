@@ -40,11 +40,8 @@ const ADM_MENU = [
     { id: 'bank.models', title: 'مدل‌های رژیم' },
     { id: 'bank.techniques', title: 'روش‌های تمرینی' }
   ] },
-  { id: 'finance', title: 'مالی', icon: '¤', roles: ['admin', 'coach'], sub: [
-    { id: 'finance.payments', title: 'پرداخت‌ها' },
-    { id: 'finance.packages', title: 'پکیج‌ها' },
-    { id: 'finance.subs', title: 'اشتراک‌ها' },
-    { id: 'finance.card', title: 'شمارهٔ کارت' }
+  { id: 'finance', title: 'اعتبار و اشتراک', icon: '¤', roles: ['admin', 'coach'], sub: [
+    { id: 'finance.membership', title: 'اعتبار و اشتراک' }
   ] },
   { id: 'comms', title: 'ارتباط', icon: '✉', roles: ['admin', 'coach'], sub: [
     { id: 'comms.alerts', title: 'هشدارهای مربی' },
@@ -108,7 +105,7 @@ const ADM_BANKS = {
       F_('Kcal100', 'کالری (۱۰۰ گرم)', 'num', 'ارزش غذایی'), F_('Protein100', 'پروتئین (۱۰۰ گرم)', 'num', 'ارزش غذایی'), F_('Carb100', 'کربوهیدرات (۱۰۰ گرم)', 'num', 'ارزش غذایی'),
       F_('Fat100', 'چربی (۱۰۰ گرم)', 'num', 'ارزش غذایی'), F_('Fiber100', 'فیبر (۱۰۰ گرم)', 'num', 'ارزش غذایی'),
       F_('Recipe', 'طرز تهیه', 'area', 'روش‌ها'), F_('Methods', 'روش‌های پخت (هر خط: روش | ضریب کالری | توضیح)', 'area', 'روش‌ها'),
-      F_('ImageURL', 'تصویر', 'img', 'رسانه'), F_('VideoURL', 'لینک یوتیوب', 'url', 'رسانه'), F_('WikiTitle', 'عنوان ویکی‌پدیا (برای یافتن تصویر)', 'text', 'رسانه'),
+      F_('ImageURL', 'تصویر محصول', 'img', 'رسانه'), F_('ImageCredit', 'اعتبار و مجوز تصویر', 'text', 'رسانه'), F_('ImageSourceURL', 'صفحهٔ منبع تصویر', 'url', 'رسانه'), F_('ImageSearchStatus', 'وضعیت جستجوی تصویر', 'text', 'رسانه'), F_('VideoURL', 'لینک یوتیوب', 'url', 'رسانه'), F_('WikiTitle', 'عنوان برای یافتن تصویر', 'text', 'رسانه'),
       F_('Tags', 'برچسب‌ها', 'text', 'رسانه')
     ]
   },
@@ -121,7 +118,7 @@ const ADM_BANKS = {
       F_('Purpose', 'هدف', 'text', 'مصرف'), F_('Dose', 'دوز معمول', 'text', 'مصرف'), F_('Timing', 'زمان مصرف', 'text', 'مصرف'), F_('WithFood', 'همراه غذا', 'text', 'مصرف'),
       F_('Benefits', 'فواید', 'area', 'ایمنی'), F_('Cautions', 'احتیاط‌ها', 'area', 'ایمنی'), F_('Interactions', 'تداخل‌ها', 'area', 'ایمنی'),
       F_('Evidence', 'سطح شواهد', 'select', 'ایمنی', { options: ['قوی', 'متوسط', 'ضعیف'] }), F_('Notes', 'یادداشت', 'area', 'ایمنی'),
-      F_('ImageURL', 'تصویر', 'img', 'رسانه'), F_('VideoURL', 'لینک یوتیوب', 'url', 'رسانه'), F_('WikiTitle', 'عنوان ویکی‌پدیا', 'text', 'رسانه')
+      F_('ImageURL', 'تصویر محصول', 'img', 'رسانه'), F_('ImageCredit', 'اعتبار و مجوز تصویر', 'text', 'رسانه'), F_('ImageSourceURL', 'صفحهٔ منبع تصویر', 'url', 'رسانه'), F_('ImageSearchStatus', 'وضعیت جستجوی تصویر', 'text', 'رسانه'), F_('VideoURL', 'لینک یوتیوب', 'url', 'رسانه'), F_('WikiTitle', 'عنوان برای یافتن تصویر', 'text', 'رسانه')
     ]
   },
   minerals: {
@@ -134,7 +131,7 @@ const ADM_BANKS = {
       F_('Functions', 'نقش در بدن', 'area', 'اطلاعات'), F_('Deficiency', 'علائم کمبود', 'area', 'اطلاعات'), F_('Excess', 'عوارض زیاده‌روی', 'area', 'اطلاعات'),
       F_('FoodSources', 'منابع غذایی (مقدار در ۱۰۰ گرم)', 'area', 'اطلاعات'), F_('Absorption', 'نکتهٔ جذب', 'text', 'اطلاعات'), F_('Interactions', 'تداخل‌ها', 'text', 'اطلاعات'),
       F_('SuppForms', 'شکل‌های مکمل', 'text', 'اطلاعات'), F_('BestTime', 'بهترین زمان مصرف', 'text', 'اطلاعات'),
-      F_('ImageURL', 'تصویر', 'img', 'رسانه'), F_('VideoURL', 'لینک یوتیوب', 'url', 'رسانه'), F_('WikiTitle', 'عنوان ویکی‌پدیا', 'text', 'رسانه')
+      F_('ImageURL', 'تصویر محصول', 'img', 'رسانه'), F_('ImageCredit', 'اعتبار و مجوز تصویر', 'text', 'رسانه'), F_('ImageSourceURL', 'صفحهٔ منبع تصویر', 'url', 'رسانه'), F_('ImageSearchStatus', 'وضعیت جستجوی تصویر', 'text', 'رسانه'), F_('VideoURL', 'لینک یوتیوب', 'url', 'رسانه'), F_('WikiTitle', 'عنوان برای یافتن تصویر', 'text', 'رسانه')
     ]
   }
 };
@@ -150,12 +147,13 @@ function adm_bankSchemas_() {
 /* ------------------------------------------------------------ آماده‌سازی شیت‌ها --- */
 function adm_register_() {
   const extra = {
-    SF_SuppBank: ['SuppID', 'PersianName', 'EnglishName', 'Category', 'Forms', 'Purpose', 'Dose', 'Timing', 'WithFood', 'Benefits', 'Cautions', 'Interactions', 'Evidence', 'Notes', 'ImageURL', 'VideoURL', 'WikiTitle', 'Active'],
-    SF_MineralBank: ['MinID', 'PersianName', 'EnglishName', 'Type', 'RdaMale', 'RdaFemale', 'UpperLimit', 'Functions', 'Deficiency', 'Excess', 'FoodSources', 'Absorption', 'Interactions', 'SuppForms', 'BestTime', 'ImageURL', 'VideoURL', 'WikiTitle', 'Active']
+    SF_SuppBank: ['SuppID', 'PersianName', 'EnglishName', 'Category', 'Forms', 'Purpose', 'Dose', 'Timing', 'WithFood', 'Benefits', 'Cautions', 'Interactions', 'Evidence', 'Notes', 'ImageURL', 'VideoURL', 'WikiTitle', 'Active', 'ImageCredit', 'ImageSourceURL', 'ImageSearchStatus'],
+    SF_MineralBank: ['MinID', 'PersianName', 'EnglishName', 'Type', 'RdaMale', 'RdaFemale', 'UpperLimit', 'Functions', 'Deficiency', 'Excess', 'FoodSources', 'Absorption', 'Interactions', 'SuppForms', 'BestTime', 'ImageURL', 'VideoURL', 'WikiTitle', 'Active', 'ImageCredit', 'ImageSourceURL', 'ImageSearchStatus']
   };
   Object.keys(extra).forEach(function (n) { SF_HEADERS[n] = extra[n]; SF_TEXT_COLS[n] = null; });
   if (SF_HEADERS.SF_ExerciseBank.indexOf('InstructionsEN') < 0) SF_HEADERS.SF_ExerciseBank.push('InstructionsEN');
   ['Methods', 'WikiTitle'].forEach(function (h) { if (SF_HEADERS.SF_Foods.indexOf(h) < 0) SF_HEADERS.SF_Foods.push(h); });
+  ['ImageCredit', 'ImageSourceURL', 'ImageSearchStatus'].forEach(function (h) { if (SF_HEADERS.SF_Foods.indexOf(h) < 0) SF_HEADERS.SF_Foods.push(h); });
 }
 function adm_ensure_() {
   adm_register_();
@@ -243,6 +241,7 @@ function adm_bankSave(token, bank, item) {
     const rowIdx = rd.rows.findIndex(function (r) { return normalize_(r[rd.idx[b.id]]) === id; });
     const obj = rowIdx >= 0 ? sfObj_(rd, rd.rows[rowIdx]) : {};
     b.fields.forEach(function (f) { if (item[f.k] !== undefined) obj[f.k] = adm_clean_(b, f, item[f.k]); });
+    if (item.ImageURL !== undefined) obj.ImageSearchStatus = normalize_(item.ImageURL) ? 'manual' : '';
     obj[b.id] = id; obj.Active = item.Active === false ? 'FALSE' : 'TRUE';
     if (bank === 'foods') adm_foodServing_(obj);
     if (rowIdx >= 0) {
@@ -291,7 +290,35 @@ function adm_wikiThumb_(resp) {
     return k && pages[k].thumbnail ? pages[k].thumbnail.source : '';
   } catch (e) { return ''; }
 }
-/** تصویر خالی را از ویکی‌پدیا پر می‌کند. چند بار صدا بزنید تا remaining صفر شود. */
+function adm_productImageReq_(query, bank) {
+  var q = String(query || '').trim();
+  if (!q) return null;
+  if (bank === 'supps' || bank === 'minerals') q += ' supplement package';
+  var url = 'https://world.openfoodfacts.org/cgi/search.pl?search_terms=' + encodeURIComponent(q) +
+    '&search_simple=1&action=process&json=1&page_size=8&fields=code,product_name,brands,image_front_url,photographers_tags';
+  return { url: url, muteHttpExceptions: true, headers: { 'User-Agent': 'SaeediFit/2.1' } };
+}
+function adm_productImage_(resp, query) {
+  try {
+    if (!resp || resp.getResponseCode() !== 200) return null;
+    var products = (JSON.parse(resp.getContentText()) || {}).products || [];
+    var terms = String(query || '').toLowerCase().replace(/[^a-z0-9\u0600-\u06ff]+/g, ' ').split(/\s+/).filter(function (x) { return x.length > 2; });
+    var best = null, bestScore = 0;
+    products.forEach(function (p) {
+      var image = String(p.image_front_url || '');
+      if (!/^https:\/\/images\.openfoodfacts\.org\//i.test(image)) return;
+      var title = String((p.product_name || '') + ' ' + (p.brands || '')).toLowerCase();
+      var score = terms.length ? terms.filter(function (t) { return title.indexOf(t) >= 0; }).length / terms.length : 0;
+      if (!best || score > bestScore) { best = p; bestScore = score; }
+    });
+    if (!best || bestScore < 0.34) return null;
+    var code = String(best.code || '');
+    var photographers = (best.photographers_tags || []).join(', ');
+    return { image: String(best.image_front_url), source: code ? 'https://world.openfoodfacts.org/product/' + encodeURIComponent(code) : 'https://world.openfoodfacts.org/',
+      credit: 'Open Food Facts' + (photographers ? ' · ' + photographers : '') + ' · CC BY-SA 3.0' };
+  } catch (e) { return null; }
+}
+/** تصاویر محصول را از بانک محصول می‌گیرد؛ ردیف‌های بی‌نتیجه را علامت می‌زند تا جستجو دور بی‌نهایت نسازد. */
 function adm_mediaFill(token, bank, limit) {
   adm_who_(token, true); adm_ensure_();
   const b = adm_bank_(bank);
@@ -299,22 +326,27 @@ function adm_mediaFill(token, bank, limit) {
   return sfWithLock_(function () {
     sfInvalidate_(b.sheet);
     const rd = sfRead_(b.sheet);
-    const todo = []; rd.rows.forEach(function (r, i) { if (normalize_(r[0]) && !normalize_(r[rd.idx.ImageURL])) todo.push(i); });
-    const batch = todo.slice(0, Math.max(1, Math.min(40, Number(limit) || 25)));
-    const reqs = batch.map(function (i) { const r = rd.rows[i]; return adm_wikiReq_(normalize_(r[rd.idx.WikiTitle]) || normalize_(r[rd.idx.EnglishName]), false); });
-    const resp = reqs.length ? UrlFetchApp.fetchAll(reqs) : [];
-    let found = 0; const retry = [];
-    batch.forEach(function (i, n) {
-      const url = adm_wikiThumb_(resp[n]);
-      if (url) { const c = rd.sh.getRange(i + 2, rd.idx.ImageURL + 1); c.setNumberFormat('@'); c.setValue(url); found++; } else retry.push(i);
+    const todo = []; rd.rows.forEach(function (r, i) {
+      var image = normalize_(r[rd.idx.ImageURL]), status = normalize_(r[rd.idx.ImageSearchStatus]);
+      var placeholder = /^data:image\/svg\+xml/i.test(image);
+      if (normalize_(r[0]) && (!image || placeholder) && status !== 'not-found') todo.push(i);
     });
-    const resp2 = retry.length ? UrlFetchApp.fetchAll(retry.map(function (i) { return adm_wikiReq_(normalize_(rd.rows[i][rd.idx.EnglishName]), true); })) : [];
-    retry.forEach(function (i, n) {
-      const url = adm_wikiThumb_(resp2[n]);
-      if (url) { const c = rd.sh.getRange(i + 2, rd.idx.ImageURL + 1); c.setNumberFormat('@'); c.setValue(url); found++; }
+    const batch = todo.slice(0, Math.max(1, Math.min(40, Number(limit) || 25)));
+    const reqs = batch.map(function (i) { const r = rd.rows[i]; return adm_productImageReq_(normalize_(r[rd.idx.EnglishName]) || normalize_(r[rd.idx.PersianName]), bank); });
+    const resp = reqs.length ? UrlFetchApp.fetchAll(reqs.map(function (r) { return r || { url: 'https://world.openfoodfacts.org/', muteHttpExceptions: true }; })) : [];
+    let found = 0, unmatched = 0;
+    function put(row, col, value) { if (rd.idx[col] == null) return; var c = rd.sh.getRange(row + 2, rd.idx[col] + 1); c.setNumberFormat('@'); c.setValue(value); }
+    batch.forEach(function (i, n) {
+      var r = rd.rows[i], name = normalize_(r[rd.idx.EnglishName]) || normalize_(r[rd.idx.PersianName]);
+      var image = adm_productImage_(resp[n], name);
+      if (image) {
+        put(i, 'ImageURL', image.image); put(i, 'ImageCredit', image.credit); put(i, 'ImageSourceURL', image.source); put(i, 'ImageSearchStatus', 'product');
+        found++;
+      } else { put(i, 'ImageSearchStatus', 'not-found'); unmatched++; }
     });
     sfInvalidate_(b.sheet);
-    return { ok: true, tried: batch.length, found: found, remaining: Math.max(0, todo.length - batch.length), missingTotal: todo.length };
+    if (bank === 'foods') sfBumpFoodCache_();
+    return { ok: true, tried: batch.length, found: found, unmatched: unmatched, remaining: Math.max(0, todo.length - batch.length), missingTotal: todo.length };
   });
 }
 

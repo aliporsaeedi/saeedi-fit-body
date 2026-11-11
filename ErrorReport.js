@@ -86,16 +86,18 @@ function sfErrorReport(data, token) {
     data = data || {};
     var session = null;
     try { if (token) session = requireSession_(token); } catch (e) { session = null; }
+    /* Error reports are an authenticated app feature; do not expose Telegram as a public relay. */
+    if (!session) return { ok: false, error: 'unauthorized' };
     var clean = {
-      app: String(data.app || 'app').slice(0, 20),
+      app: ['student', 'admin', 'server'].indexOf(String(data.app || 'student')) >= 0 ? String(data.app || 'student') : 'student',
       action: sfErrSafe_(data.action, 120),
       fn: sfErrSafe_(data.fn, 60),
       message: sfErrSafe_(data.message, 600),
       extra: sfErrSafe_(data.extra, 400),
       url: sfErrSafe_(data.url, 200),
       stack: sfErrSafe_(data.stack, 700),
-      username: session ? session.username : String(data.username || '').slice(0, 60),
-      role: session ? session.role : String(data.role || '').slice(0, 20)
+      username: String(session.username || '').slice(0, 60),
+      role: String(session.role || '').slice(0, 20)
     };
     if (!clean.message) return { ok: false, error: 'empty' };
 
@@ -105,6 +107,10 @@ function sfErrorReport(data, token) {
       var key = 'err_' + (clean.username || 'anon') + '_' + clean.message.slice(0, 80);
       if (cache.get(key)) return { ok: true, deduped: true };
       cache.put(key, '1', 120);
+      var rateKey = 'err_rate_' + (clean.username || 'anon');
+      var n = Number(cache.get(rateKey) || 0);
+      if (n >= 10) return { ok: true, throttled: true };
+      cache.put(rateKey, String(n + 1), 60);
     } catch (eC) {}
 
     sfErrLog_(clean);

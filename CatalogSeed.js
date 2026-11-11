@@ -17,7 +17,7 @@ function sfCatArt_(label, kind) {
   var art = kind === 'supp'
     ? '<g transform="rotate(-30 120 82)"><rect x="98" y="58" width="44" height="48" rx="22" fill="' + tone + '" opacity=".85"/><rect x="98" y="58" width="22" height="48" rx="22" fill="#101820" opacity=".45"/></g>'
     : (kind === 'min'
-      ? '<circle cx="120" cy="82" r="26" fill="none" stroke="' + tone + '" stroke-width="3"/><path d="M120 58v48" stroke="' + tone + '" stroke-width="3"/>'
+      ? '<g><rect x="99" y="55" width="42" height="61" rx="8" fill="' + tone + '" opacity=".82"/><rect x="106" y="43" width="28" height="14" rx="3" fill="' + tone + '"/><rect x="104" y="76" width="32" height="21" rx="4" fill="#101820" opacity=".56"/><path d="M110 85h20M110 91h14" stroke="#EDF2F7" stroke-width="2" stroke-linecap="round" opacity=".85"/></g>'
       : '<circle cx="120" cy="84" r="27" fill="none" stroke="' + tone + '" stroke-width="3"/><path d="M93 84h54" stroke="' + tone + '" stroke-width="3"/><path d="M104 68c6 5 26 5 32 0" stroke="' + tone + '" stroke-width="2" fill="none"/>');
   var svg = '<svg xmlns="http://www.w3.org/2000/svg" width="240" height="180" viewBox="0 0 240 180">' +
     '<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#161b23"/><stop offset="1" stop-color="#090c11"/></linearGradient></defs>' +

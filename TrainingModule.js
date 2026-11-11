@@ -1385,7 +1385,7 @@ function sfUserRecords_() {
   const sh = getSS_().getSheetByName(CONFIG.USERS_SHEET);
   if (!sh || sh.getLastRow() < 2) return [];
   return sh.getDataRange().getValues().slice(1).filter(function (r) { return normalize_(r[0]); }).map(function (r, i) {
-    return { row: i + 2, username: normalize_(r[0]), supplementPlans: splitPlans_(r[2]), workoutPlans: splitPlans_(r[3]), dietPlans: splitPlans_(r[4]), role: normalize_(r[5]).toLowerCase(), telegramChatId: normalize_(r[6]), coachUsername: normalize_(r[7]) };
+    return { row: i + 2, username: normalize_(r[0]), supplementPlans: splitPlans_(r[2]), workoutPlans: splitPlans_(r[3]), dietPlans: splitPlans_(r[4]), role: normalize_(r[5]).toLowerCase(), telegramChatId: normalize_(r[6]), email: normalize_(r[7]), coachUsername: normalize_(r[8]) };
   });
 }
 
@@ -1403,6 +1403,7 @@ function sfCoachBoard(token) {
   const athletes = [];
   users.forEach(function (u) {
     if (u.role === 'admin' || u.role === 'coach') return; // کارکنان در فهرست شاگردان نمی‌آیند
+    if (String(session.role || '').toLowerCase() !== 'admin' && u.coachUsername.toLowerCase() !== String(session.username || '').toLowerCase()) return;
     const profile = getProfile_(u.username);
     let act = {};
     try { act = getActivityDays_(u.username) || {}; } catch (e) { act = {}; }
@@ -1733,7 +1734,7 @@ SF_HEADERS.SF_Foods = [
   'FoodID', 'PersianName', 'EnglishName', 'Category', 'DietType', 'ServingName', 'ServingGrams',
   'Kcal100', 'Protein100', 'Carb100', 'Fat100', 'Fiber100',
   'KcalServing', 'ProteinServing', 'CarbServing', 'FatServing',
-  'Recipe', 'VideoURL', 'ImageURL', 'Tags', 'Active', 'SourceNote'
+  'Recipe', 'VideoURL', 'ImageURL', 'Tags', 'Active', 'SourceNote', 'ImageCredit', 'ImageSourceURL', 'ImageSearchStatus'
 ];
 SF_HEADERS.SF_DietModels = [
   'ModelID', 'Title', 'Kind', 'ProteinPct', 'CarbPct', 'FatPct', 'FastingWindow',
@@ -1742,7 +1743,7 @@ SF_HEADERS.SF_DietModels = [
 /* ستون‌های ماکرو برای هر آیتم برنامهٔ غذایی (به انتهای SF_Diets اضافه می‌شوند) */
 SF_HEADERS.SF_Diets = SF_HEADERS.SF_Diets.concat(['FoodID', 'Grams', 'Protein', 'Carbs', 'Fat']);
 
-SF_TEXT_COLS.SF_Foods = ['FoodID', 'PersianName', 'EnglishName', 'Category', 'DietType', 'ServingName', 'Recipe', 'VideoURL', 'ImageURL', 'Tags', 'SourceNote'];
+SF_TEXT_COLS.SF_Foods = ['FoodID', 'PersianName', 'EnglishName', 'Category', 'DietType', 'ServingName', 'Recipe', 'VideoURL', 'ImageURL', 'Tags', 'SourceNote', 'ImageCredit', 'ImageSourceURL', 'ImageSearchStatus'];
 SF_TEXT_COLS.SF_DietModels = ['ModelID', 'Title', 'Kind', 'FastingWindow', 'Description', 'Rules', 'AllowedFoods', 'ForbiddenFoods', 'SampleDay', 'Tags'];
 SF_TEXT_COLS.SF_Diets = null; /* همه ستون‌ها متنی → SF_Diets از قبل همین‌طور بوده */
 
@@ -1965,6 +1966,7 @@ function sfFoodObj_(r) {
     kcal100: g('Kcal100'), protein100: g('Protein100'), carb100: g('Carb100'), fat100: g('Fat100'), fiber100: g('Fiber100'),
     kcal: g('KcalServing'), protein: g('ProteinServing'), carb: g('CarbServing'), fat: g('FatServing'),
     recipe: normalize_(r.Recipe), video: normalize_(r.VideoURL), image: normalize_(r.ImageURL),
+    imageCredit: normalize_(r.ImageCredit), imageSourceUrl: normalize_(r.ImageSourceURL),
     tags: normalize_(r.Tags), note: normalize_(r.SourceNote), active: sfIsTrue_(r.Active)
   };
 }
@@ -5319,7 +5321,7 @@ function sf3AdminOverview(token) {
     if (!un) return;
     var sub = { status: 'none', daysLeft: 0, endDate: '' };
     try { sub = sfActiveSubOf_(un); } catch (e) {}
-    subRows.push({ username: un, role: normalize_(u.role) || 'user', status: sub.status, daysLeft: Number(sub.daysLeft) || 0, endDate: sub.endDate });
+    subRows.push({ username: un, role: normalize_(u.role) || 'user', packageId: normalize_(sub.packageId), status: sub.status, daysLeft: Number(sub.daysLeft) || 0, endDate: sub.endDate });
   });
   subRows.sort(function (a, b) { return (a.daysLeft || 9999) - (b.daysLeft || 9999); });
 
@@ -5516,7 +5518,9 @@ function sfCoachAlerts(token) {
   const s = requireSession_(token);
   if (!isCoach_(s)) throw new Error('دسترسی مربی لازم است.');
   sfEnsure_();
-  return sfAlertsList_();
+  const alerts = sfAlertsList_();
+  if (String(s.role || '').toLowerCase() === 'admin') return alerts;
+  return alerts.filter(function (a) { try { requireAssignedAthlete_(s, a.username); return true; } catch (e) { return false; } });
 }
 
 function sfCoachAlertsDismiss(token, ids) {
@@ -5527,7 +5531,12 @@ function sfCoachAlertsDismiss(token, ids) {
   return sfWithLock_(() => {
     const rd = sfRead_('SF_Alerts');
     if (rd.idx.Seen === undefined) return { ok: true };
-    rd.rows.forEach((r, i) => { if (set[normalize_(r[rd.idx.AlertID])]) rd.sh.getRange(i + 2, rd.idx.Seen + 1).setValue('TRUE'); });
+    rd.rows.forEach((r, i) => {
+      if (!set[normalize_(r[rd.idx.AlertID])]) return;
+      const username = normalize_(r[rd.idx.Username]);
+      if (String(s.role || '').toLowerCase() !== 'admin') { try { requireAssignedAthlete_(s, username); } catch (e) { return; } }
+      rd.sh.getRange(i + 2, rd.idx.Seen + 1).setValue('TRUE');
+    });
     sfInvalidate_('SF_Alerts');
     return { ok: true };
   });

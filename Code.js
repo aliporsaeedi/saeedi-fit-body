@@ -486,7 +486,8 @@ function getUserRecord_(username) {
       return {
         row: r + 1, username: normalize_(values[r][0]), password: normalize_(values[r][1]),
         supplementPlan: normalize_(values[r][2]), workoutPlan: normalize_(values[r][3]), dietPlan: normalize_(values[r][4]),
-        role: normalize_(values[r][5]).toLowerCase() || 'user', telegramChatId: normalize_(values[r][6]), email: normalize_(values[r][7])
+        role: normalize_(values[r][5]).toLowerCase() || 'user', telegramChatId: normalize_(values[r][6]), email: normalize_(values[r][7]),
+        coachUsername: normalize_(values[r][8])
       };
     }
   }
@@ -1256,13 +1257,19 @@ function getFoodByBarcode(token, barcode) {
 function getLeaderboard(token) {
   const session = requireSession_(token);
   const values = getSS_().getSheetByName(CONFIG.USERS_SHEET).getDataRange().getValues();
-  const all = values.slice(1).filter(r => normalize_(r[0])).map(r => {
+  let all = values.slice(1).filter(r => normalize_(r[0])).map(r => {
     const username = normalize_(r[0]);
     return { username, name: getProfile_(username).name || username, streak: computeStreak_(username) };
   });
   all.sort((a, b) => b.streak - a.streak);
 
-  if (isCoach_(session)) return { mode: 'coach', list: all };
+  if (isCoach_(session)) {
+    if (!isAdmin_(session)) all = all.filter(x => {
+      const u = getUserRecord_(x.username);
+      return u && u.coachUsername.toLowerCase() === session.username.toLowerCase();
+    });
+    return { mode: 'coach', list: all };
+  }
 
   const rank = all.findIndex(x => x.username.toLowerCase() === session.username.toLowerCase()) + 1;
   return { mode: 'athlete', rank: rank || null, total: all.length, streak: computeStreak_(session.username) };
@@ -1276,10 +1283,10 @@ function daysSince_(isoDate) {
   if (!isoDate) return 9999; // sentinel for 'never logged' — Infinity cannot cross the RPC boundary
   return Math.round((new Date(todayISO_() + 'T00:00:00') - new Date(isoDate + 'T00:00:00')) / 86400000);
 }
-function getCoachAthletes_() {
+function getCoachAthletes_(session) {
   const values = getSS_().getSheetByName(CONFIG.USERS_SHEET).getDataRange().getValues();
   const wk = doneCountsByUser_(7), lm = lastMessagesMap_();
-  return values.slice(1).filter(r => normalize_(r[0])).map(r => {
+  return values.slice(1).filter(r => normalize_(r[0]) && (!session || isAdmin_(session) || normalize_(r[8]).toLowerCase() === String(session.username || '').toLowerCase())).map(r => {
     const username = normalize_(r[0]);
     const profile = getProfile_(username);
     const lastLog = lastLogDate_(username);
@@ -1299,6 +1306,7 @@ function assignPlans(token, input) {
   if (!isCoach_(session)) throw new Error('دسترسی مربی/ادمین لازم است.');
   const target = getUserRecord_(input.username);
   if (!target) throw new Error('ورزشکار پیدا نشد.');
+  requireAssignedAthlete_(session, target.username);
   const sh = getSS_().getSheetByName(CONFIG.USERS_SHEET);
   sh.getRange(target.row, 3).setValue(joinPlans_(input.supplementPlans));
   sh.getRange(target.row, 4).setValue(joinPlans_(input.workoutPlans));
@@ -1306,11 +1314,18 @@ function assignPlans(token, input) {
   /* برنامه‌هایی که فقط اسمشان ثبت شده، همین حالا برای شاگرد کپی می‌شوند */
   try { if (typeof sf7SyncAssignedPlans === 'function') sf7SyncAssignedPlans(token, target.username); } catch (e) {}
   try { if (typeof sf7BumpPlans_ === 'function') sf7BumpPlans_(); } catch (e) {}
-  return { ok: true, athletes: getCoachAthletes_() };
+  return { ok: true, athletes: getCoachAthletes_(session) };
+}
+function requireAssignedAthlete_(session, athleteUsername) {
+  if (isAdmin_(session)) return getUserRecord_(athleteUsername);
+  const target = getUserRecord_(athleteUsername);
+  if (!target || target.coachUsername.toLowerCase() !== String(session.username || '').toLowerCase()) throw new Error('این شاگرد به حساب مربی شما اختصاص داده نشده است.');
+  return target;
 }
 function getCoachNote(token, athleteUsername) {
   const session = requireSession_(token);
   if (!isCoach_(session)) throw new Error('دسترسی مربی/ادمین لازم است.');
+  requireAssignedAthlete_(session, athleteUsername);
   const sh = getSS_().getSheetByName(CONFIG.COACH_NOTES_SHEET);
   const values = sh.getDataRange().getValues();
   for (let r = 1; r < values.length; r++) if (normalize_(values[r][0]).toLowerCase() === normalize_(athleteUsername).toLowerCase()) return { note: normalize_(values[r][1]) };
@@ -1319,6 +1334,7 @@ function getCoachNote(token, athleteUsername) {
 function saveCoachNote(token, athleteUsername, note) {
   const session = requireSession_(token);
   if (!isCoach_(session)) throw new Error('دسترسی مربی/ادمین لازم است.');
+  requireAssignedAthlete_(session, athleteUsername);
   const sh = getSS_().getSheetByName(CONFIG.COACH_NOTES_SHEET);
   const values = sh.getDataRange().getValues();
   let row = -1;
@@ -1410,6 +1426,7 @@ function getMessages(token, athleteUsername) {
   const session = requireSession_(token);
   const athlete = isCoach_(session) ? normalize_(athleteUsername) : session.username;
   if (!athlete) return [];
+  if (isCoach_(session)) requireAssignedAthlete_(session, athlete);
   const sh = getSS_().getSheetByName(CONFIG.MESSAGES_SHEET);
   if (!sh) return [];
   const values = sh.getDataRange().getValues();
@@ -1423,6 +1440,7 @@ function getMessages(token, athleteUsername) {
 function sendMessage(token, athleteUsername, text) {
   const session = requireSession_(token);
   const athlete = isCoach_(session) ? normalize_(athleteUsername) : session.username;
+  if (isCoach_(session)) requireAssignedAthlete_(session, athlete);
   const body = normalize_(text);
   if (!athlete || !body) throw new Error('پیام یا ورزشکار مشخص نیست.');
   /* ضد تکرار: همان متن از همان فرستنده در ۱۰ دقیقه فقط یک‌بار ثبت می‌شود */
@@ -1480,7 +1498,7 @@ function sendWeeklyReport() {
   const tgToken = props.getProperty('TELEGRAM_BOT_TOKEN');
   const tgChat = props.getProperty('COACH_TELEGRAM_CHAT_ID');
   if (!coachEmail && !(tgToken && tgChat)) return;
-  const athletes = getCoachAthletes_();
+  const athletes = getCoachAthletes_(null);
   const missed = athletes.filter(a => a.missedDays >= CONFIG.MISSED_LOG_ALERT_DAYS);
   const weekAgo = new Date(); weekAgo.setDate(weekAgo.getDate() - 7);
   const weekAgoStr = Utilities.formatDate(weekAgo, tz_(), 'yyyy-MM-dd');
@@ -2110,7 +2128,7 @@ function getBootstrap(token, clientToday) {
     reminders: getRemindersInfo_(session.username),
     hasYouTubeKey: !!PropertiesService.getScriptProperties().getProperty('YT_KEY')
   };
-  if (isCoach_(session)) result.athletes = getCoachAthletes_();
+  if (isCoach_(session)) { result.isCoach = true; result.athletes = getCoachAthletes_(session); }
   if (isAdmin_(session)) result.isAdmin = true;
   var __gate;
   try { __gate = sfGate_(session); } catch (eGate) { __gate = sfGateFallback_(); }

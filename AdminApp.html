@@ -172,7 +172,7 @@ input:focus,select:focus,textarea:focus{outline:0;border-color:var(--acc);box-sh
 <script>
 var S = { token: '', user: null, menu: [], banks: {}, techniques: [], appUrl: '', route: '', bank: {}, open: {} };
 var $ = function (id) { return document.getElementById(id); };
-function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+function esc(s) { return String(s == null ? '' : s).replace(/[۰-۹٠-٩]/g, function (d) { var a = '۰۱۲۳۴۵۶۷۸۹٠١٢٣٤٥٦٧٨٩'; var n = a.indexOf(d); return n < 10 ? String(n) : String(n - 10); }).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
 function fa(n) { return Number(n || 0).toLocaleString('en-US'); }
 function toast(m, bad) { var t = document.createElement('div'); t.className = 'toast'; t.textContent = m; if (bad) t.style.background = '#d33', t.style.color = '#fff'; document.body.appendChild(t); setTimeout(function () { t.remove(); }, bad ? 5000 : 2600); }
 function rpc(fn) {
@@ -336,11 +336,11 @@ function userDlg(u, sheets) {
     call('adm_userSave', { username: u.username, role: $('f_role').value, telegram: $('f_tg').value, coach: $('f_co').value, workout: $('f_w').value, diet: $('f_d').value, supp: $('f_s').value })
       .then(function () { toast('ذخیره شد ✅'); closeModal(); render(); }).catch(fail);
   };
-  $('pw').onclick = function () { var p = prompt('رمز جدید (حداقل ۶ کاراکتر):'); if (!p) return; call('adminResetPassword', u.username, p).then(function () { toast('رمز تغییر کرد.'); }).catch(fail); };
+  $('pw').onclick = function () { var p = prompt('رمز جدید (حداقل 6 کاراکتر):'); if (!p) return; call('adminResetPassword', u.username, p).then(function () { toast('رمز تغییر کرد.'); }).catch(fail); };
   $('dx').onclick = function () { if (!confirm('کاربر «' + u.username + '» حذف شود؟')) return; call('adminDeleteUser', u.username).then(function () { toast('حذف شد.'); closeModal(); render(); }).catch(fail); };
 }
 R['users.create'] = function () {
-  view('<div class="card" style="max-width:480px"><div class="fg"><div class="full"><label>نام کاربری</label><input id="c_u" class="ltr"></div><div class="full"><label>رمز عبور (حداقل ۶ کاراکتر)</label><input id="c_p" class="ltr" type="password"></div>' +
+  view('<div class="card" style="max-width:480px"><div class="fg"><div class="full"><label>نام کاربری</label><input id="c_u" class="ltr"></div><div class="full"><label>رمز عبور (حداقل 6 کاراکتر)</label><input id="c_p" class="ltr" type="password"></div>' +
     '<div class="full"><label>نقش</label><select id="c_r"><option value="user">شاگرد</option><option value="coach">مربی</option><option value="admin">ادمین</option></select></div></div>' +
     '<p><button class="btn" id="c_b">ساخت کاربر</button></p></div>');
   $('c_b').onclick = function () { call('adminCreateUser', { username: $('c_u').value, password: $('c_p').value, role: $('c_r').value }).then(function () { toast('کاربر ساخته شد ✅'); go('users.list'); }).catch(fail); };
@@ -526,7 +526,7 @@ function anaHtml(a) {
     '<div class="card kpi"><small>روز</small><b>' + fa(sx.days) + '</b></div>' +
     '<div class="card kpi"><small>بلوک</small><b>' + fa(sx.blocks) + '</b></div>' +
     '<div class="card kpi"><small>حرکت</small><b>' + fa(sx.exercises) + '</b><small>کل ست: ' + fa(sx.sets) + '</small></div>' +
-    '<div class="card kpi"><small>نمرهٔ تعادل</small><b>' + fa(a.score) + '</b><small>از ۱۰۰</small></div></div>' +
+    '<div class="card kpi"><small>نمرهٔ تعادل</small><b>' + fa(a.score) + '</b><small>از 100</small></div></div>' +
     '<div class="anal"><h3>حجم هر گروه در یک دوره (ست)</h3><div class="bars">' +
     (order.length ? order.map(function (k) {
       return '<div class="baru"><span>' + esc(k) + '</span><i style="width:' + Math.round(g[k].sets / max * 100) + '%"></i><b>' + fa(g[k].sets) + '</b></div>';
@@ -576,7 +576,7 @@ R['plans.generate'] = function () {
       '<p class="note">هدف، سطح، تعداد روز و وسایل را انتخاب کن؛ برنامه از بانک حرکات با حجم و تکرار متناسب همان هدف ساخته می‌شود، به شاگرد ثبت می‌شود و می‌توانی در همان لحظه در بانک برنامه‌ها هم ذخیره‌اش کنی. بعد از ساخت می‌توانی با «ویرایش ست و تکرار» دستی هم تغییرش بدهی.</p>' +
       '<div class="fg"><div><label>هدف</label>' + sel('g_goal', [['auto', 'خودکار از پروفایل شاگرد'], ['lose', 'کاهش چربی'], ['gain', 'افزایش حجم'], ['strength', 'افزایش قدرت'], ['tone', 'تناسب اندام']], 'auto') + '</div>' +
       '<div><label>سطح</label>' + sel('g_level', [['مبتدی', 'مبتدی'], ['متوسط', 'متوسط'], ['پیشرفته', 'پیشرفته']], 'متوسط') + '</div>' +
-      '<div><label>روز در هفته</label>' + sel('g_days', [['2', '۲'], ['3', '۳'], ['4', '۴'], ['5', '۵'], ['6', '۶']], '3') + '</div>' +
+      '<div><label>روز در هفته</label>' + sel('g_days', [['2', '2'], ['3', '3'], ['4', '4'], ['5', '5'], ['6', '6']], '3') + '</div>' +
       '<div><label>وسایل</label>' + sel('g_equip', [['all', 'همهٔ وسایل'], ['body', 'وزن بدن'], ['دمبل', 'دمبل'], ['هالتر', 'هالتر'], ['دستگاه', 'دستگاه'], ['سیمکش', 'سیم‌کش'], ['کش', 'کش']], 'all') + '</div>' +
       '<div><label>مدت جلسه (دقیقه)</label><input id="g_min" type="number" min="20" max="120" value="60"></div>' +
       '<div><label>شاگرد مقصد</label>' + sel('g_user', users.map(function (x) { return [x.username, x.username]; })) + '</div>' +
@@ -895,7 +895,7 @@ R['plans.create'] = function () {
     };
     view('<div class="card"><h3>برنامه‌ساز — برنامهٔ تازه</h3>' +
       '<p class="note">مشخصات را پر کن، روزها را بساز و برای هر روز حرکت اضافه کن. در هر بلوک روش تمرینی، تعداد ست، تکرارها (مثل 8-12 یا 12-10-8-6) و استراحت را همان‌جا تعیین می‌کنی؛ بعد از ذخیره برنامه برای شاگرد ثبت می‌شود و (در صورت تیک) نسخهٔ بانکی هم برای تحلیل ساخته می‌شود.</p>' +
-      '<div class="fg"><div class="full"><label>نام برنامه</label><input id="cb_name" placeholder="مثل: حجم ۴ روزه"></div>' +
+    '<div class="fg"><div class="full"><label>نام برنامه</label><input id="cb_name" placeholder="مثل: حجم 4 روزه"></div>' +
       '<div><label>شاگرد</label><select id="cb_user">' + opt(users.map(function (x) { return [x.username, x.username]; }), '') + '</select></div>' +
       '<div><label>هدف</label><select id="cb_goal">' + opt([['', '—'], ['کاهش چربی', 'کاهش چربی'], ['افزایش حجم', 'افزایش حجم'], ['افزایش قدرت', 'افزایش قدرت'], ['تناسب اندام', 'تناسب اندام']], '') + '</select></div>' +
       '<div><label>سطح</label><select id="cb_level">' + opt([['', '—'], ['مبتدی', 'مبتدی'], ['متوسط', 'متوسط'], ['پیشرفته', 'پیشرفته']], '') + '</select></div>' +
@@ -1197,7 +1197,7 @@ R.bank = function (bk) {
   var t; $('bq').oninput = function () { var v = this.value; clearTimeout(t); t = setTimeout(function () { st.q = v; st.page = 1; fetchPage(); }, 300); };
   $('bm').onchange = function () { st.miss = this.checked; st.page = 1; fetchPage(); };
   if ($('badd')) $('badd').onclick = function () { editDlg(bk, {}); };
-  if ($('bimg')) $('bimg').onclick = function () { var b = this; b.disabled = true; var loop = function () { b.textContent = 'در حال جستجو…'; call('adm_mediaFill', bk, 30).then(function (r) { toast('پیدا شد: ' + fa(r.found) + ' از ' + fa(r.tried) + ' · مانده: ' + fa(r.remaining)); if (r.remaining > 0 && r.tried > 0) loop(); else { b.disabled = false; b.textContent = 'پر کردن خودکار تصاویر'; fetchPage(); } }).catch(function (e) { b.disabled = false; b.textContent = 'پر کردن خودکار تصاویر'; fail(e); }); }; loop(); };
+  if ($('bimg')) $('bimg').onclick = function () { var b = this; b.disabled = true; var loop = function () { b.textContent = 'در حال جستجوی عکس محصول…'; call('adm_mediaFill', bk, 15).then(function (r) { toast('عکس محصول: ' + fa(r.found) + ' · نتیجه‌ای پیدا نشد: ' + fa(r.unmatched) + ' · صف: ' + fa(r.remaining)); if (r.remaining > 0 && r.tried > 0) loop(); else { b.disabled = false; b.textContent = 'جستجوی عکس محصول'; fetchPage(); } }).catch(function (e) { b.disabled = false; b.textContent = 'جستجوی عکس محصول'; fail(e); }); }; loop(); };
   if (bk === 'exercises') wireGifCard();
   fetchPage();
 };
@@ -1240,7 +1240,7 @@ function wireGifCard() {
 function card(bk, o) {
   var sc = S.banks[bk], meta = '';
   if (bk === 'exercises') meta = '<small>' + esc(o.MuscleGroup) + ' · ' + esc(o.Equipment) + ' · ' + esc(o.Level) + '</small>';
-  if (bk === 'foods') meta = '<div class="mac"><span>' + fa(o.Kcal100) + ' kcal</span><span>پ ' + fa(o.Protein100) + '</span><span>ک ' + fa(o.Carb100) + '</span><span>چ ' + fa(o.Fat100) + '</span><span>ف ' + fa(o.Fiber100) + '</span></div><small>در ۱۰۰ گرم · ' + esc(o.Category) + '</small>';
+  if (bk === 'foods') meta = '<div class="mac"><span>' + fa(o.Kcal100) + ' kcal</span><span>پ ' + fa(o.Protein100) + '</span><span>ک ' + fa(o.Carb100) + '</span><span>چ ' + fa(o.Fat100) + '</span><span>ف ' + fa(o.Fiber100) + '</span></div><small>در 100 گرم · ' + esc(o.Category) + '</small>';
   if (bk === 'supps') meta = '<small>' + esc(o.Category) + ' · ' + esc(o.Dose) + '</small>';
   if (bk === 'minerals') meta = '<small>' + esc(o.Type) + ' · نیاز: ' + esc(o.RdaMale) + '</small>';
   return '<div class="it' + (o.Active ? '' : ' off') + '" data-id="' + esc(o[sc.id]) + '"><div class="im">' + mediaHtml(bk, o, false) + '</div><div class="bd"><b>' + esc(o[sc.name]) + '</b><small class="ltr" style="display:block">' + esc(o[sc.sub]) + '</small>' + meta + '</div></div>';
@@ -1341,7 +1341,7 @@ R['bank.moves'] = function () {
   view(CSS +
     '<div class="hero-band"><p class="hb-sec">MOVE FINDER · 1323 MOVES</p>' +
     '<h2>جستجوی حرکت و افزودن به برنامهٔ شاگرد</h2>' +
-    '<p>روی ۱۳۲۳ حرکت جستجو کن (فارسی یا انگلیسی، عضله، وسیله)، پیش‌نمایش WebP را ببین و همان حرکت را با ست و تکرار دلخواه به یک روز از برنامهٔ شاگرد اضافه کن.</p></div>' +
+    '<p>روی 1323 حرکت جستجو کن (فارسی یا انگلیسی، عضله، وسیله)، پیش‌نمایش WebP را ببین و همان حرکت را با ست و تکرار دلخواه به یک روز از برنامهٔ شاگرد اضافه کن.</p></div>' +
     '<div class="card"><div class="mvbar">' +
     '<div class="wide"><label>جستجو</label><input id="mvq" placeholder="مثلاً: لت، سرشانه، lat pulldown، دمبل"></div>' +
     '<div><label>گروه عضلانی</label><select id="mvg"><option value="">همه</option></select></div>' +
@@ -1395,11 +1395,11 @@ R['bank.moves'] = function () {
       var opts = (r.days || []).map(function (d) {
         return '<option value="' + d.dayNo + '">' + esc(d.title) + ' · ' + fa(d.exercises) + ' حرکت</option>';
       }).join('');
-      dsel.innerHTML = (opts || '<option value="1">روز ۱ (خالی)</option>') + '<option value="new">+ روز جدید</option>';
+      dsel.innerHTML = (opts || '<option value="1">روز 1 (خالی)</option>') + '<option value="new">+ روز جدید</option>';
       $('a_newday').value = r.nextDay || 1;
       dsel.onchange = function () { $('a_newday').disabled = dsel.value !== 'new'; };
       $('a_newday').disabled = dsel.value !== 'new';
-    }).catch(function (e) { dsel.innerHTML = '<option value="1">روز ۱</option>'; fail(e); });
+    }).catch(function (e) { dsel.innerHTML = '<option value="1">روز 1</option>'; fail(e); });
   }
 
   function openAssign(id) {
@@ -1409,7 +1409,7 @@ R['bank.moves'] = function () {
       '<div class="sub">' + esc(it.group || '') + ' · ' + esc(it.equip || '') + ' · ' + esc(it.level || '') + '</div></div></div>' +
       '<div class="fg">' +
       '<div class="full"><label>برنامهٔ شاگرد</label><select id="a_plan"><option value="">در حال خواندن…</option></select></div>' +
-      '<div><label>روز</label><select id="a_day"><option value="1">روز ۱</option></select></div>' +
+      '<div><label>روز</label><select id="a_day"><option value="1">روز 1</option></select></div>' +
       '<div><label>شمارهٔ روز جدید</label><input id="a_newday" type="number" min="1" max="14" value="1" disabled></div>' +
       '<div><label>ست</label><input id="a_sets" type="number" min="1" max="12" value="' + (Number(it.sets) || 3) + '"></div>' +
       '<div><label>تکرار</label><input id="a_reps" value="' + esc(it.reps || '8-12') + '"></div>' +
@@ -1471,7 +1471,7 @@ R['bank.moves'] = function () {
 R['bank.library'] = function () {
   var busy = false;
   view('<div class="hero-band"><p class="hb-sec">EXERCISE GIF LIBRARY · 1323 MOVES</p>' +
-    '<h2>کتابخانهٔ ۱۳۲۳ حرکتی با گیف</h2>' +
+    '<h2>کتابخانهٔ 1323 حرکتی با گیف</h2>' +
     '<p>منبع اصلی گیف‌ها همین کتابخانه است و گیف‌های قبلی هر حرکت به‌عنوان پشتیبان می‌مانند؛ اگر گیف کتابخانه لود نشود، همان گیف قدیمی نمایش داده می‌شود. هر حرکت با نام فارسی/انگلیسی، گروه عضلانی، تجهیزات، ست و تکرار پیشنهادی، لینک یوتیوب و لینک گیف وارد شیت می‌شود.</p>' +
     '<div class="bar"><button class="btn" id="libImp">افزودن / به‌روزرسانی کتابخانه در شیت</button>' +
     '<button class="btn sec" id="libDl">دانلود گیف‌ها به درایو (دسته‌ای)</button>' +
@@ -1479,7 +1479,7 @@ R['bank.library'] = function () {
     '<button class="btn sec" id="libRefresh">به‌روزرسانی وضعیت</button></div></div>' +
     '<div class="card" id="libStat"><div class="empty">در حال خواندن وضعیت…</div></div>' +
     '<div class="card"><div class="section-title"><h3>دیتابیس غذا / مکمل / ویتامین</h3><span class="pill">با تصویر</span></div>' +
-    '<p class="sub" style="margin:0 0 10px">۴۱ غذای تازه، ۳۰ مکمل و ۲۴ ویتامین/مینرال به بانک اضافه می‌شود؛ تصویر خالی هر ردیف هم با تصویر داخلی پر می‌شود (بدون نیاز به هاست بیرونی). فقط ردیف‌های تکراری ساخته نمی‌شوند.</p>' +
+    '<p class="sub" style="margin:0 0 10px">بانک‌های غذا، مکمل و ویتامین را بدون ردیف تکراری به‌روز می‌کند؛ بعد عکس جلوی بستهٔ محصول را جستجو می‌کند و منبع و مجوز هر عکس را در شیت نگه می‌دارد.</p>' +
     '<div class="bar"><button class="btn" id="catSeed">پر کردن بانک‌ها + تصویرها</button></div>' +
     '<pre id="catLog" style="white-space:pre-wrap;font-size:12px;font-family:inherit;margin-top:10px;color:var(--muted)"></pre></div>' +
     '<div class="card" id="libLogCard" style="display:none"><div class="section-title"><h3>گزارش</h3></div>' +
@@ -1575,8 +1575,22 @@ R['bank.library'] = function () {
         ' | مدل رژیم: +' + fa(r.models) + ' | تصویر پر شد: ' + fa(r.images) +
         (r.foodError || r.suppError || r.minError || r.modelError || r.imageError
           ? '\nخطا: ' + [r.foodError, r.suppError, r.minError, r.modelError, r.imageError].filter(Boolean).join(' / ') : '');
-      toast('بانک‌ها به‌روز شد');
-      btn.disabled = false;
+      var banks = ['foods', 'supps', 'minerals'], sums = { found: 0, unmatched: 0 };
+      function nextBank(i) {
+        if (i >= banks.length) {
+          log.textContent += '\nعکس محصول ثبت شد: ' + fa(sums.found) + ' | تصویر مناسب پیدا نشد: ' + fa(sums.unmatched);
+          toast('بانک و عکس‌های محصولات بررسی شد'); btn.disabled = false; return;
+        }
+        function batch() {
+          call('adm_mediaFill', banks[i], 15).then(function (m) {
+            sums.found += Number(m.found) || 0; sums.unmatched += Number(m.unmatched) || 0;
+            log.textContent = log.textContent.split('\nعکس محصول ثبت شد:')[0] + '\nدر حال یافتن عکس محصول: ' + banks[i] + ' · ' + fa(sums.found) + ' پیدا شد';
+            if (m.remaining > 0 && m.tried > 0) batch(); else nextBank(i + 1);
+          }).catch(function (e) { log.textContent += '\nخطای جستجوی ' + banks[i] + ': ' + ((e && e.message) || e); nextBank(i + 1); });
+        }
+        batch();
+      }
+      nextBank(0);
     }).catch(function (e) {
       log.textContent = 'خطا: ' + ((e && e.message) || e);
       btn.disabled = false;
@@ -1595,39 +1609,49 @@ R['bank.techniques'] = function () {
   view('<div class="cards">' + S.techniques.map(function (t) { return '<div class="card"><b>' + esc(t.label) + '</b><div class="mac"><span>حداقل ' + fa(t.min) + ' حرکت</span><span>حداکثر ' + fa(t.max) + ' حرکت</span></div><p>' + esc(t.desc) + '</p></div>'; }).join('') + '</div>');
 };
 
-/* ---------- مالی ---------- */
-R['finance.payments'] = function () {
+/* ---------- اعتبار و اشتراک یکپارچه ---------- */
+R['finance.membership'] = function () {
   call('sf3AdminOverview').then(function (o) {
-    var st = { pending_review: 'در انتظار', approved: 'تأیید', rejected: 'رد' };
-    var tbl = function (rows, withAct) { return plansTable(rows, [['کاربر', function (p) { return '<span class="ltr">' + esc(p.username) + '</span>'; }], ['مبلغ', function (p) { return fa(p.final || p.amount); }], ['وضعیت', function (p) { return esc(st[p.status] || p.status); }], ['تاریخ', function (p) { return esc(String(p.createdAt).slice(0, 10)); }], ['رسید', function (p) { return p.receipt ? '<a href="' + esc(p.receipt) + '" target="_blank">مشاهده</a>' : '—'; }]], function (p) { return withAct ? '<button class="btn sm" data-ok="' + esc(p.payId) + '">تأیید</button><button class="btn bad sm" data-no="' + esc(p.payId) + '">رد</button>' : ''; }); };
-    view('<div class="card"><h3>در انتظار تأیید (' + fa(o.pending.length) + ')</h3>' + tbl(o.pending, true) + '</div><div class="card"><h3>اخیر</h3>' + tbl(o.recent, false) + '</div>');
-    document.querySelectorAll('[data-ok]').forEach(function (b) { b.onclick = function () { call('sf3AdminDecide', b.getAttribute('data-ok'), true, '').then(function () { toast('تأیید شد ✅'); render(); }).catch(fail); }; });
-    document.querySelectorAll('[data-no]').forEach(function (b) { b.onclick = function () { var r = prompt('دلیل رد (اختیاری):'); if (r === null) return; call('sf3AdminDecide', b.getAttribute('data-no'), false, r).then(function () { render(); }).catch(fail); }; });
+    var status = { active: 'فعال', grace: 'مهلت تمدید', none: 'بدون اشتراک', expired: 'منقضی' };
+    var roleName = { user: 'شاگرد', coach: 'مربی', admin: 'ادمین' };
+    var pkgName = function (id) { var p = (o.packages || []).filter(function (x) { return x.id === id; })[0]; return p ? p.name : '—'; };
+    var users = plansTable(o.subscriptionRows || [], [
+      ['کاربر', function (r) { return '<span class="ltr">' + esc(r.username) + '</span>'; }],
+      ['نقش', function (r) { return esc(roleName[r.role] || r.role); }],
+      ['بستهٔ فعال', function (r) { return esc(pkgName(r.packageId)); }],
+      ['وضعیت', function (r) { return '<span class="pill ' + (r.status === 'active' ? 'ok' : (r.status === 'none' ? '' : 'warn')) + '">' + esc(status[r.status] || r.status) + '</span>'; }],
+      ['اعتبار باقی‌مانده', function (r) { return r.status === 'none' ? '—' : fa(r.daysLeft) + ' روز'; }],
+      ['پایان اشتراک', function (r) { return esc(r.endDate || '—'); }]
+    ], function (r) { return '<button class="btn sec sm" data-renew="' + esc(r.username) + '">تمدید</button>'; });
+    var pending = plansTable(o.pending || [], [
+      ['کاربر', function (r) { return '<span class="ltr">' + esc(r.username) + '</span>'; }],
+      ['بسته', function (r) { return esc(pkgName(r.packageId)); }],
+      ['مبلغ', function (r) { return fa(r.final || r.amount); }],
+      ['تاریخ', function (r) { return esc(String(r.createdAt || '').slice(0, 10)); }],
+      ['رسید', function (r) { return r.receipt ? '<a href="' + esc(r.receipt) + '" target="_blank" rel="noopener">مشاهده</a>' : '—'; }]
+    ], function (r) { return '<button class="btn sm" data-pay-ok="' + esc(r.payId) + '">تأیید</button> <button class="btn bad sm" data-pay-no="' + esc(r.payId) + '">رد</button>'; });
+    var packages = plansTable(o.packages || [], [
+      ['بسته', function (p) { return '<b>' + esc(p.name) + '</b>'; }],
+      ['مدت', function (p) { return fa(p.days) + ' روز'; }],
+      ['قیمت', function (p) { return fa(p.price); }],
+      ['وضعیت', function (p) { return pill(p.active); }]
+    ], function (p) { return '<button class="btn sec sm" data-package-edit="' + esc(p.id) + '">ویرایش</button>'; });
+    view('<div class="hero-band"><p class="hb-sec">MEMBERSHIP · CREDIT</p><h2>اعتبار و اشتراک</h2><p>وضعیت شاگردها، پرداخت‌ها و بسته‌ها در یک نمای یکپارچه؛ اقدام‌ها کنار همان ردیف انجام می‌شوند.</p></div>' +
+      '<div class="cards"><div class="card kpi"><small>اشتراک فعال</small><b>' + fa(o.stats.active) + '</b></div><div class="card kpi"><small>نیازمند پیگیری</small><b>' + fa(o.stats.expiring) + '</b></div><div class="card kpi"><small>بدون اشتراک</small><b>' + fa(o.stats.none) + '</b></div><div class="card kpi"><small>پرداخت در انتظار</small><b>' + fa(o.stats.pending) + '</b></div></div>' +
+      '<div class="card"><div class="bar"><h3>حساب شاگردها</h3><input id="memberSearch" placeholder="جستجوی کاربر یا بسته"></div><div id="memberRows">' + users + '</div></div>' +
+      '<div class="card"><h3>پرداخت‌های نیازمند بررسی</h3>' + (o.pending && o.pending.length ? pending : '<div class="note ok">پرداخت در انتظاری وجود ندارد.</div>') + '</div>' +
+      '<div class="card"><div class="bar"><h3>بسته‌های اشتراک</h3><button class="btn" id="memberAddPackage">+ بستهٔ جدید</button></div>' + packages + '</div>' +
+      '<div class="card"><h3>روش پرداخت</h3><div class="fg"><div><label>شمارهٔ کارت</label><input id="memberCardNo" class="ltr" value="' + esc((o.card || {}).number || '') + '"></div><div><label>نام صاحب کارت</label><input id="memberCardHolder" value="' + esc((o.card || {}).holder || '') + '"></div></div><p><button class="btn sec" id="memberCardSave">ذخیرهٔ اطلاعات پرداخت</button></p></div>');
+    document.querySelectorAll('[data-renew]').forEach(function (b) { b.onclick = function () { var days = Number(prompt('چند روز تمدید شود؟', '30') || 0); if (!days) return; call('sf3AdminGrantSub', b.getAttribute('data-renew'), days, 'MANUAL').then(function (r) { toast('تمدید شد تا ' + r.endDate); render(); }).catch(fail); }; });
+    document.querySelectorAll('[data-pay-ok]').forEach(function (b) { b.onclick = function () { call('sf3AdminDecide', b.getAttribute('data-pay-ok'), true, '').then(function () { toast('پرداخت تأیید شد'); render(); }).catch(fail); }; });
+    document.querySelectorAll('[data-pay-no]').forEach(function (b) { b.onclick = function () { var reason = prompt('دلیل رد (اختیاری):'); if (reason === null) return; call('sf3AdminDecide', b.getAttribute('data-pay-no'), false, reason).then(function () { render(); }).catch(fail); }; });
+    var packageEdit = function (p) { p = p || {}; modal('<h3>بستهٔ اشتراک</h3><div class="fg"><div><label>نام</label><input id="p_n" value="' + esc(p.name || '') + '"></div><div><label>مدت (روز)</label><input id="p_d" type="number" value="' + esc(p.days || 30) + '"></div><div><label>قیمت</label><input id="p_p" type="number" value="' + esc(p.price || 0) + '"></div><div><label>نشان</label><input id="p_b" value="' + esc(p.badge || '') + '"></div><div class="full"><label>ویژگی‌ها</label><textarea id="p_f" rows="3">' + esc(p.features || '') + '</textarea></div></div><p><button class="btn" id="p_s">ذخیره</button></p>'); $('p_s').onclick = function () { call('sf3AdminSavePackage', { id: p.id || '', name: $('p_n').value, days: $('p_d').value, price: $('p_p').value, badge: $('p_b').value, features: $('p_f').value, active: p.active !== false }).then(function () { closeModal(); render(); }).catch(fail); }; };
+    $('memberAddPackage').onclick = function () { packageEdit(); };
+    document.querySelectorAll('[data-package-edit]').forEach(function (b) { b.onclick = function () { packageEdit((o.packages || []).filter(function (p) { return p.id === b.getAttribute('data-package-edit'); })[0]); }; });
+    $('memberCardSave').onclick = function () { call('sf3AdminSetCard', $('memberCardNo').value, $('memberCardHolder').value).then(function () { toast('اطلاعات پرداخت ذخیره شد'); }).catch(fail); };
+    $('memberSearch').oninput = function () { var q = this.value.toLowerCase(); document.querySelectorAll('#memberRows table tbody tr').forEach(function (tr) { tr.style.display = !q || tr.textContent.toLowerCase().indexOf(q) >= 0 ? '' : 'none'; }); };
   }).catch(fail);
 };
-R['finance.packages'] = function () {
-  call('sf3AdminOverview').then(function (o) {
-    view('<div class="bar"><button class="btn" id="np">+ پکیج جدید</button></div><div class="card">' + plansTable(o.packages, [['نام', function (p) { return '<b>' + esc(p.name) + '</b>'; }], ['مدت (روز)', function (p) { return fa(p.days); }], ['قیمت', function (p) { return fa(p.price); }], ['وضعیت', function (p) { return pill(p.active); }]], function (p) { return '<button class="btn sec sm" data-e="' + esc(p.id) + '">ویرایش</button><button class="btn bad sm" data-d="' + esc(p.id) + '">حذف</button>'; }) + '</div>');
-    var edit = function (p) { p = p || {}; modal('<h3>پکیج</h3><div class="fg"><div><label>نام</label><input id="p_n" value="' + esc(p.name || '') + '"></div><div><label>مدت (روز)</label><input id="p_d" type="number" value="' + esc(p.days || 30) + '"></div><div><label>قیمت</label><input id="p_p" type="number" value="' + esc(p.price || 0) + '"></div><div><label>نشان</label><input id="p_b" value="' + esc(p.badge || '') + '"></div><div class="full"><label>ویژگی‌ها</label><textarea id="p_f" rows="3">' + esc(p.features || '') + '</textarea></div></div><p><button class="btn" id="p_s">ذخیره</button></p>'); $('p_s').onclick = function () { call('sf3AdminSavePackage', { id: p.id, name: $('p_n').value, days: $('p_d').value, price: $('p_p').value, badge: $('p_b').value, features: $('p_f').value, active: p.active !== false }).then(function () { closeModal(); render(); }).catch(fail); }; };
-    $('np').onclick = function () { edit(); };
-    document.querySelectorAll('[data-e]').forEach(function (b) { b.onclick = function () { edit(o.packages.filter(function (p) { return p.id === b.getAttribute('data-e'); })[0]); }; });
-    document.querySelectorAll('[data-d]').forEach(function (b) { b.onclick = function () { if (confirm('پکیج حذف شود؟')) call('sf3AdminDeletePackage', b.getAttribute('data-d')).then(function () { render(); }).catch(fail); }; });
-  }).catch(fail);
-};
-R['finance.subs'] = function () {
-  call('sf3AdminOverview').then(function (o) {
-    var stl = { active: 'فعال', grace: 'مهلت', none: 'ندارد', expired: 'منقضی' };
-    view('<div class="card"><h3>اشتراک کاربران</h3>' + plansTable(o.subscriptionRows, [['کاربر', function (p) { return '<span class="ltr">' + esc(p.username) + '</span>'; }], ['وضعیت', function (p) { return '<span class="pill ' + (p.status === 'active' ? 'ok' : (p.status === 'none' ? '' : 'warn')) + '">' + esc(stl[p.status] || p.status) + '</span>'; }], ['روز باقی‌مانده', function (p) { return p.status === 'none' ? '—' : fa(p.daysLeft); }], ['پایان', function (p) { return esc(p.endDate || '—'); }]], function (p) { return '<button class="btn sec sm" data-g="' + esc(p.username) + '">تمدید دستی</button>'; }) + '</div>');
-    document.querySelectorAll('[data-g]').forEach(function (b) { b.onclick = function () { var d = prompt('چند روز اضافه شود؟', '30'); if (!d) return; call('sf3AdminGrantSub', b.getAttribute('data-g'), d, 'MANUAL').then(function (r) { toast('تا ' + r.endDate + ' تمدید شد ✅'); render(); }).catch(fail); }; });
-  }).catch(fail);
-};
-R['finance.card'] = function () {
-  call('sf3AdminOverview').then(function (o) {
-    view('<div class="card" style="max-width:460px"><div class="fg"><div class="full"><label>شمارهٔ کارت</label><input id="k_n" class="ltr" value="' + esc(o.card.number) + '"></div><div class="full"><label>نام صاحب کارت</label><input id="k_h" value="' + esc(o.card.holder) + '"></div></div><p><button class="btn" id="k_s">ذخیره</button></p></div>');
-    $('k_s').onclick = function () { call('sf3AdminSetCard', $('k_n').value, $('k_h').value).then(function () { toast('ذخیره شد ✅'); }).catch(fail); };
-  }).catch(fail);
-};
-
 /* ---------- ارتباط ---------- */
 R['comms.alerts'] = function () {
   call('sfCoachAlerts').then(function (rows) {
@@ -1733,7 +1757,7 @@ R['plans.anatomy'] = function () {
   view('<div class="hero-band"><p class="hb-sec">ADMIN PANEL · ANATOMY</p><h2>آناتومی برنامه</h2><p>شاگرد را انتخاب کن تا ببینی هر برنامه کدام بخش‌های بدن را درگیر می‌کند و نقطهٔ ضعف کجاست.</p></div>' +
     '<div class="card"><div class="fg">' +
     '<div><label>شاگرد</label><select id="anUser"><option value="">— همه —</option></select></div>' +
-    '<div><label>برنامه</label><select id="anPlan"><option value="">— انتخاب برنامه —</option></select></div>' +
+    '<div><label>ماه / برنامه</label><select id="anPlan"><option value="">— انتخاب برنامه —</option></select></div>' +
     '</div><div id="anOut"></div></div>');
 
   var userSel = $('anUser'), planSel = $('anPlan');
@@ -1752,7 +1776,7 @@ R['plans.anatomy'] = function () {
       (r.plans || []).forEach(function (p) {
         var o = document.createElement('option');
         o.value = p.planId;
-        o.textContent = p.planName + ' · ' + p.username + (p.days ? ' · ' + fa(p.days) + ' روز' : '');
+        o.textContent = p.planName + (p.month ? ' · ' + p.month : '') + ' · ' + p.username + (p.days ? ' · ' + fa(p.days) + ' روز' : '');
         planSel.appendChild(o);
       });
       if (st.planId) { planSel.value = st.planId; draw(st.planId); }
@@ -1790,7 +1814,7 @@ R['plans.anatomy'] = function () {
       '<div class="grid an-grid">' +
       '<div class="card an-body">' + anBodySvg() + '</div>' +
       '<div><div class="card"><h3>تعادل عضلانی</h3>' +
-      '<div class="an-score"><b>' + fa(bal.score || 0) + '</b><small>از ۱۰۰</small></div>' +
+      '<div class="an-score"><b>' + fa(bal.score || 0) + '</b><small>از 100</small></div>' +
       '<table class="wrap"><tbody><tr><td>بالاتنه</td><td>' + fa(bal.upper || 0) + '</td></tr><tr><td>پایین‌تنه</td><td>' + fa(bal.lower || 0) + '</td></tr></tbody></table>' +
       ((bal.warnings || []).length ? '<div class="note">' + bal.warnings.map(function (w) { return '• ' + esc(w); }).join('<br>') + '</div>' : '<div class="note ok">ترکیب برنامه متعادل است ✅</div>') +
       '</div>' +

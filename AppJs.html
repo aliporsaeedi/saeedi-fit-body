@@ -54,14 +54,15 @@ function ring(size, stroke, pct, colorVar) {
 function skeleton(n) { return Array.from({length: n || 3}).map(() => '<div class="skeleton skel-card"></div>').join(''); }
 
 const $ = id => document.getElementById(id);
-function esc(v) { return String(v ?? '').replace(/[&<>'"]/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', "'":'&#39;', '"':'&quot;' }[c])); }
+function esc(v) { return String(v ?? '').replace(/[۰-۹٠-٩]/g, d => { const n = '۰۱۲۳۴۵۶۷۸۹٠١٢٣٤٥٦٧٨٩'.indexOf(d); return String(n < 10 ? n : n - 10); }).replace(/[&<>'"]/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', "'":'&#39;', '"':'&quot;' }[c])); }
 function server(name, args = []) {
   return new Promise((resolve, reject) => {
     const runner = google.script.run.withSuccessHandler(resolve).withFailureHandler(e => {
       const msg = e && e.message ? e.message : String(e);
       /* فقط خطاهای واقعی (شبکه/سرور/قطع اتصال) به ادمین می‌رود؛ خطای اعتبارسنجی نه */
       if (/HTTP |network|fetch|timeout|unexpected|not found|502|504|برای این کار|دسترسی/i.test(msg)) {
-        sfReportError(msg, { fn: name, action: 'server:' + name, extra: 'args=' + JSON.stringify(args || []).slice(0, 160) });
+        /* never include RPC arguments here: meal, profile and chat payloads are private */
+        sfReportError(msg, { fn: name, action: 'server:' + name });
       }
       reject(new Error(msg));
     });
@@ -153,6 +154,8 @@ window.addEventListener('unhandledrejection', function (e) {
   var r = e && e.reason;
   sfReportError((r && r.message) || String(r || 'rejection'), { stack: r && r.stack, action: 'unhandledrejection' });
 });
+window.addEventListener('offline', function () { sfReportError('اتصال اینترنت قطع شد', { action: 'network.offline' }); });
+window.addEventListener('online', function () { sfReportError('اتصال اینترنت دوباره برقرار شد', { action: 'network.online' }); });
 
 /* -------------------------------------------------------------------------
  * Login / bootstrap
@@ -625,7 +628,7 @@ const SUPP_PHOTOS = [
 ];
 function foodPhoto(q){const s=String(q||'');return (FOOD_PHOTOS.find(x=>x[0].test(s))||FOOD_PHOTOS[3])[1];}
 function suppPhoto(q){const s=String(q||'');return (SUPP_PHOTOS.find(x=>x[0].test(s))||SUPP_PHOTOS[3])[1];}
-function imgArt(label,kind){var tone=kind==='supp'?'#7BD88F':(kind==='min'?'#8FC7E8':'#E9C88A');var txt=String(label==null?'':label).replace(/^تصویر\s*/,'').slice(0,22);var art=kind==='supp'?'<g transform="rotate(-30 120 82)"><rect x="98" y="58" width="44" height="48" rx="22" fill="'+tone+'" opacity=".85"/><rect x="98" y="58" width="22" height="48" rx="22" fill="#101820" opacity=".45"/></g>':(kind==='min'?'<circle cx="120" cy="82" r="26" fill="none" stroke="'+tone+'" stroke-width="3"/><path d="M120 58v48" stroke="'+tone+'" stroke-width="3"/>':'<circle cx="120" cy="84" r="27" fill="none" stroke="'+tone+'" stroke-width="3"/><path d="M93 84h54" stroke="'+tone+'" stroke-width="3"/>');var svg='<svg xmlns="http://www.w3.org/2000/svg" width="240" height="180" viewBox="0 0 240 180"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#161b23"/><stop offset="1" stop-color="#090c11"/></linearGradient></defs><rect width="240" height="180" rx="18" fill="url(#g)"/><circle cx="196" cy="34" r="52" fill="'+tone+'" opacity=".13"/><circle cx="40" cy="152" r="42" fill="'+tone+'" opacity=".09"/>'+art+'<text x="120" y="152" text-anchor="middle" font-family="Tahoma,Arial,sans-serif" font-size="15" fill="#EDF2F7">'+txt.replace(/[&<>]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;'}[c];})+'</text></svg>';return 'data:image/svg+xml;charset=UTF-8,'+encodeURIComponent(svg);}
+function imgArt(label,kind){var tone=kind==='supp'?'#7BD88F':(kind==='min'?'#8FC7E8':'#E9C88A');var txt=String(label==null?'':label).replace(/^تصویر\s*/,'').slice(0,22);var art=kind==='supp'?'<g transform="rotate(-30 120 82)"><rect x="98" y="58" width="44" height="48" rx="22" fill="'+tone+'" opacity=".85"/><rect x="98" y="58" width="22" height="48" rx="22" fill="#101820" opacity=".45"/></g>':(kind==='min'?'<g><rect x="99" y="55" width="42" height="61" rx="8" fill="'+tone+'" opacity=".82"/><rect x="106" y="43" width="28" height="14" rx="3" fill="'+tone+'"/><rect x="104" y="76" width="32" height="21" rx="4" fill="#101820" opacity=".56"/><path d="M110 85h20M110 91h14" stroke="#EDF2F7" stroke-width="2" stroke-linecap="round" opacity=".85"/></g>':'<circle cx="120" cy="84" r="27" fill="none" stroke="'+tone+'" stroke-width="3"/><path d="M93 84h54" stroke="'+tone+'" stroke-width="3"/>');var svg='<svg xmlns="http://www.w3.org/2000/svg" width="240" height="180" viewBox="0 0 240 180"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#161b23"/><stop offset="1" stop-color="#090c11"/></linearGradient></defs><rect width="240" height="180" rx="18" fill="url(#g)"/><circle cx="196" cy="34" r="52" fill="'+tone+'" opacity=".13"/><circle cx="40" cy="152" r="42" fill="'+tone+'" opacity=".09"/>'+art+'<text x="120" y="152" text-anchor="middle" font-family="Tahoma,Arial,sans-serif" font-size="15" fill="#EDF2F7">'+txt.replace(/[&<>]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;'}[c];})+'</text></svg>';return 'data:image/svg+xml;charset=UTF-8,'+encodeURIComponent(svg);}
 function imgFallback(el){el.onerror=null;var a=String(el.alt||''),k=a.indexOf('مکمل')>=0?'supp':(a.indexOf('ویتامین')>=0?'min':'food');el.src=imgArt(a.replace(/^تصویر\s*/,''),k);}
 function loadMedia() {
   document.querySelectorAll('[data-yt-query]').forEach(el=>{const q=el.dataset.ytQuery;if(q)el.href='https://www.youtube.com/results?search_query='+encodeURIComponent(q);});
@@ -3483,7 +3486,7 @@ function sfaWaterSeg(water) {
 function homeView() {
   var d = state.data;
   if (!d) return;
-  if (d.isAdmin) { try { sfAdminHome(); return; } catch (eAdm) { try { console.error('sfAdminHome', eAdm); } catch (e0) {} } }
+  if (d.isAdmin || d.isCoach) { try { sfAdminHome(); return; } catch (eAdm) { try { console.error('sfAdminHome', eAdm); } catch (e0) {} } }
   var p = d.profile, logs = d.logs || [], water = d.water || {};
   $('main').innerHTML =
     '<div class="hero"><div class="mini-profile">' + (p.avatarUrl ? '<img class="mini-avatar" src="' + esc(p.avatarUrl) + '" alt="تصویر پروفایل">' : '<div class="mini-avatar" style="display:grid;place-items:center;font-size:18px">👤</div>') + '<div><p>' + greet() + '</p><h1>' + esc((p.name || d.user.username).split(' ')[0]) + '</h1></div></div><span class="pill">' + esc(goalFa(p.goal)) + '</span></div>' +

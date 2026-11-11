@@ -481,9 +481,15 @@ function sfAdminAnatomyPlans(token, username) {
     plans: sfObjects_(sfRead_(SF.PLANS))
       .filter(function (p) { return normalize_(p.Username) && normalize_(p.Username) !== '__LIB__' && (!u || normalize_(p.Username) === u); })
       .map(function (p) {
+        var month = '';
+        try {
+          var created = p.CreatedAt ? new Date(p.CreatedAt) : null;
+          if (created && !isNaN(created.getTime())) month = Utilities.formatDate(created, 'Asia/Tehran', 'yyyy-MM');
+        } catch (e) {}
         return {
           planId: p.PlanID, planName: normalize_(p.PlanName), username: normalize_(p.Username),
           days: dayCount_[normalize_(p.PlanID)] || 0,
+          month: month,
           active: String(p.Active) !== 'FALSE' && String(p.Active) !== 'false'
         };
       })
