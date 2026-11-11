@@ -96,6 +96,7 @@ function sfAiClean_(s, n) { return String(s == null ? '' : s).replace(/[\u0000-\
 /* پرسش اصلی. آرگومان سوم (history از کلاینت) عمداً نادیده گرفته می‌شود؛ تاریخچه سمت سرور نگه داشته می‌شود. */
 function sfAiAsk(token, question /*, history */) {
   var s = requireSession_(token), user = String(s.username || '').toLowerCase();
+  sfRequireFeature_(s, 'ai');
   var key = sfAiProp_('GEMINI_API_KEY', '');
   if (!key || sfAiProp_('AI_ENABLED', '1') === '0') throw new Error('پرسش از هوش مصنوعی هنوز فعال نشده است. از مربی‌ات بخواه فعالش کند.');
   var q = sfAiClean_(question, SFAI.MAX_Q);

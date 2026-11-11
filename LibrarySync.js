@@ -148,43 +148,52 @@ function sfAdminLibImport(token) {
     var idx = sfLibBankIndex_();
     var rd = idx.rd, sh = rd.sh, I = rd.idx;
     var added = 0, gifFilled = 0, ytFilled = 0, kept = 0, rebased = 0;
-    var fresh = [];
+    var fresh = [], dirty = {};
+    function put(row, col, value) {
+      if (I[col] == null) return;
+      row[I[col]] = value;
+      dirty[col] = true;
+    }
 
     SF_LIB.forEach(function (it) {
       var rowNo = sfLibFindRow_(idx, it);
       if (!rowNo) { fresh.push(sfLibRow_(it)); return; }
       var r = rd.rows[rowNo - 2] || [];
-      var setCell = function (col, val) {
-        if (I[col] == null) return;
-        var c = sh.getRange(rowNo, I[col] + 1);
-        c.setNumberFormat('@'); c.setValue(val);
-      };
       var hasDrive = !!(normalize_(r[I.GifNewFileId]) || normalize_(r[I.GifFileId]));
       var hasNew = !!(normalize_(r[I.GifNewURL]) || normalize_(r[I.GifNewFileId]));
       /* مهاجرت: لینک‌های قدیمی CDN به نسخهٔ سبک و میزبانی‌شدهٔ خودمان تغییر می‌کند
          تا اپ به jsDelivr وابسته نباشد (و آفلاین هم کار کند). */
       var curNew = normalize_(r[I.GifNewURL]), curSrc = normalize_(r[I.GifSourceURL]);
       if (curNew && curNew.indexOf('cdn.jsdelivr.net') >= 0 && normalize_(it.gifSelf)) {
-        setCell('GifNewURL', it.gifSelf); rebased++; curNew = it.gifSelf;
+        put(r, 'GifNewURL', it.gifSelf); rebased++; curNew = it.gifSelf;
       }
       if (curSrc && curSrc.indexOf('cdn.jsdelivr.net') >= 0 && normalize_(it.gifSelf)) {
-        setCell('GifSourceURL', it.gifSelf); curSrc = it.gifSelf;
+        put(r, 'GifSourceURL', it.gifSelf); curSrc = it.gifSelf;
       }
       if (hasDrive) { kept++; }
       else if (!hasNew) {
-        setCell('GifNewURL', sfLibMedia_(it));
-        if (!normalize_(r[I.GifSourceURL])) setCell('GifSourceURL', sfLibMedia_(it));
-        if (!normalize_(r[I.ImgSrc0]) && it.thumb) setCell('ImgSrc0', it.thumb);
-        if (!normalize_(r[I.MediaStatus])) setCell('MediaStatus', 'cdn');
+        put(r, 'GifNewURL', sfLibMedia_(it));
+        if (!normalize_(r[I.GifSourceURL])) put(r, 'GifSourceURL', sfLibMedia_(it));
+        if (!normalize_(r[I.ImgSrc0]) && it.thumb) put(r, 'ImgSrc0', it.thumb);
+        if (!normalize_(r[I.MediaStatus])) put(r, 'MediaStatus', 'cdn');
         gifFilled++;
       } else {
         kept++;
       }
-      if (!normalize_(r[I.GifURL])) setCell('GifURL', sfLibMedia_(it));
+      if (!normalize_(r[I.GifURL])) put(r, 'GifURL', sfLibMedia_(it));
       if (!normalize_(r[I.YouTubeURL])) {
-        setCell('YouTubeURL', 'https://www.youtube.com/results?search_query=' + encodeURIComponent(it.n + ' exercise proper form tutorial'));
+        put(r, 'YouTubeURL', 'https://www.youtube.com/results?search_query=' + encodeURIComponent(it.n + ' exercise proper form tutorial'));
         ytFilled++;
       }
+    });
+
+    /* چند هزار setValue را با حداکثر چند نوشتن ستونی جایگزین می‌کنیم تا
+       ورود کامل کتابخانه سریع بماند و در محدودیت زمان Apps Script جا شود. */
+    Object.keys(dirty).forEach(function (col) {
+      var values = rd.rows.map(function (r) { return [r[I[col]] == null ? '' : String(r[I[col]])]; });
+      var range = sh.getRange(2, I[col] + 1, values.length, 1);
+      range.setNumberFormat('@');
+      range.setValues(values);
     });
 
     if (fresh.length) {

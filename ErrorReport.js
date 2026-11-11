@@ -1,3 +1,12 @@
+function sfErrSafe_(value, limit) {
+  return String(value == null ? '' : value)
+    .replace(/(?:password|passwd|token|authorization|api[_-]?key|secret|receipt|base64)(\s*[=:]\s*|\s+)[^\s,;]+/ig, '$1[redacted]')
+    .replace(/Bearer\s+[A-Za-z0-9._~+\/-]+/ig, 'Bearer [redacted]')
+    .replace(/([?&](?:k|token|key|auth|password)=)[^&#\s]+/ig, '$1[redacted]')
+    .replace(/[\u0000-\u001F<>]/g, ' ')
+    .slice(0, limit || 300);
+}
+
 /**
  * ErrorReport.js — خطاهای اپ/پنل/بک‌اند را به تلگرام ادمین می‌فرستد
  *
@@ -79,12 +88,12 @@ function sfErrorReport(data, token) {
     try { if (token) session = requireSession_(token); } catch (e) { session = null; }
     var clean = {
       app: String(data.app || 'app').slice(0, 20),
-      action: String(data.action || '').slice(0, 120),
-      fn: String(data.fn || '').slice(0, 60),
-      message: String(data.message || '').slice(0, 600),
-      extra: String(data.extra || '').slice(0, 400),
-      url: String(data.url || '').slice(0, 200),
-      stack: String(data.stack || '').slice(0, 700),
+      action: sfErrSafe_(data.action, 120),
+      fn: sfErrSafe_(data.fn, 60),
+      message: sfErrSafe_(data.message, 600),
+      extra: sfErrSafe_(data.extra, 400),
+      url: sfErrSafe_(data.url, 200),
+      stack: sfErrSafe_(data.stack, 700),
       username: session ? session.username : String(data.username || '').slice(0, 60),
       role: session ? session.role : String(data.role || '').slice(0, 20)
     };
@@ -112,14 +121,14 @@ function sfErrorReport(data, token) {
 /** گزارش از داخل سرور (خطای API، شیت، اتصال…) */
 function sfErrNotify_(where, err, extra) {
   try {
-    var msg = String((err && err.message) || err || '').slice(0, 600);
+    var msg = sfErrSafe_((err && err.message) || err || '', 600);
     if (!msg) return;
     var cache = CacheService.getScriptCache();
     var key = 'serr_' + where + '_' + msg.slice(0, 60);
     if (cache.get(key)) return;
     cache.put(key, '1', 180);
     var text = '🛠 <b>خطای سرور</b>\n📍 ' + where + '\n📝 ' + msg +
-      (extra ? '\n➕ ' + String(extra).slice(0, 250) : '') +
+      (extra ? '\n➕ ' + sfErrSafe_(extra, 250) : '') +
       '\n🕒 ' + Utilities.formatDate(new Date(), 'Asia/Tehran', 'yyyy-MM-dd HH:mm:ss');
     sfErrChats_().forEach(function (chat) { try { sfTgSend_(chat, text, null); } catch (e1) {} });
   } catch (e) {}
