@@ -401,6 +401,8 @@ function wireImport() {
   };
 
   var show = function (p) {
+    /* The user may switch routes while the parser RPC is still running. */
+    if (!$('impOut')) return;
     var sx = p.stats || {}, bad = 0;
     var h = '<div class="grid g4"><div class="card kpi"><small>روز</small><b>' + fa(sx.days || 0) + '</b></div>' +
       '<div class="card kpi"><small>بلوک</small><b>' + fa(sx.blocks || 0) + '</b></div>' +
@@ -441,13 +443,14 @@ function wireImport() {
   };
 
   var analyze = function () {
+    if (!$('impText') || !$('impGo') || !$('impOut')) return;
     var t = $('impText').value.trim();
     if (!t) { toast('اول فایل انتخاب کن یا متن را بچسبان.', true); return; }
     $('impGo').disabled = true;
     $('impOut').innerHTML = '<div class="note">در حال تحلیل…</div>';
     call('sfAdminParseProgram', { text: t, planName: $('impName').value.trim(), overrides: ov, blockOverrides: blkOv })
-      .then(function (r) { $('impGo').disabled = false; show(r); })
-      .catch(function (e) { $('impGo').disabled = false; $('impOut').innerHTML = '<div class="note">' + esc(e.message) + '</div>'; });
+      .then(function (r) { var b = $('impGo'); if (b) b.disabled = false; if ($('impOut')) show(r); })
+      .catch(function (e) { var b = $('impGo'), out = $('impOut'); if (b) b.disabled = false; if (out) out.innerHTML = '<div class="note">' + esc(e.message) + '</div>'; });
   };
 
   $('impGo').onclick = function () { collect(); analyze(); };
@@ -458,7 +461,7 @@ function wireImport() {
     this.disabled = true;
     call('sfAdminImportProgram', { text: t, planName: $('impName').value.trim(), username: u, overrides: ov, blockOverrides: blkOv, saveToBank: !!($('impBank') && $('impBank').checked) })
       .then(function (r) { toast('برنامه ثبت شد ✅ (' + fa((r.stats && r.stats.created) || 0) + ' حرکت جدید به بانک اضافه شد' + (r.savedToBank ? ' · در بانک برنامه‌ها هم ذخیره شد' : '') + ')'); render(); })
-      .catch(function (e) { $('impSave').disabled = false; toast(e.message, true); $('impOut').insertAdjacentHTML('afterbegin', '<div class="note">' + esc(e.message) + '</div>'); });
+      .catch(function (e) { var b = $('impSave'), out = $('impOut'); if (b) b.disabled = false; toast(e.message, true); if (out) out.insertAdjacentHTML('afterbegin', '<div class="note">' + esc(e.message) + '</div>'); });
   };
 }
 R['plans.workout'] = function () {
