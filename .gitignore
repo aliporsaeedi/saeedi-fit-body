@@ -1,0 +1,12 @@
+# Apps Script tooling
+.clasp.json
+.tools/
+node_modules/
+*.log
+
+# Build artifacts / previews
+artifacts/
+previews/
+
+# OS
+.DS_Store
