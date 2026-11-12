@@ -1,0 +1,26 @@
+const fs=require('fs'),vm=require('vm'),assert=require('node:assert/strict');
+const base=process.cwd(), html=fs.readFileSync('AdminApp.html','utf8');
+for(const f of fs.readdirSync(base).filter(x=>x.endsWith('.js'))) new vm.Script(fs.readFileSync(f,'utf8'),{filename:f});
+for(const [i,m] of [...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g)].entries()) new vm.Script(m[1],{filename:'AdminApp-'+i});
+const context=vm.createContext({console});
+function load(name,end,source=html){vm.runInContext(source.slice(source.indexOf('function '+name+'('),source.indexOf(end,source.indexOf('function '+name+'('))),context);}
+load('planRepSequence','function editDraftItems');load('collectPlanBlocks',"R['plans.create']");
+assert.deepEqual(Array.from(context.planRepSequence('8-12')),['8-12']);
+assert.deepEqual(Array.from(context.planRepSequence('15,12,10,8')),['15','12','10','8']);
+assert.deepEqual(Array.from(context.planRepSequence('15-12-10-8')),['15','12','10','8']);
+const originals=[{rest:0,extra:{pause:4},cells:[{reps:'8-12',weight:'0'},{reps:'15',weight:'25'}]},{rest:45,extra:{drop:2},cells:[{reps:'10',weight:'50'},{reps:'20',weight:'15'}]}];
+const vals={'[data-f="technique"]':'superset','[data-f="sets"]':'2','[data-f="reps"]':'8-12, 10','[data-f="rest"]':'0','[data-f="notes"]':'saved notes','[data-original-sets]':encodeURIComponent(JSON.stringify(originals)),'[data-original-reps]':'8-12, 10','[data-original-rest]':'0','[data-items]':encodeURIComponent(JSON.stringify([{exerciseId:'e1',name:'custom name'},{exerciseId:'e2',name:'second'}])),'[data-extra]':encodeURIComponent(JSON.stringify({tempo:'3010'}))};
+const box={querySelector:s=>s in vals?{value:vals[s]}:null,getAttribute:k=>k==='data-ex'?'e1,e2':null};
+const card={getAttribute:k=>k==='data-day'?'1':'Day 1',querySelector:()=>({value:'Day 1'}),querySelectorAll:()=>[box]};
+const root={querySelectorAll:()=>[card]};
+let out=context.collectPlanBlocks(root,[{key:'superset',min:2,max:2}]);
+assert.equal(out.bad,'');assert.equal(out.blocks[0].sets[0].restAfterSec,0);assert.equal(out.blocks[0].sets[1].restAfterSec,45);
+assert.equal(out.blocks[0].sets[0].cells[1].reps,'15');assert.equal(out.blocks[0].sets[1].cells[0].weight,'50');assert.equal(out.blocks[0].items[0].name,'custom name');assert.equal(out.blocks[0].sets[1].extra.drop,2);assert.equal(out.blocks[0].extra.tempo,'3010');
+vals['[data-f="reps"]']='8-12';out=context.collectPlanBlocks(root,[{key:'superset',min:2,max:2}]);assert.equal(out.blocks[0].sets[1].cells[1].reps,'8-12');
+vals['[data-f="reps"]']='12,8';out=context.collectPlanBlocks(root,[{key:'superset',min:2,max:2}]);assert.equal(out.blocks[0].sets[1].cells[1].reps,'8');
+context.sfText_=(x)=>String(x==null?'':x);context.normalize_=x=>String(x||'').trim();context.sfRead_=()=>[];context.sfObjects_=()=>[{Username:'u'}];context.CONFIG={USERS_SHEET:'Users'};context.SF7_LIB='__LIB__';context.SF={MAX_BLOCKS:100,MAX_ITEMS:6,MAX_SETS:20};context.sfTechnique_=()=>({min:1,max:1,key:'normal'});context.sfNum_=(x,d)=>x==null?d:Number(x);
+load('sfValidatePlan_','function sfAdminSavePlan',fs.readFileSync('TrainingModule.js','utf8'));
+const bank={e1:{ExerciseID:'e1',PersianName:'bank name',SuggestedReps:'10'}};
+const v=context.sfValidatePlan_({planName:'p',username:'u',blocks:[{items:[{exerciseId:'e1',name:'custom name'}],sets:[{cells:[{reps:'8-12',weight:'0'}],restAfterSec:0}]}]},bank);
+assert.equal(v.blocks[0].items[0].PersianName,'custom name');assert.equal(bank.e1.PersianName,'bank name');assert.equal(v.blocks[0].sets[0].rest,0);
+console.log('PASS: syntax, rep ranges/sequences, distinct superset cells, zero rests/weights, metadata, custom exercise names.');

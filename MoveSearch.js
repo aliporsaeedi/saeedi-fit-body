@@ -372,99 +372,53 @@ function sfAdminPlanItems(token, planId) {
 
 /** نگاشت نام گروه عضلانی (فارسی/انگلیسی) به ناحیهٔ آناتومی */
 var SF_ANATOMY_MAP_ = [
-  ['chest', /سینه|سینهای|chest|pec/i],
-  ['shoulders', /سرشانه|سر شانه|دلتو|shoulder|delt/i],
-  ['traps', /کول|تراپ|گردن|trap|neck/i],
-  ['lats', /زیربغل|لت|lat|wing/i],
-  ['back', /پشت|کمر بالا|back|row|mid/i],
-  ['lowerback', /کمر پایین|فیله|lumbar|lower.?back|erector/i],
-  ['biceps', /جلوبازو|جلو بازو|bicep/i],
-  ['triceps', /پشت.?بازو|پشت بازو|tricep/i],
-  ['forearms', /ساعد|forearm|grip/i],
-  ['abs', /شکم|core|abs|abdo/i],
-  ['obliques', /پهلو|oblique|side/i],
-  ['glutes', /باسن|سرینی|glute|hip/i],
-  ['quads', /چهارسر|جلو.?ران|quad/i],
-  ['hamstrings', /همسترینگ|پشت.?ران|hamstring/i],
-  ['calves', /ساق|calf|calv/i]
+  ['adductors',/داخل\s*(ران|پا)|ادکتور|adductors?/i], ['abductors',/خارج\s*(ران|پا)|ابدکتور|abductors?/i],
+  ['triceps', /پشت\s*بازو|triceps?/i], ['biceps', /جلو\s*بازو|biceps?/i],
+  ['hamstrings', /پشت\s*(پا|ران)|همسترینگ|hamstrings?/i],
+  ['quads', /جلو\s*(پا|ران)|چهار\s*سر|quadriceps|quads?/i],
+  ['calves', /ساق|calves|calf/i], ['lowerback', /کمر\s*پایین|پایین\s*کمر|فیله|lower[ -]?back|lumbar|erector/i],
+  ['forearms', /ساعد|forearms?/i], ['obliques', /پهلو|obliques?/i],
+  ['shoulders', /سر\s*شانه|دلتو|shoulder|deltoid/i], ['traps', /کول|تراپ|trapezius|traps?/i],
+  ['lats', /زیر\s*بغل|(?:^|\s)لت(?:\s|$)|latissimus|(?:^|\s)lats?(?:\s|$)/i],
+  ['chest', /سینه|chest|pectoral/i], ['glutes', /باسن|سرین|glute/i],
+  ['abs', /شکم|abdominals?|(?:^|\s)abs(?:\s|$)|core/i], ['back', /پشت|کمر\s*بالا|upper[ -]?back|middle[ -]?back|rhomboid|(?:^|\s)back(?:\s|$)/i]
 ];
-
 function sfAnatomyKey_(group) {
-  var g = normalize_(group);
-  if (!g) return '';
-  for (var i = 0; i < SF_ANATOMY_MAP_.length; i++) {
-    if (SF_ANATOMY_MAP_[i][1].test(g)) return SF_ANATOMY_MAP_[i][0];
-  }
+  var g=normalize_(group).replace(/\u200c/g,' ').replace(/\s+/g,' ').trim();
+  for(var i=0;i<SF_ANATOMY_MAP_.length;i++) if(SF_ANATOMY_MAP_[i][1].test(g)) return SF_ANATOMY_MAP_[i][0];
   return '';
 }
-
-/**
- * نقشهٔ آناتومی یک برنامه: کدام ناحیهٔ بدن در کدام روز چند حرکت دارد.
- * خروجی: { ok, planName, days:[{dayNo,title,regions:{chest:2,...},items:[...]}], totals, balance }
- */
-function sfAdminPlanAnatomy(token, planId) {
-  sfAdmin_(token); sfEnsure_();
-  var id = normalize_(planId);
-  if (!id) throw new Error('شناسهٔ برنامه لازم است.');
-
-  var plan = {};
-  sfObjects_(sfRead_(SF.PLANS)).forEach(function (p) { if (normalize_(p.PlanID) === id) plan = p; });
-
-  var blocks = {};
-  sfObjects_(sfRead_(SF.BLOCKS)).forEach(function (b) {
-    if (normalize_(b.PlanID) === id) blocks[normalize_(b.BlockID)] = b;
+function sfExerciseRegion_(ex) {
+  if(SF_ANATOMY_MAP_.some(function(row){return row[0]===ex.AnatomyRegion;})) return ex.AnatomyRegion;
+  var key=sfAnatomyKey_(ex.SubGroup) || sfAnatomyKey_(ex.MuscleGroup);if(key)return key;
+  var meta=sfLibMediaMeta_(ex);return meta ? sfAnatomyKey_(meta.muscle) : '';
+}
+function sfAnatomyCompute_(plan, blocks, items, sets, bank) {
+  var id=normalize_(plan.PlanID), byBlock={}, bySet={}, days={}, totals={}, secondary={}, rows=[],unknown=[];
+  blocks.filter(function(b) { return normalize_(b.PlanID)===id; }).forEach(function(b) { byBlock[b.BlockID]=b; });
+  sets.filter(function(s) { return normalize_(s.PlanID)===id; }).forEach(function(s) { var key=s.BlockID+'|'+s.ExerciseID+'|'+s.PosNo; (bySet[key] || (bySet[key]={}))[s.SetNo]=true; });
+  items.filter(function(it) { return normalize_(it.PlanID)===id; }).forEach(function(it) {
+    var block=byBlock[it.BlockID]; if(!block) return;
+    var ex=bank[it.ExerciseID] || {},category=normalize_(ex.Category || it.Category),cardio=category ? category==='هوازی' : block.Technique==='cardio',conflict=!!category && block.Technique==='cardio' && !cardio;
+    var primary=sfExerciseRegion_(ex) || sfAnatomyKey_(it.MuscleGroup),origin=primary ? 'bank' : 'unknown';
+    if(!primary && !cardio) { primary=sfAnatomyKey_(it.ExerciseName); if(primary) origin='name-estimate'; }
+    var sec=String(ex.SecondaryMuscle || '').split(/[,،;|/]+/).map(sfAnatomyKey_).filter(function(k,i,all) { return k && k!==primary && all.indexOf(k)===i; });
+    var n=Object.keys(bySet[it.BlockID+'|'+it.ExerciseID+'|'+it.PosNo] || {}).length, dayNo=Number(block.DayNo) || 1;
+    var day=days[dayNo] || (days[dayNo]={dayNo:dayNo,title:block.DayTitle || 'روز '+dayNo,regions:{},secondary:{},items:[]});
+    var row={itemId:it.ItemID,exerciseId:it.ExerciseID,name:it.ExerciseName,group:ex.MuscleGroup || it.MuscleGroup,region:cardio ? '' : primary,secondary:cardio ? [] : sec,sets:n,dayNo:dayNo,cardio:cardio,techniqueConflict:conflict,mappingSource:origin};
+    rows.push(row); day.items.push(row);
+    if(!cardio && primary) { totals[primary]=(totals[primary] || 0)+n; day.regions[primary]=(day.regions[primary] || 0)+n; }
+    if(!cardio) sec.forEach(function(k) { secondary[k]=(secondary[k] || 0)+n; day.secondary[k]=(day.secondary[k] || 0)+n; });
+    if(!cardio && (!primary || origin==='name-estimate' || !n || conflict)) unknown.push(row);
   });
-
-  var dayMap = {}, totals = {}, all = [];
-  sfObjects_(sfRead_(SF.ITEMS)).forEach(function (it) {
-    if (normalize_(it.PlanID) !== id) return;
-    var b = blocks[normalize_(it.BlockID)] || {};
-    var dayNo = Number(b.DayNo) || 1;
-    var key = sfAnatomyKey_(it.MuscleGroup) || sfAnatomyKey_(it.ExerciseName);
-    var row = {
-      itemId: it.ItemID, name: normalize_(it.ExerciseName), exerciseId: normalize_(it.ExerciseID),
-      group: normalize_(it.MuscleGroup), region: key, dayNo: dayNo
-    };
-    all.push(row);
-    dayMap[dayNo] = dayMap[dayNo] || { dayNo: dayNo, title: normalize_(b.DayTitle) || ('روز ' + dayNo), regions: {}, items: [] };
-    dayMap[dayNo].items.push(row);
-    if (key) {
-      dayMap[dayNo].regions[key] = (dayMap[dayNo].regions[key] || 0) + 1;
-      totals[key] = (totals[key] || 0) + 1;
-    }
-  });
-
-  var days = Object.keys(dayMap).map(function (k) { return dayMap[k]; }).sort(function (a, b) { return a.dayNo - b.dayNo; });
-
-  /* تعادل عضلانی: نسبت بالاتنه/پایین‌تنه و پوشش نواحی کلیدی */
-  var upper = ['chest', 'back', 'lats', 'traps', 'shoulders', 'biceps', 'triceps', 'forearms', 'abs', 'obliques', 'lowerback'];
-  var lower = ['glutes', 'quads', 'hamstrings', 'calves'];
-  var su = 0, sl = 0;
-  upper.forEach(function (k) { su += totals[k] || 0; });
-  lower.forEach(function (k) { sl += totals[k] || 0; });
-  var warnings = [];
-  if (!sl) warnings.push('برنامه هیچ حرکت پایین‌تنه ندارد؛ برای تعادل، حرکات پا اضافه کن.');
-  else if (su && sl / su < 0.45) warnings.push('حجم پایین‌تنه نسبت به بالاتنه کم است.');
-  if (!totals.chest) warnings.push('حرکتی برای سینه ثبت نشده.');
-  if (!totals.back && !totals.lats) warnings.push('حرکتی برای پشت ثبت نشده.');
-  if (!totals.abs && !totals.obliques) warnings.push('حرکتی برای مرکز بدن (شکم/پهلو) ثبت نشده.');
-  if (!all.length) warnings.push('این برنامه هنوز حرکتی ندارد.');
-
-  return {
-    ok: true,
-    planId: id,
-    planName: normalize_(plan.PlanName) || 'برنامه',
-    username: normalize_(plan.Username),
-    days: days,
-    totals: totals,
-    items: all,
-    balance: {
-      upper: su, lower: sl,
-      ratio: su ? Math.round((sl / su) * 100) / 100 : (sl ? 99 : 0),
-      warnings: warnings,
-      score: Math.max(0, Math.min(100, 100 - warnings.length * 18 - Math.abs(su - sl) * (su + sl ? Math.round(60 / (su + sl)) : 0)))
-    }
-  };
+  var upper=['chest','back','lats','traps','shoulders','biceps','triceps','forearms'],lower=['glutes','quads','hamstrings','calves','adductors','abductors'];
+  function sum(keys) { return keys.reduce(function(n,k) { return n+(totals[k] || 0); },0); }
+  return {ok:true,planId:id,planName:plan.PlanName,username:plan.Username,goal:plan.Goal || '',level:plan.Level || '',days:Object.keys(days).map(function(k) { return days[k]; }).sort(function(a,b) { return a.dayNo-b.dayNo; }),totals:totals,secondaryTotals:secondary,items:rows,unmapped:unknown,metric:'direct-sets',balance:{upper:sum(upper),lower:sum(lower),warnings:unknown.length ? [unknown.length+' حرکت به تکمیل گروه عضلانی یا ست نیاز دارد؛ تا اصلاح بانک، تحلیل پوشش کامل نیست.'] : [],score:null},explanation:'رنگ بدن بر اساس ست‌های ثبت‌شده برای عضلهٔ اصلی است. عضلات کمکی جدا گزارش می‌شوند؛ این نمایش اندازه‌گیری شدت درگیری یا تشخیص پزشکی نیست.'};
+}
+function sfAdminPlanAnatomy(token,planId) {
+  sfAdmin_(token); sfEnsure_(); var id=normalize_(planId),plan=sfObjects_(sfRead_(SF.PLANS)).find(function(p) { return normalize_(p.PlanID)===id; });
+  if(!plan) throw new Error('برنامه پیدا نشد.');
+  return sfAnatomyCompute_(plan,sfObjects_(sfRead_(SF.BLOCKS)),sfObjects_(sfRead_(SF.ITEMS)),sfObjects_(sfRead_(SF.SETS)),sfBankMap_());
 }
 
 /** فهرست برنامه‌های یک شاگرد (برای انتخابگر صفحهٔ آناتومی) */

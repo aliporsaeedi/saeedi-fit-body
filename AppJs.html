@@ -1,5 +1,4 @@
-
-
+<script>
 /* -------------------------------------------------------------------------
  * Client-side state
  * ---------------------------------------------------------------------- */
@@ -39,9 +38,10 @@ ICON.bell='<path d="M6 9a6 6 0 0 1 12 0c0 6 2 7 2 7H4s2-1 2-7"/><path d="M10 20a
 ICON.clock='<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>';
 ICON.calendar='<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>';
 function icon(name, cls) { return `<svg class="icon ${cls || ''}" viewBox="0 0 24 24"><g>${ICON[name] || ''}</g></svg>`; }
-function brandLogo(cls = '') {
-  return `<img class="brand-logo ${cls}" src="data:image/png;base64,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" alt="Saeedi Fit Body">`;
-}
+const SF_OFFICIAL_LOGO_URI = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDgwIDEwODAiIHdpZHRoPSIxMDgwIiBoZWlnaHQ9IjEwODAiPgogIDxkZWZzPgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJsaW1lIiB4MT0iMCIgeTE9IjAiIHgyPSIxIiB5Mj0iMSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iI2I1ZTg0YSIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjAuNTUiIHN0b3AtY29sb3I9IiM0ZmI4NDgiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjMGY3YTQ1Ii8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJuYXZ5IiB4MT0iMCIgeTE9IjAiIHgyPSIxIiB5Mj0iMSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iIzFmMmQzZCIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiMwYTE2MjQiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9InB1bHNlIiB4MT0iMCIgeTE9IjAiIHgyPSIxIiB5Mj0iMCI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iI2I1ZTg0YSIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiMyZmFlNWEiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgICA8bWFzayBpZD0iZ2FwTWFzayIgbWFza1VuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeD0iMCIgeT0iMCIgd2lkdGg9IjEwODAiIGhlaWdodD0iMTA4MCI+CiAgICAgIDxyZWN0IHdpZHRoPSIxMDgwIiBoZWlnaHQ9IjEwODAiIGZpbGw9IiNmZmYiLz4KICAgICAgPHBvbHlnb24gcG9pbnRzPSI1NDAsMTkwIDcyMiwyOTUgNzIyLDUwNSA1NDAsNjEwIDM1OCw1MDUgMzU4LDI5NSIgZmlsbD0iIzAwMCIvPgogICAgPC9tYXNrPgogICAgPGNsaXBQYXRoIGlkPSJpbm5lckNsaXAiPgogICAgICA8cG9seWdvbiBwb2ludHM9IjU0MCwyMDIgNzExLDMwMSA3MTEsNDk5IDU0MCw1OTggMzY5LDQ5OSAzNjksMzAxIi8+CiAgICA8L2NsaXBQYXRoPgogIDwvZGVmcz4KCgogIDwhLS0gSGV4YWdvbiBiYWRnZTogb3V0ZXIgZ3JlZW4gcmluZywgd2hpdGUgZ2FwLCBuYXZ5IGNvcmUgLS0+CiAgPGcgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+CiAgICA8cG9seWdvbiBwb2ludHM9IjU0MCwxNzAgNzM5LDI4NSA3MzksNTE1IDU0MCw2MzAgMzQxLDUxNSAzNDEsMjg1IiBmaWxsPSJ1cmwoI2xpbWUpIiBzdHJva2U9InVybCgjbGltZSkiIHN0cm9rZS13aWR0aD0iMTYiIG1hc2s9InVybCgjZ2FwTWFzaykiLz4KICAgIDxwb2x5Z29uIHBvaW50cz0iNTQwLDIwMiA3MTEsMzAxIDcxMSw0OTkgNTQwLDU5OCAzNjksNDk5IDM2OSwzMDEiIGZpbGw9InVybCgjbmF2eSkiLz4KICA8L2c+CgogIDwhLS0gU3VidGxlIHNpeC1wYWNrIHBhdHRlcm4gLS0+CiAgPGcgY2xpcC1wYXRoPSJ1cmwoI2lubmVyQ2xpcCkiIGZpbGw9IiNiNWU4NGEiIG9wYWNpdHk9IjAuMTAiPgogICAgPHJlY3QgeD0iNDQ1IiB5PSI0NDAiIHdpZHRoPSI4MCIgaGVpZ2h0PSI0NiIgcng9IjE0Ii8+CiAgICA8cmVjdCB4PSI1NTUiIHk9IjQ0MCIgd2lkdGg9IjgwIiBoZWlnaHQ9IjQ2IiByeD0iMTQiLz4KICAgIDxyZWN0IHg9IjQ0NSIgeT0iNDk4IiB3aWR0aD0iODAiIGhlaWdodD0iNDYiIHJ4PSIxNCIvPgogICAgPHJlY3QgeD0iNTU1IiB5PSI0OTgiIHdpZHRoPSI4MCIgaGVpZ2h0PSI0NiIgcng9IjE0Ii8+CiAgICA8cmVjdCB4PSI0NTAiIHk9IjU1NiIgd2lkdGg9Ijc1IiBoZWlnaHQ9IjQwIiByeD0iMTQiLz4KICAgIDxyZWN0IHg9IjU1NSIgeT0iNTU2IiB3aWR0aD0iNzUiIGhlaWdodD0iNDAiIHJ4PSIxNCIvPgogIDwvZz4KCiAgPCEtLSBEeW5hbWljIFMgbW9ub2dyYW0gLS0+CiAgPGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoNjYgLTYpIHNrZXdYKC0xMCkiPgogICAgPHBhdGggZD0iTSA2MTggMzQyIEggNDkyIFEgNDY0IDM0MiA0NjQgMzY4IFEgNDY0IDM5NCA0OTIgMzk3IEwgNTkwIDQxMyBRIDYxOCA0MTggNjE4IDQ0NCBRIDYxOCA0NzAgNTkwIDQ3MCBIIDQ1OCIKICAgICAgICAgIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2ZmZmZmZiIgc3Ryb2tlLXdpZHRoPSI0MCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgc3Ryb2tlLWxpbmVjYXA9ImJ1dHQiLz4KICAgIDxwYXRoIGQ9Ik0gNjE4IDQ3MCBIIDQ1OCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjYjVlODRhIiBzdHJva2Utd2lkdGg9IjAiLz4KICA8L2c+CgogIDwhLS0gSGVhcnRiZWF0IC8gcHVsc2UgbGluZSAtLT4KICA8cGF0aCBkPSJNIDQyMCA1NDAgSCA0ODggTCA1MDggNTA4IEwgNTM3IDU2OCBMIDU2MiA1MjAgTCA1NzggNTQwIEggNjYwIgogICAgICAgIGZpbGw9Im5vbmUiIHN0cm9rZT0idXJsKCNwdWxzZSkiIHN0cm9rZS13aWR0aD0iMTIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPgoKICA8IS0tIEJyYW5kIG5hbWUgLS0+CiAgPHRleHQgeD0iNTQwIiB5PSI4MDAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJNb250c2VycmF0LCAnQXJpYWwgQmxhY2snLCBJbXBhY3QsIHNhbnMtc2VyaWYiCiAgICAgICAgZm9udC13ZWlnaHQ9IjkwMCIgZm9udC1zaXplPSIxMjgiIGxldHRlci1zcGFjaW5nPSI4IiBmaWxsPSIjMGYxYzJiIj5TQUVFREk8L3RleHQ+CgogIDxnPgogICAgPHJlY3QgeD0iMjYyIiB5PSI4NTMiIHdpZHRoPSIxMjAiIGhlaWdodD0iNiIgcng9IjMiIGZpbGw9InVybCgjbGltZSkiLz4KICAgIDxyZWN0IHg9IjY5OCIgeT0iODUzIiB3aWR0aD0iMTIwIiBoZWlnaHQ9IjYiIHJ4PSIzIiBmaWxsPSJ1cmwoI2xpbWUpIi8+CiAgICA8dGV4dCB4PSI1NDAiIHk9Ijg3MCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9Ik1vbnRzZXJyYXQsIEFyaWFsLCBzYW5zLXNlcmlmIgogICAgICAgICAgZm9udC13ZWlnaHQ9IjcwMCIgZm9udC1zaXplPSI0NCIgbGV0dGVyLXNwYWNpbmc9IjE2IiBmaWxsPSIjMWM4YTRhIj5GSVQgQk9EWTwvdGV4dD4KICA8L2c+Cjwvc3ZnPgo=";
+function sfLogoForTheme() { return SF_OFFICIAL_LOGO_URI; }
+function brandLogo(cls) { return '<img class="brand-logo ' + String(cls || '').replace(/[^a-zA-Z0-9 _-]/g,'') + '" alt="لوگوی رسمی Saeedi Fit Body" decoding="async" src="' + SF_OFFICIAL_LOGO_URI + '">'; }
+function sf6BuildPinkLogo() { return SF_OFFICIAL_LOGO_URI; }
 function coachContactCard(compact = false) {
   return `<div class="card coach-contact"><div class="section-title"><h2>📞 ارتباط با مربی</h2><span class="pill">Saeedi Fit Body</span></div><p class="sub">برای هماهنگی برنامه، پیگیری یا پرسیدن سؤال مستقیماً با مربی در تماس باش.</p><div class="contact-number">09127278492</div><div class="contact-actions"><a class="btn" href="tel:+989127278492">📞 تماس با مربی</a><a class="btn secondary" href="https://wa.me/989127278492" target="_blank" rel="noopener noreferrer">💬 واتساپ</a></div></div>`;
 }
@@ -55,25 +55,7 @@ function skeleton(n) { return Array.from({length: n || 3}).map(() => '<div class
 
 const $ = id => document.getElementById(id);
 function esc(v) { return String(v ?? '').replace(/[۰-۹٠-٩]/g, d => { const n = '۰۱۲۳۴۵۶۷۸۹٠١٢٣٤٥٦٧٨٩'.indexOf(d); return String(n < 10 ? n : n - 10); }).replace(/[&<>'"]/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', "'":'&#39;', '"':'&quot;' }[c])); }
-function server(name, args = []) {
-  return new Promise((resolve, reject) => {
-    const runner = google.script.run.withSuccessHandler(resolve).withFailureHandler(e => {
-      const msg = e && e.message ? e.message : String(e);
-      /* فقط خطاهای واقعی (شبکه/سرور/قطع اتصال) به ادمین می‌رود؛ خطای اعتبارسنجی نه */
-      if (/HTTP |network|fetch|timeout|unexpected|not found|502|504|برای این کار|دسترسی/i.test(msg)) {
-        /* never include RPC arguments here: meal, profile and chat payloads are private */
-        sfReportError(msg, { fn: name, action: 'server:' + name });
-      }
-      reject(new Error(msg));
-    });
-    const fn = runner[name];
-    if (typeof fn !== 'function') {
-      sfReportError('Server function not found: ' + name, { fn: name, action: 'missing-fn' });
-      reject(new Error('Server function not found: ' + name)); return;
-    }
-    fn(...args);
-  });
-}
+
 function toast(msg, bad = false) {
   const el = document.createElement('div');
   el.className = 'toast'; if (bad) el.style.borderColor = '#73303a';
@@ -91,13 +73,9 @@ function stat(label, val) { return `<div class="stat"><span>${label}</span><b>${
 /* -------------------------------------------------------------------------
  * Theme
  * ---------------------------------------------------------------------- */
-function applyTheme(t) { document.documentElement.setAttribute('data-theme', t); localStorage.setItem('fc_theme', t); }
-function initTheme() {
-  const saved = localStorage.getItem('fc_theme');
-  if (saved) { applyTheme(saved); return; }
-  applyTheme(window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
-}
-function toggleTheme() { applyTheme(document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light'); render(); }
+
+
+
 
 try { initTheme(); } catch (e) { /* theme is cosmetic only, never block the app over it */ }
 
@@ -123,7 +101,7 @@ const SF_ERR = { n: 0, last: 0, seen: {} };
 /* نسخهٔ پورتال، اگر این کد در صفحهٔ ادمین هم بارگذاری شد */
 function sfAdminPortalGo() {
   try {
-    if (/script\.google\.com$/.test(location.hostname)) return false;
+    if (/(^|\.)script\.google\.com$|\.googleusercontent\.com$/i.test(location.hostname)) return false;
     var u = (location.pathname || '/').replace(/\/(index\.html)?$/, '') + '/admin';
     location.replace(u);
     return true;
@@ -487,54 +465,7 @@ function loginView() {
 
   try { if (u) u.focus({ preventScroll: true }); } catch (e) {}
 }
-async function load() {
-  if (!state.token) { loginView(); return; }
-  // Show a skeleton immediately instead of a blank stretch while the first
-  // getBootstrap round-trip is in flight — makes the app feel alive, not stuck.
-  if (!$('root') || !$('root').innerHTML.includes('topbar')) {
-    $('root').innerHTML = `<div class="container" style="padding-top:24px">${skeleton(1)}<div class="grid grid-4">${skeleton(4)}</div>${skeleton(2)}</div>`;
-  }
-  try {
-    const ck = 'fc_boot_' + state.token.slice(-12);
-    /* آخرین وضعیت ذخیره‌شده فوری رندر می‌شود تا اپ منتظر شبکه نماند،
-       بعد دادهٔ تازه در پس‌زمینه می‌آید و دوباره رندر می‌شود. */
-    try {
-      const cached = localStorage.getItem(ck);
-      if (cached) {
-        /* فقط اسنپ‌شات تازه رندر می‌شود؛ دادهٔ قدیمی (نشست منقضی) نباید
-           صفحهٔ قدیمی را نشان بدهد. بیشینه ۳۰ دقیقه. */
-        const box = JSON.parse(cached);
-        const fresh = box && box.d && (Date.now() - Number(box.t || 0) < 30 * 60 * 1000);
-        if (fresh) { state.data = box.d; render(); }
-        else if (box && box.d && box.t === undefined) { /* فرمت قدیمی بدون زمان: نمایش نده */ }
-      }
-    } catch (xCache) {}
-    /* اگر سرور کند جواب بدهد، اپ نباید تا ابد روی «در حال بارگذاری» بماند */
-    state.data = await Promise.race([
-      server('getBootstrap', [state.token, todayISO()]),
-      new Promise(function (_, rej) { setTimeout(function () { rej(new Error('سرور دیر پاسخ داد؛ اینترنت را چک کن و صفحه را دوباره باز کن.')); }, 25000); })
-    ]);
-    try { localStorage.setItem(ck, JSON.stringify({ t: Date.now(), d: state.data })); } catch (x) {}
-    render();
-  } catch (e) {
-    const msg = e && e.message ? e.message : String(e);
-    const isAuthError = (/جلسه|منقضی|session|token|401|unauthorized/i.test(msg)) && !/رمز عبور|password/i.test(msg);
-    if (isAuthError) {
-      // Only an actual expired/invalid session should bounce back to login.
-      localStorage.removeItem('fc_session'); state.token = ''; toast(msg, true); loginView();
-    } else {
-      // Anything else (a real bug, a server exception, a broken render) stays
-      // on screen instead of silently wiping the session and hiding the
-      // problem behind the login page.
-      $('root').innerHTML = `<div style="font-family:inherit;direction:rtl;padding:24px;max-width:520px;margin:40px auto;background:var(--panel,#fff);color:var(--text,#111);border-radius:16px;border:1px solid #ddd">
-        <h3>مشکلی پیش اومد</h3>
-        <pre style="white-space:pre-wrap;background:rgba(0,0,0,.05);padding:12px;border-radius:8px;font-size:12px;direction:ltr;text-align:left">${msg}</pre>
-        <p style="font-size:13px;opacity:.75">این پیام رو برای بررسی بفرست. (نشست شما پاک نشد؛ می‌تونی صفحه رو رفرش کنی تا دوباره امتحان کنه.)</p>
-        <button onclick="load()" style="margin-top:8px;padding:8px 14px;border:0;border-radius:10px;background:#ff8a3d;color:#fff;cursor:pointer">تلاش دوباره</button>
-      </div>`;
-    }
-  }
-}
+
 
 /* انیمیشن دو فریم تصویر حرکت */
 function sfAnimStart() {
@@ -554,43 +485,7 @@ function sfAnimStart() {
     }
   } catch (e) {}
 }
-function render() {
-  const d = state.data;
-  const theme = document.documentElement.getAttribute('data-theme');
-  $('root').innerHTML = `<div class="topbar"><div class="topbar-inner">
-    <div class="brand"><div class="brand-mark">${brandLogo()}</div>
-      <div><div class="brand-name" style="font-size:17px"><span class="bn1">SAEEDI</span><span class="bn2">FIT BODY</span></div><div class="sub">${esc(d.profile.name || d.user.username)}</div></div>
-    </div>
-    <div class="nav" id="nav"></div>
-    <div style="display:flex;gap:6px;align-items:center">
-      ${d.profile.avatarUrl ? `<button class="icon-btn" id="avatarNavBtn" title="پروفایل" style="width:38px;height:38px;border-radius:50%;padding:0;overflow:hidden"><img src="${esc(d.profile.avatarUrl)}" alt="پروفایل" style="width:100%;height:100%;object-fit:cover"></button>` : `<button class="icon-btn" id="avatarNavBtn" title="پروفایل">${icon('user')}</button>`}
-      ${d.streak > 0 ? `<span class="streak-ring" title="${fmt(d.streak)} روز پیاپی ثبت">${ring(30, 3, Math.min(1, d.streak / 7), '--accent')}<b>🔥${fmt(d.streak)}</b></span>` : ''}
-      <button class="icon-btn" id="themeBtn" title="تغییر تم">${icon(theme === 'light' ? 'moon' : 'sun')}</button>
-      <button class="icon-btn" id="printBtn" title="چاپ / PDF">${icon('printer')}</button>
-      <button class="btn secondary small" id="logout" style="display:flex;align-items:center;gap:6px">${icon('logout')}خروج</button>
-    </div>
-  </div></div><main class="container" id="main"></main><div id="restTimerHost"></div>`;
 
-  const tabs = [
-    ['home', 'خانه', 'home'], ['workout', 'تمرین', 'dumbbell'], ['diet', 'تغذیه', 'apple'],
-    ['supp', 'مکمل', 'pill'], ['more', 'بیشتر', 'grid']
-  ];
-  const role = String(d.user.role).toLowerCase();
-  if (['coach', 'admin'].includes(role)) tabs.push(['coach', 'مربی', 'trophy']);
-
-  $('nav').innerHTML = tabs.map(t => `<button data-tab="${t[0]}" class="${state.tab === t[0] ? 'active' : ''}">${icon(t[2])}${t[1]}</button>`).join('');
-  if (hasUnread()) { const mb = document.querySelector('#nav [data-tab="more"]'); if (mb) mb.insertAdjacentHTML('beforeend', '<i class="ndot"></i>'); }
-  document.querySelectorAll('#nav button').forEach(b => b.onclick = () => { state.tab = b.dataset.tab; render(); });
-
-  $('avatarNavBtn').onclick = () => { state.tab = 'profile'; render(); };
-  $('themeBtn').onclick = toggleTheme;
-  $('printBtn').onclick = () => window.print();
-  $('logout').onclick = async () => { try { await server('logout', [state.token]); } catch (e) {} try { localStorage.removeItem('fc_session'); } catch (e) {} try { localStorage.removeItem('fc_boot_' + (state.token||'').slice(-12)); } catch (e) {} state.token = ''; state.data = null; state.selected = { workout: 0, diet: 0, supplement: 0 }; loginView(); };
-
-  const views = { home: homeView, workout: workoutView, diet: dietView, supp: suppView, progress: progressView, chat: chatView, profile: profileView, coach: coachView, more: moreView, calendar: calendarView, reminders: remindersView, checkin: checkinView };
-  (views[state.tab] || homeView)();
-sfAnimStart();
-}
 
 
 
@@ -633,13 +528,23 @@ const SUPP_PHOTOS = [
   [/ویتامین|مولتی|قرص|کپسول|vitamin/i,'https://images.unsplash.com/photo-1471864190281-a93a3070b6de?auto=format&fit=crop&w=320&q=75'],
   [/bcaa|آمینواسید|گلوتامین/i,'https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?auto=format&fit=crop&w=320&q=75']
 ];
-function foodPhoto(q){const s=String(q||'');return (FOOD_PHOTOS.find(x=>x[0].test(s))||FOOD_PHOTOS[3])[1];}
-function suppPhoto(q){const s=String(q||'');return (SUPP_PHOTOS.find(x=>x[0].test(s))||SUPP_PHOTOS[3])[1];}
+
+
 function imgArt(label,kind){var tone=kind==='supp'?'#7BD88F':(kind==='min'?'#8FC7E8':'#E9C88A');var txt=String(label==null?'':label).replace(/^تصویر\s*/,'').slice(0,22);var art=kind==='supp'?'<g transform="rotate(-30 120 82)"><rect x="98" y="58" width="44" height="48" rx="22" fill="'+tone+'" opacity=".85"/><rect x="98" y="58" width="22" height="48" rx="22" fill="#101820" opacity=".45"/></g>':(kind==='min'?'<g><rect x="99" y="55" width="42" height="61" rx="8" fill="'+tone+'" opacity=".82"/><rect x="106" y="43" width="28" height="14" rx="3" fill="'+tone+'"/><rect x="104" y="76" width="32" height="21" rx="4" fill="#101820" opacity=".56"/><path d="M110 85h20M110 91h14" stroke="#EDF2F7" stroke-width="2" stroke-linecap="round" opacity=".85"/></g>':'<circle cx="120" cy="84" r="27" fill="none" stroke="'+tone+'" stroke-width="3"/><path d="M93 84h54" stroke="'+tone+'" stroke-width="3"/>');var svg='<svg xmlns="http://www.w3.org/2000/svg" width="240" height="180" viewBox="0 0 240 180"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#161b23"/><stop offset="1" stop-color="#090c11"/></linearGradient></defs><rect width="240" height="180" rx="18" fill="url(#g)"/><circle cx="196" cy="34" r="52" fill="'+tone+'" opacity=".13"/><circle cx="40" cy="152" r="42" fill="'+tone+'" opacity=".09"/>'+art+'<text x="120" y="152" text-anchor="middle" font-family="Tahoma,Arial,sans-serif" font-size="15" fill="#EDF2F7">'+txt.replace(/[&<>]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;'}[c];})+'</text></svg>';return 'data:image/svg+xml;charset=UTF-8,'+encodeURIComponent(svg);}
 function imgFallback(el){el.onerror=null;var a=String(el.alt||''),k=a.indexOf('مکمل')>=0?'supp':(a.indexOf('ویتامین')>=0?'min':'food');el.src=imgArt(a.replace(/^تصویر\s*/,''),k);}
 function loadMedia() {
   document.querySelectorAll('[data-yt-query]').forEach(el=>{const q=el.dataset.ytQuery;if(q)el.href='https://www.youtube.com/results?search_query='+encodeURIComponent(q);});
   document.querySelectorAll('[data-img-query]').forEach(el=>{if(el.dataset.loadedImage)return;el.dataset.loadedImage='1';const q=el.dataset.imgQuery,img=document.createElement('img');img.className='meal-image';img.alt='تصویر '+q;img.loading='eager';img.decoding='async';img.src=imgArt(q,'food');const probe=new Image();probe.onload=()=>{if(probe.naturalWidth>2)img.src=probe.src;};probe.src=foodPhoto(q);el.replaceWith(img);});
+  resolveCatalogImages();
+}
+var SF_CATALOG_IMAGE_CACHE=window.SF_CATALOG_IMAGE_CACHE||{};
+function resolveCatalogImages(){
+  const nodes=[...document.querySelectorAll('.supp-photo-row img,.supp-group-item img,.supp img,.meal-image')], requests=[], seen={};
+  nodes.forEach(el=>{let kind='food',q=el.dataset.catalogQuery||el.alt||'';if(el.closest('.supp-photo-row,.supp-group-item,.supp')){const row=el.closest('.supp-photo-row');if(row)q=row.querySelector('span')?.textContent||q;kind=/ویتامین|مینرال|vitamin|mineral/i.test(q)?'min':'supp';}else q=String(q).replace(/^تصویر\s*/,'');el.dataset.catalogQuery=q;el.dataset.catalogKind=kind;const k=kind+'|'+String(q).toLowerCase().trim();if(!SF_CATALOG_IMAGE_CACHE[k]&&!seen[k]){seen[k]=1;requests.push({query:q,kind:kind});}});
+  const apply=()=>[...document.querySelectorAll('.supp-photo-row img,.supp-group-item img,.supp img,.meal-image')].forEach(el=>{const k=el.dataset.catalogKind+'|'+String(el.dataset.catalogQuery||'').toLowerCase().trim(),u=SF_CATALOG_IMAGE_CACHE[k];if(u&&el.src!==u){el.src=u;el.dataset.catalogResolved='1';}});
+  apply();if(!requests.length||window.SF_CATALOG_IMAGE_PENDING)return;
+  window.SF_CATALOG_IMAGE_PENDING=true;
+  server('sfCatalogImageLookup',[state.token,requests]).then(rows=>{(rows||[]).forEach(x=>{const k=x.kind+'|'+String(x.query||'').toLowerCase().trim();SF_CATALOG_IMAGE_CACHE[k]=x.image||'';});window.SF_CATALOG_IMAGE_CACHE=SF_CATALOG_IMAGE_CACHE;apply();}).catch(()=>{}).then(()=>{window.SF_CATALOG_IMAGE_PENDING=false;});
 }
 
 /* -------------------------------------------------------------------------
@@ -657,38 +562,7 @@ function beep() {
     o.start(); o.stop(ctx.currentTime + 0.25);
   } catch (e) {}
 }
-function startRestTimer(seconds) {
-  clearInterval(restInterval);
-  let remaining = seconds, total = seconds;
-  const host = $('restTimerHost');
-  if (!host) return;
-  const draw = () => {
-    if (!host.isConnected) { clearInterval(restInterval); return; }
-    host.innerHTML = `<div id="restTimer">
-      <div class="ring">${ring(40, 4, remaining / total, '--teal')}<b class="ltr">${remaining}</b></div>
-      <span class="sub">استراحت</span>
-      <button id="restMinus" title="15 ثانیه کم">−15</button>
-      <button id="restPlus" title="15 ثانیه بیشتر">+15</button>
-      <button id="restStop" title="بستن">✕</button>
-    </div>`;
-    host.querySelector('#restStop').onclick = () => { clearInterval(restInterval); host.innerHTML = ''; };
-    host.querySelector('#restPlus').onclick = () => { remaining += 15; total = Math.max(total, remaining); draw(); };
-    host.querySelector('#restMinus').onclick = () => { remaining = Math.max(0, remaining - 15); draw(); };
-  };
-  draw();
-  restInterval = setInterval(() => {
-    remaining--;
-    if (remaining <= 0) {
-      clearInterval(restInterval);
-      beep();
-      if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
-      host.innerHTML = '';
-      toast('استراحت تموم شد 💪');
-      return;
-    }
-    draw();
-  }, 1000);
-}
+
 
 /* -------------------------------------------------------------------------
  * Camera barcode scan — progressive enhancement using the native
@@ -777,7 +651,7 @@ function todayInfo(){ const ws=state.data.workouts||[]; const w=ws[Math.min(stat
 function tile(ico,label,val,pct){ return `<div class="card tile"><span class="tico">${ico}</span><small>${label}</small><b>${val}</b><div class="tbar"><span style="width:${Math.max(0,Math.min(100,pct))}%"></span></div></div>`; }
 function mealsNow(){ return state.data.meals || {today:[], days:{}}; }
 function mealTotals(){ const t=mealsNow().today||[]; const f=k=>t.reduce((s,x)=>s+(Number(x[k])||0),0); return {kcal:f('kcal'),protein:f('protein'),carbs:f('carbs'),fat:f('fat')}; }
-function proteinTarget(p){ return Math.round((Number(p.weight)||70)*1.8); }
+
 const BARBELL='<svg viewBox="0 0 120 80" aria-hidden="true"><defs><linearGradient id="bb" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9dff7a"/><stop offset="1" stop-color="#1fa550"/></linearGradient></defs><rect x="4" y="37" width="112" height="6" rx="3" fill="#cfd8d4"/><rect x="14" y="14" width="10" height="52" rx="4" fill="url(#bb)"/><rect x="27" y="22" width="8" height="36" rx="3" fill="url(#bb)" opacity=".85"/><rect x="96" y="14" width="10" height="52" rx="4" fill="url(#bb)"/><rect x="85" y="22" width="8" height="36" rx="3" fill="url(#bb)" opacity=".85"/></svg>';
 function homeTop(){ const d=state.data, p=d.profile, wt=d.water||{}, t=todayInfo(), m=mealTotals(); const wg=Number(wt.goal||p.waterGoal||8), wc=Number(wt.glasses||0), kt=Number(p.targetCalories)||0, pt=proteinTarget(p);
   const bg = HERO_IMG ? `style="background-image:linear-gradient(90deg,rgba(5,9,8,.92) 30%,rgba(5,9,8,.25)),url('${esc(HERO_IMG)}');background-size:cover;background-position:center"` : '';
@@ -798,36 +672,8 @@ const HERO_IMG = ''; // آدرس عکس مربی/تمرین برای پس‌زم
 const JM=['فروردین','اردیبهشت','خرداد','تیر','مرداد','شهریور','مهر','آبان','آذر','دی','بهمن','اسفند'];
 function jal(d){ const p=new Intl.DateTimeFormat('en-US-u-ca-persian-nu-latn',{year:'numeric',month:'numeric',day:'numeric'}).formatToParts(d); const g=t=>+p.find(x=>x.type===t).value; return {y:g('year'),m:g('month'),d:g('day')}; }
 function isoOf(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
-function calendarView(){
-  const off=state.calOff||0; const f=new Date(); f.setHours(12,0,0,0); f.setDate(f.getDate()-(jal(f).d-1));
-  for(let i=0;i<Math.abs(off);i++){ f.setDate(f.getDate()+(off>0?32:-1)); f.setDate(f.getDate()-(jal(f).d-1)); }
-  const j=jal(f), cells=[], lead=(f.getDay()+1)%7; for(let i=0;i<lead;i++) cells.push(null);
-  for(const x=new Date(f); jal(x).m===j.m; x.setDate(x.getDate()+1)) cells.push({n:jal(x).d, iso:isoOf(x)});
-  const act={}; const mark=(k,v)=>{ if(k){ act[k]=act[k]||{}; act[k][v]=1; } };
-  Object.keys(state.data.activity||{}).forEach(k=>Object.keys(state.data.activity[k]).forEach(v=>mark(k,v)));
-  (state.data.logs||[]).forEach(x=>mark(String(x.date).slice(0,10),'l')); Object.keys(mealsNow().days||{}).forEach(k=>mark(k,'m'));
-  JSON.parse(localStorage.getItem('fc_wdays')||'[]').forEach(k=>mark(k,'w'));
-  const today=isoOf(new Date()); let wcount=0; cells.forEach(c=>{ if(c&&act[c.iso]&&act[c.iso].w) wcount++; });
-  $('main').innerHTML=`<div class="hero"><div><h1>تقویم</h1><p>${fmt(wcount)} روز تمرین در این ماه</p></div></div>
-  <div class="card"><div class="cal-head"><button class="icon-btn" id="calNext">›</button><h2>${JM[j.m-1]} ${j.y}</h2><button class="icon-btn" id="calPrev">‹</button></div>
-  <div class="cal-grid">${['ش','ی','د','س','چ','پ','ج'].map(w=>`<small>${w}</small>`).join('')}${cells.map(c=>{ if(!c) return '<span></span>'; const a=act[c.iso]||{}; return `<div class="cal-cell ${c.iso===today?'today':''} ${a.w?'w':''}"><b>${c.n}</b><span class="dots">${a.w?'<i class="dw"></i>':''}${a.l?'<i class="dl"></i>':''}${a.m?'<i class="dm"></i>':''}</span></div>`; }).join('')}</div>
-  <div class="cal-legend"><span><i class="dw"></i>تمرین</span><span><i class="dl"></i>ثبت وزن</span><span><i class="dm"></i>ثبت غذا</span></div></div>`;
-  $('calNext').onclick=()=>{ state.calOff=(state.calOff||0)+1; calendarView(); };
-  $('calPrev').onclick=()=>{ state.calOff=(state.calOff||0)-1; calendarView(); };
-}
-function moreView(){
-  const cur=document.documentElement.getAttribute('data-theme')||'dark';
-  const T=[['dark','Dark','تیره','linear-gradient(135deg,#0b1210,#1f3a2c)'],['light','Light','روشن','linear-gradient(135deg,#ffffff,#d8e4de)'],['nike','Nike','نایکی','linear-gradient(135deg,#07090c,#b7ff00)'],['adidas','Adidas','آدیداس','linear-gradient(135deg,#090909,#ffffff)']];
-  const tiles=[['workout','dumbbell','تمرین'],['reminders','bell','یادآورها'],['checkin','check','چک‌این'],['diet','apple','تغذیه'],['progress','chart','پیشرفت'],['supp','pill','مکمل‌ها'],['calendar','calendar','تقویم'],['chat','chat','گفت‌وگو'],['profile','user','پروفایل']];
-  if(['coach','admin'].includes(String(state.data.user.role).toLowerCase())) tiles.push(['coach','trophy','مربی']);
-  $('main').innerHTML=`<div class="hero"><div><h1>بیشتر</h1><p>ابزارها و تنظیمات</p></div></div>
-  <div class="more-grid">${tiles.map(t=>`<button class="card more-tile" data-more-go="${t[0]}">${icon(t[1])}${t[0]==='chat'&&hasUnread()?'<i class="ndot"></i>':''}<span>${t[2]}</span></button>`).join('')}<button class="card more-tile" id="moreLogout">${icon('logout')}<span>خروج</span></button></div>
-  <div class="card" style="margin-top:14px"><h2>پوسته</h2><div class="theme-list">${T.map(t=>`<button class="theme-row ${cur===t[0]?'on':''}" data-theme-pick="${t[0]}"><span class="sw" style="background:${t[3]}"></span><span class="tn">${t[1]} <small>· ${t[2]}</small></span><span class="tk">${cur===t[0]?icon('check'):''}</span></button>`).join('')}</div></div>
-  ${coachContactCard()}`;
-  document.querySelectorAll('[data-theme-pick]').forEach(b=>b.onclick=()=>{ applyTheme(b.dataset.themePick); render(); });
-  document.querySelectorAll('[data-more-go]').forEach(b=>b.onclick=()=>{ state.tab=b.dataset.moreGo; render(); });
-  $('moreLogout').onclick=()=>$('logout').click();
-}
+
+
 /* ---- v10: persisted workout completion, set logging, macros, reminders, check-in, badges ---- */
 function doneMap(){ const d=state.data, k=todayISO(); if(!d._done||d._doneDay!==k){ d._done=Object.fromEntries((d.doneToday||[]).map(x=>[x,true])); d._doneDay=k; } return d._done; }
 function setDone(key,val){ const m=doneMap(), t=todayISO(); if(val) m[key]=true; else delete m[key]; if(val){ const a=state.data.activity=state.data.activity||{}; (a[t]=a[t]||{}).w=1; } server('setExerciseDone',[state.token,key,!!val,t]).catch(e=>toast(e.message,true)); }
@@ -838,30 +684,10 @@ function exStats(h){ if(!h.length) return '<div class="sub">هنوز ثبتی ب
 const FOODS=[['برنج پخته',130,2.7,28,.3],['نان سنگک',250,8.5,50,1.2],['نان لواش',275,9,56,1.2],['سینه مرغ پخته',165,31,0,3.6],['گوشت گاو کم‌چرب',200,26,0,10],['ماهی سالمون',208,20,0,13],['تن ماهی',132,29,0,1],['تخم‌مرغ',155,13,1.1,11],['ماست ساده',61,3.5,4.7,3.3],['پنیر سفید',264,14,4,21],['شیر کم‌چرب',42,3.4,5,1],['جو دوسر',389,17,66,7],['موز',89,1.1,23,.3],['سیب',52,.3,14,.2],['پرتقال',47,.9,12,.1],['خرما',282,2.5,75,.4],['بادام',579,21,22,50],['گردو',654,15,14,65],['کره بادام‌زمینی',588,25,20,50],['سیب‌زمینی پخته',87,1.9,20,.1],['عدس پخته',116,9,20,.4],['لوبیا پخته',127,8.7,23,.5],['نخود پخته',164,8.9,27,2.6],['خیار',15,.7,3.6,.1],['گوجه‌فرنگی',18,.9,3.9,.2],['کاهو',15,1.4,2.9,.2],['روغن زیتون',884,0,0,100],['عسل',304,.3,82,0],['پودر پروتئین وی',400,80,8,6],['کینوا پخته',120,4.4,21,1.9],['میگو',99,24,.2,.3],['بوقلمون',135,30,0,1],['دوغ',35,2,3,1.5],['هندوانه',30,.6,8,.2],['انگور',69,.7,18,.2],['شکلات تلخ',546,5,61,31],['ماکارونی پخته',158,5.8,31,.9],['کره',717,.9,.1,81]];
 let curFood=null;
 function favs(){ try{ return JSON.parse(localStorage.getItem('fc_favs')||'[]'); }catch(e){ return []; } }
-function mealLogCard(){ const m=mealsNow(), tot=mealTotals(), p=state.data.profile, kt=Number(p.targetCalories)||0, pt=proteinTarget(p), fv=favs();
-  return `<div class="card" id="mealLog"><div class="section-title"><h2>ثبت غذای امروز</h2><span class="pill">${fmt(tot.kcal)} / ${fmt(kt)} kcal</span></div>
-  <div class="tbar" style="margin:6px 0 10px"><span style="width:${kt?Math.min(100,tot.kcal/kt*100):0}%"></span></div>
-  <div class="macros"><div><small>پروتئین</small><b>${fmt(tot.protein)}<i>/${fmt(pt)}g</i></b></div><div><small>کربوهیدرات</small><b>${fmt(tot.carbs)}<i>g</i></b></div><div><small>چربی</small><b>${fmt(tot.fat)}<i>g</i></b></div></div>
-  ${(m.today||[]).map(x=>`<div class="meal-row"><div><b>${esc(x.title)}</b><div class="sub" style="direction:ltr;text-align:right">${fmt(x.kcal||0)} kcal · P ${fmt(x.protein||0)} · C ${fmt(x.carbs||0)} · F ${fmt(x.fat||0)}</div></div><div style="display:flex;gap:6px"><button class="icon-btn" data-mfav="${esc(x.id)}" title="علاقه‌مندی">★</button><button class="icon-btn" data-mdel="${esc(x.id)}" title="حذف">✕</button></div></div>`).join('')}
-  ${fv.length?`<div class="favs">${fv.map((f,i)=>`<button class="chip" data-fav="${i}">${esc(f.title)} · ${fmt(f.kcal)}</button>`).join('')}</div>`:''}
-  <div class="meal-form2"><input id="mlSearch" placeholder="جستجوی غذا (برنج، مرغ، موز ...)" autocomplete="off"><div id="mlSug" class="sug"></div>
-  <div class="mf-grid"><input id="mlTitle" placeholder="نام غذا" maxlength="80"><input id="mlGram" type="number" inputmode="decimal" placeholder="گرم" value="100"></div>
-  <div class="mf-grid4"><input id="mlKcal" type="number" inputmode="decimal" placeholder="kcal"><input id="mlProt" type="number" inputmode="decimal" placeholder="پروتئین"><input id="mlCarb" type="number" inputmode="decimal" placeholder="کربو"><input id="mlFat" type="number" inputmode="decimal" placeholder="چربی"></div>
-  <div class="mf-actions"><button class="btn small" id="mlAdd">${icon('plus')} ثبت</button><button class="btn small secondary" id="mlScan">اسکن بارکد</button>${(m.yesterday||[]).length?'<button class="btn small secondary" id="mlCopy">کپی از دیروز</button>':''}</div></div></div>`; }
-function fillFood(){ if(!curFood) return; const g=Number($('mlGram').value)||0, k=g/100, r=v=>v?Math.round(v*k):''; $('mlTitle').value=curFood.name; $('mlKcal').value=r(curFood.per[0]); $('mlProt').value=r(curFood.per[1]); $('mlCarb').value=r(curFood.per[2]); $('mlFat').value=r(curFood.per[3]); }
-async function addMeal(o){ try{ const r=await server('logMeal',[state.token,o,todayISO()]); state.data.meals=r.meals; toast('ثبت شد'); return true; }catch(e){ toast(e.message,true); return false; } }
-function bindMealLog(rerender){
-  const s=$('mlSearch'); if(!s) return;
-  s.oninput=()=>{ const q=s.value.trim(); $('mlSug').innerHTML=q?FOODS.filter(f=>f[0].includes(q)).slice(0,6).map((f,i)=>`<button type="button" data-fi="${FOODS.indexOf(f)}">${esc(f[0])} <small>${f[1]} kcal / 100g</small></button>`).join(''):''; $('mlSug').querySelectorAll('[data-fi]').forEach(b=>b.onclick=()=>{ const f=FOODS[b.dataset.fi]; curFood={name:f[0],per:f.slice(1)}; $('mlSug').innerHTML=''; s.value=''; fillFood(); }); };
-  $('mlGram').oninput=fillFood;
-  $('mlAdd').onclick=async()=>{ const o={title:$('mlTitle').value,kcal:$('mlKcal').value,protein:$('mlProt').value,carbs:$('mlCarb').value,fat:$('mlFat').value}; if(await addMeal(o)){ curFood=null; rerender(); } };
-  $('mlScan').onclick=()=>startBarcodeScan(async code=>{ try{ const f=await server('getFoodByBarcode',[state.token,code]); if(!f){ toast('محصول پیدا نشد',true); return; } curFood={name:f.name,per:[f.kcalPer100g||0,0,0,0]}; fillFood(); toast('کالری از بارکد پر شد؛ ماکروها رو خودت وارد کن'); }catch(e){ toast(e.message,true); } });
-  const cp=$('mlCopy'); if(cp) cp.onclick=async()=>{ try{ state.data.meals=(await server('copyYesterdayMeals',[state.token,todayISO()])).meals; toast('وعده‌های دیروز کپی شد'); rerender(); }catch(e){ toast(e.message,true); } };
-  document.querySelectorAll('[data-mdel]').forEach(b=>b.onclick=async()=>{ try{ state.data.meals=(await server('deleteMeal',[state.token,b.dataset.mdel,todayISO()])).meals; rerender(); }catch(e){ toast(e.message,true); } });
-  document.querySelectorAll('[data-mfav]').forEach(b=>b.onclick=()=>{ const x=(mealsNow().today||[]).find(y=>y.id===b.dataset.mfav); if(!x) return; const a=favs().filter(f=>f.title!==x.title); a.unshift({title:x.title,kcal:x.kcal,protein:x.protein,carbs:x.carbs,fat:x.fat}); localStorage.setItem('fc_favs',JSON.stringify(a.slice(0,10))); toast('به علاقه‌مندی‌ها اضافه شد'); rerender(); });
-  document.querySelectorAll('[data-fav]').forEach(b=>b.onclick=async()=>{ if(await addMeal(favs()[b.dataset.fav])) rerender(); });
-  document.querySelectorAll('[data-lt]').forEach(b=>b.onclick=async()=>{ if(await addMeal({title:b.dataset.lt,kcal:b.dataset.lk})) rerender(); });
-}
+
+
+
+
 function hasUnread(){ const d=state.data; if(['coach','admin'].includes(String(d.user.role).toLowerCase())) return (d.athletes||[]).some(a=>a.lastMsgFrom&&a.lastMsgFrom.toLowerCase()===String(a.username).toLowerCase()); const m=d.lastMessage; if(!m||!m.at||String(m.sender).toLowerCase()===String(d.user.username).toLowerCase()) return false; return m.at>(localStorage.getItem('fc_chat_seen')||''); }
 function weekWorkoutDays(){ const a=state.data.activity||{}; let n=0; for(let i=0;i<7;i++){ const d=new Date(); d.setDate(d.getDate()-i); if((a[isoOf(d)]||{}).w) n++; } return n; }
 function challengeCard(){ const n=weekWorkoutDays(), g=4; return `<div class="card challenge"><div class="section-title"><h2>چالش این هفته</h2><span class="pill">${fmt(Math.min(n,g))}/${g}</span></div><div class="sub">${g} روز تمرین در 7 روز اخیر${n>=g?' — تمام شد! 🏆':''}</div><div class="tbar" style="margin-top:8px"><span style="width:${Math.min(100,n/g*100)}%"></span></div></div>`; }
@@ -871,26 +697,7 @@ function badgesCard(){ const b=badgeList(); return `<div class="card"><div class
 function metricCard(title,field,unit){ const v=(state.data.logs||[]).filter(l=>l[field]).slice(0,14).reverse(); if(v.length<2) return ''; const y=v.map(l=>Number(l[field])), mn=Math.min(...y)-1, mx=Math.max(...y)+1, X=i=>10+i*(300/(v.length-1)), Y=n=>10+(mx-n)/(mx-mn)*70, line=y.map((n,i)=>(i?'L':'M')+X(i).toFixed(1)+' '+Y(n).toFixed(1)).join(' ');
   return `<div class="card" style="margin-top:14px"><div class="section-title"><h2>${title}</h2><span class="pill">${'\u200E'}${fmt(y[y.length-1])} ${unit}</span></div><svg class="wchart" viewBox="0 0 320 90"><path class="ln" pathLength="1" d="${line}"/>${y.map((n,i)=>`<circle cx="${X(i)}" cy="${Y(n)}" r="2.4" style="fill:var(--accent)"/>`).join('')}</svg></div>`; }
 const REM_T={workout:'تمرین',water:'آب',meal:'ثبت غذا',weight:'وزن‌کشی'};
-async function remindersView(){
-  const R=state.data.reminders||{configured:false,linked:false,items:[]}; state.rem=state.rem||R.items.map(x=>({...x}));
-  const plat=R.platform==='bale'?'بله':'تلگرام';
-  $('main').innerHTML=`<div class="hero"><div><h1>یادآورها</h1><p>پیام خودکار در ${plat}</p></div></div>
-  <div class="card">${!R.configured?`<div class="notice">ربات هنوز تنظیم نشده${state.data.isAdmin?' — از کارت «تنظیم ربات» پایین همین صفحه انجامش بده.':'؛ از مربی بخواه فعالش کنه.'}</div>`:R.linked?`<div class="section-title"><h2>متصل است</h2><span class="pill">${plat}</span></div><button class="btn small secondary" id="remUnlink">قطع اتصال</button>`:`<h2>اتصال به ${plat}</h2><p class="sub">دکمه رو بزن، ربات باز می‌شه؛ «Start» رو بزن تا حسابت وصل بشه. بعد این‌جا «بررسی اتصال» رو بزن.</p><div style="display:flex;gap:8px;margin-top:8px"><button class="btn" id="remLink">اتصال</button><button class="btn secondary" id="remCheck">بررسی اتصال</button></div>`}</div>
-  <div class="card" style="margin-top:14px"><div class="section-title"><h2>زمان‌بندی</h2><button class="btn small secondary" id="remAdd">${icon('plus')} افزودن</button></div>
-  ${state.rem.length?state.rem.map((x,i)=>`<div class="rem-row"><select data-rt="${i}">${Object.keys(REM_T).map(k=>`<option value="${k}" ${x.type===k?'selected':''}>${REM_T[k]}</option>`).join('')}</select><input type="time" data-rm="${i}" value="${esc(x.time)}"><label class="sw-t" title="فعال"><input type="checkbox" data-ro="${i}" ${x.on!==false?'checked':''}><span></span></label><label class="chk-daily"><input type="checkbox" data-rda="${i}" ${x.daily!==false?'checked':''}> هر روز</label><button class="icon-btn" data-rd="${i}">✕</button></div>`).join(''):'<div class="empty">هنوز یادآوری نساختی.</div>'}
-  <button class="btn" id="remSave" style="margin-top:12px;width:100%">ذخیره</button><p class="sub" style="margin-top:8px">یادآور تمرین و آب فقط وقتی میاد که اون روز انجام نداده باشی. تیک «هر روز» یعنی هر روز همان ساعت یادآوری میشود و دیگر لازم نیست دوباره ست کنی.</p></div>${state.data.isAdmin?'<div class="card" id="botAdmin" style="margin-top:14px"><div class="sub">در حال بارگذاری تنظیمات ربات...</div></div>':''}`;
-  const rd=()=>remindersView();
-  if(state.data.isAdmin) loadBotAdmin();
-  document.querySelectorAll('[data-rt]').forEach(e=>e.onchange=()=>state.rem[e.dataset.rt].type=e.value);
-  document.querySelectorAll('[data-rm]').forEach(e=>e.onchange=()=>state.rem[e.dataset.rm].time=e.value);
-  document.querySelectorAll('[data-ro]').forEach(e=>e.onchange=()=>state.rem[e.dataset.ro].on=e.checked);document.querySelectorAll('[data-rda]').forEach(e=>e.onchange=()=>state.rem[e.dataset.rda].daily=e.checked);
-  document.querySelectorAll('[data-rd]').forEach(e=>e.onclick=()=>{ state.rem.splice(e.dataset.rd,1); rd(); });
-  $('remAdd').onclick=()=>{ if(state.rem.length>=8) return toast('حداکثر 8 یادآور',true); state.rem.push({type:'workout',time:'18:00',on:true,daily:true}); rd(); };
-  $('remSave').onclick=async()=>{ try{ const r=await server('saveReminders',[state.token,state.rem]); state.data.reminders=r.reminders; state.rem=null; toast('ذخیره شد'); rd(); }catch(e){ toast(e.message,true); } };
-  if($('remLink')) $('remLink').onclick=async()=>{ try{ const r=await server('getBotLink',[state.token]); window.open(r.url,'_blank'); }catch(e){ toast(e.message,true); } };
-  if($('remCheck')) $('remCheck').onclick=async()=>{ await load(); state.tab='reminders'; render(); };
-  if($('remUnlink')) $('remUnlink').onclick=async()=>{ try{ state.data.reminders=(await server('unlinkBot',[state.token])).reminders; rd(); }catch(e){ toast(e.message,true); } };
-}
+
 function checkinView(){
   const sc=(id,l)=>`<div class="field"><label>${l}</label><div class="scale" data-sc="${id}">${[1,2,3,4,5].map(n=>`<button type="button" data-v="${n}" class="${n===3?'on':''}">${n}</button>`).join('')}</div></div>`;
   $('main').innerHTML=`<div class="hero"><div><h1>چک‌این هفتگی</h1><p>گزارش کوتاه برای مربی</p></div></div><div class="card"><div class="form">${sc('energy','سطح انرژی')}${sc('sleep','کیفیت خواب')}${sc('hunger','اشتها و پایبندی به رژیم')}${sc('sore','خستگی عضلات')}<div class="field"><label>توضیحات (اختیاری)</label><textarea id="ciNote" rows="3"></textarea></div><button class="btn" id="ciSend">ارسال برای مربی</button></div></div>`;
@@ -953,114 +760,14 @@ function guideCard() {
     '4) یک‌بار در روز وزنت را ثبت کن</div></div>';
 }
 
-function homeView() {
-  const d = state.data, p = d.profile, logs = d.logs || [];
-  const latest = logs[0] || {};
-  const water = d.water || {};
 
-  $('main').innerHTML = `
-    <div class="hero"><div class="mini-profile">${p.avatarUrl ? `<img class="mini-avatar" src="${esc(p.avatarUrl)}" alt="تصویر پروفایل">` : `<div class="mini-avatar" style="display:grid;place-items:center;font-size:18px">👤</div>`}<div><p>${greet()}</p><h1>${esc((p.name || d.user.username).split(' ')[0])}</h1></div></div><span class="pill">${esc(goalFa(p.goal))}</span></div>
-    ${homeTop()}<div class="grid grid-4">${kpi('وزن فعلی', fmt(p.weight), 'kg')}${kpi('هدف وزن', fmt(p.goalWeight), 'kg')}${kpi('BMI', fmt(p.bmi), '')}${kpi('کالری هدف', fmt(p.targetCalories), 'kcal')}</div>
-    ${guideCard()}
-    ${todayCard()}
-    <div class="grid grid-3" style="margin-top:14px">
-      <div class="card"><h2>متابولیسم</h2><div class="stats">${stat('BMR', fmt(p.bmr))}${stat('TDEE', fmt(p.tdee))}${stat('هدف', fmt(p.targetCalories))}</div></div>
-      <div class="card"><h2>برنامه‌های فعال</h2><div class="notice">
-        <b>تمرین:</b> ${d.assignments.workout.map(esc).join('، ') || 'تخصیص داده نشده'}<br>
-        <b>رژیم:</b> ${d.assignments.diet.map(esc).join('، ') || 'تخصیص داده نشده'}<br>
-        <b>مکمل:</b> ${d.assignments.supplement.map(esc).join('، ') || 'تخصیص داده نشده'}
-      </div></div>
-      <div class="card">
-        <div class="section-title"><h2>آب امروز</h2><span class="pill">${fmt(water.glasses || 0)} / ${fmt(water.goal || p.waterGoal)} لیوان</span></div>
-        
-        ${sfaWaterSeg(water)}<div style="font-size:26px;font-weight:800;margin:6px 0 10px">💧 ${fmt(water.glasses || 0)}</div>
-        <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn secondary small" id="waterMinus">−1</button><button class="btn small" id="waterPlus">+1 لیوان</button><button class="btn secondary small" id="waterReset">ریست</button></div>
-      </div>
-    </div>
-    ${weeklyCard()}<div class="card" style="margin-top:14px"><div class="section-title"><h2>روند وزن</h2><span class="sub">آخرین 10 ثبت — خط نقطه‌چین: هدف</span></div>${weightChart(logs.slice(0, 10).reverse(), p.goalWeight)}</div>
-    <div id="rankCard"></div>`;
-
-  bindTodayCard();
-  $('waterPlus').onclick = async () => { const prev = state.data.water; state.data.water = { ...prev, glasses: (Number(prev.glasses) || 0) + 1 }; homeView(); try { state.data.water = (await server('addWater', [state.token, 1, todayISO()])).water; homeView(); } catch (e) { state.data.water = prev; homeView(); toast(e.message, true); } };
-  $('waterReset').onclick = async () => { try { state.data.water = (await server('resetWater', [state.token, todayISO()])).water; homeView(); } catch (e) { toast(e.message, true); } };
-
-  // Lazy, non-blocking: the athlete's rank among their coach's group by streak.
-  server('getLeaderboard', [state.token]).then(lb => {
-    const host = $('rankCard');
-    if (!host || lb.mode !== 'athlete' || !lb.rank) return;
-    host.innerHTML = `<div class="card" style="margin-top:14px"><div class="section-title"><h2>${icon('trophy')} رتبه‌ی تو</h2><span class="pill">${fmt(lb.rank)} از ${fmt(lb.total)}</span></div><div class="sub">بر اساس روزهای پیاپی ثبت پیشرفت</div></div>`;
-  }).catch(() => {});
-}
 
 
 /* -------------------------------------------------------------------------
  * Workout page — every day fully visible (nothing collapsed); "امروز" pill
  * just marks which one, it doesn't hide the rest anymore.
  * ---------------------------------------------------------------------- */
-function workoutView() {
-  const customHtml = sfStudentHtml();
 
-  const workouts = state.data.workouts;
-  const idx = Math.min(state.selected.workout, workouts.length - 1);
-  const w = workouts[idx];
-  const done = doneMap();
-  const todayDayIdx = w ? Number(localStorage.getItem('fc_today_day_' + w.name) || 0) : 0;
-
-  $('main').innerHTML = `
-    <div class="hero"><div><h1>برنامه تمرینی</h1><p>${w ? esc(w.name.trim()) : 'تخصیص داده نشده'}</p></div></div>
-    ${customHtml}
-    ${planTabs('workout', workouts)}
-    ${w && w.days.length ? w.days.map((day, di) => `
-      <div class="card day-card">
-        <div class="day-head"><h2>${di + 1}. ${esc(day.title)} ${di === todayDayIdx ? '<span class="pill">امروز</span>' : ''}</h2>
-          <span class="pill">${day.isRest ? 'روز استراحت' : day.exercises.length + ' حرکت'}</span>
-        </div>
-        ${day.isRest ? '<div class="empty">استراحت و ریکاوری 😴</div>' : day.exercises.map((ex, xi) => {
-          const key = w.name + '_' + di + '_' + xi;
-          const fallbackYt = 'https://www.youtube.com/results?search_query=' + encodeURIComponent(ex.name + ' آموزش');
-          return `<div class="exercise ${done[key] ? 'done' : ''}" data-ex-key="${esc(key)}" data-rest-s="${restFor(ex)}">
-            <span class="chk-wrap"><input type="checkbox" data-done-key="${esc(key)}" ${done[key] ? 'checked' : ''}><span class="chk-box">${icon('check')}</span></span>
-            <div class="name">${esc(ex.name)}</div>
-            <div class="meta">${ex.sets ? esc(ex.sets) + ' ست' : ''}</div>
-            <div class="meta ltr">${esc(ex.reps)}</div>
-            <div class="notes">${esc(ex.notes) || '—'}</div>
-            <div style="display:flex;gap:6px">
-              <a class="yt-link" target="_blank" rel="noopener" href="${fallbackYt}" data-yt-query="${esc(ex.name)}">▶ ویدیو</a>
-              <button type="button" class="ex-toggle" data-log-toggle="${esc(key)}" data-ex-name="${esc(ex.name)}" title="ثبت وزنه و نمودار قدرت">${icon('chart')}</button>
-              <button type="button" class="ex-toggle rest-btn" data-rest="${esc(key)}" data-ex-name="${esc(ex.name)}" title="تایمر استراحت">${icon('clock')}<small>${restFor(ex)}s</small></button>
-            </div>
-            <div class="ex-detail hidden" id="detail-${esc(key)}"></div>
-            <div class="rest-chips hidden" id="rest-${esc(key)}"></div>
-          </div>`;
-        }).join('')}
-      </div>`).join('') : '<div class="empty">برای این ورزشکار هنوز برنامه تمرینی تخصیص داده نشده.</div>'}
-    ${w && w.notes.length ? `<div class="card"><h2>توصیه‌های عمومی</h2>${w.notes.map(n => `<div class="notice">${esc(n)}</div>`).join('')}</div>` : ''}
-  `;
-  bindPlanTabs(workoutView);
-  document.querySelectorAll('.exercise input[type=checkbox]').forEach(cb => {
-    cb.onchange = () => {
-      setDone(cb.dataset.doneKey, cb.checked);
-      cb.closest('.exercise').classList.toggle('done', cb.checked);
-      if (cb.checked) startRestTimer(Number(cb.closest('.exercise').dataset.restS) || 90);
-    };
-  });
-  document.querySelectorAll('[data-rest]').forEach(b => b.onclick = () => {
-    const box = $('rest-' + b.dataset.rest), wasOpen = !box.classList.contains('hidden');
-    document.querySelectorAll('.rest-chips').forEach(x => x.classList.add('hidden'));
-    if (wasOpen) return;
-    const name = b.dataset.exName, cur = restFor({ name });
-    box.innerHTML = [30, 45, 60, 90, 120, 180].map(v => `<button type="button" class="chip ${v === cur ? 'on' : ''}" data-rv="${v}">${v}s</button>`).join('');
-    box.classList.remove('hidden');
-    box.querySelectorAll('[data-rv]').forEach(c => c.onclick = () => {
-      const v = Number(c.dataset.rv); localStorage.setItem('fc_rest_' + name, String(v));
-      b.querySelector('small').textContent = v + 's'; b.closest('.exercise').dataset.restS = v;
-      box.classList.add('hidden'); startRestTimer(v);
-    });
-  });
-  document.querySelectorAll('[data-log-toggle]').forEach(btn => btn.onclick = () => toggleExerciseLog(btn.dataset.logToggle, btn.dataset.exName, w.name));
-  sfBindStudent();
-  loadMedia();
-}
 
 /* -------------------------------------------------------------------------
  * Real weight/reps logging per exercise + a small strength-over-time
@@ -1121,24 +828,7 @@ function mealSearchQuery(item) {
   const source = isGeneric ? item.description : item.title;
   return source.split('+')[0].replace(/[0-90-9\/]+|(گرم|عدد|ق غ|ق م|لیوان|اسلایس|کفگیر|استکان|واحد)/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 40);
 }
-function dietView() {
-  const diets = state.data.diets;
-  const idx = Math.min(state.selected.diet, diets.length - 1);
-  const d = diets[idx];
-  $('main').innerHTML = `
-    <div class="hero"><div><h1>برنامه غذایی</h1><p>${d ? esc(d.name.trim()) : 'تخصیص داده نشده'}</p></div><span class="pill">${fmt(state.data.profile.targetCalories)} kcal/day</span></div>
-    ${mealLogCard()}
-    ${planTabs('diet', diets)}
-    ${d && d.sections.length ? d.sections.map(s => `
-      <div class="card"><div class="section-title"><h2>${esc(s.title)}</h2><span class="pill">${s.items.length} مورد</span></div>
-        ${s.items.map(it => `<div class="meal"><div class="meal-thumb" data-img-query="${esc(mealSearchQuery(it))}">🍽️</div><div><div class="meal-title">${esc(it.title || 'گزینه')}${it.kcal != null ? `<span class="pill kcal">~${fmt(it.kcal)} kcal</span>` : ''}</div><div class="meal-text">${esc(it.description)}</div></div><button class="logbtn" data-lt="${esc(it.title || 'وعده')}" data-lk="${it.kcal || 0}" title="ثبت در امروز">${icon('plus')}</button></div>`).join('')}
-      </div>`).join('') : '<div class="empty">برای این ورزشکار هنوز برنامه غذایی تخصیص داده نشده.</div>'}
-    ${d && d.sections.length ? '<div class="notice">🍽️ عکس‌ها خودکار پیدا می‌شن و همیشه دقیق نیستن؛ کالری هم فقط یک تخمین تقریبیه از یک جدول کوچیک داخلیه، نه یک دیتابیس تغذیه.</div>' : ''}
-  `;
-  bindPlanTabs(dietView);
-  bindMealLog(dietView);
-  loadMedia();
-}
+
 
 /* -------------------------------------------------------------------------
  * Supplement page — real timing schedule (morning/noon/etc. shown as
@@ -1148,39 +838,7 @@ function dietView() {
 const TIMING_ICON = { 'صبح':'☀️','ظهر':'🌤️','عصر':'🌆','شب':'🌙','ناشتا':'🥣','قبل از تمرین':'🏋️','بعد از تمرین':'💪','قبل از خواب':'😴' };
 function timingIcon(t) { for (const k in TIMING_ICON) if (t.indexOf(k) === 0) return TIMING_ICON[k]; return '⏰'; }
 
-function suppView() {
-  const supps = state.data.supplements;
-  const idx = Math.min(state.selected.supplement, supps.length - 1);
-  const s = supps[idx];
-  const hasSchedule = s && s.schedule && s.schedule.length;
-  const hasGroups = s && s.groups && s.groups.length;
-  const hasOldItems = s && s.items && s.items.length;
 
-  $('main').innerHTML = `
-    <div class="hero"><div><h1>مکمل‌ها</h1><p>${s ? esc(s.name.trim()) : 'تخصیص داده نشده'}</p></div></div>
-    ${planTabs('supplement', supps)}
-    ${s ? `<div class="card supp-summary" style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
-      <div style="flex:1;min-width:150px"><div class="sub">جمع برنامه</div><b style="font-size:20px">${(hasSchedule ? s.schedule.reduce((n,b)=>n+b.items.length,0) : (hasGroups ? s.groups.reduce((n,g)=>n+g.items.length,0) : (hasOldItems ? s.items.length : 0)))} قلم</b></div>
-      <div style="flex:1;min-width:110px"><div class="sub">بازه‌های مصرف</div><b style="font-size:20px">${hasSchedule ? new Set(s.schedule.map(b=>b.timing)).size : 0}</b></div>
-      <div style="flex:1;min-width:110px"><div class="sub">گروه‌ها</div><b style="font-size:20px">${hasGroups ? s.groups.length : 0}</b></div>
-      <span class="pill">${esc((s.name||'').trim())}</span>
-    </div>` : ''}
-    ${hasSchedule ? suppPills(s) : ''}
-    ${hasSchedule ? s.schedule.filter(b=>!state.suppF||b.timing===state.suppF).map(block => `
-      <div class="card timing-block">
-        <div class="timing-head">${timingIcon(block.timing)} ${esc(block.timing)}<span class="pill" style="margin-inline-start:auto">${block.items.length} قلم</span></div>
-        <div class="timing-items">${block.items.map(item => `<div class="timing-item supp-photo-row"><img class="meal-image" loading="lazy" alt="مکمل" src="${suppPhoto(item)}" onerror="imgFallback(this)"><span>${esc(item)}</span></div>`).join('')}</div>
-      </div>`).join('') : ''}
-    ${hasGroups ? s.groups.map(g => `
-      <div class="card"><h2>${esc(g.title)}</h2>
-        ${g.items.map(it => `<div class="supp-group-item"><img class="meal-image" loading="lazy" alt="${esc(it.name)}" src="${suppPhoto(it.name)}" onerror="imgFallback(this)"><div style="flex:1"><b>${esc(it.name)}</b><div class="sub">${it.timings.map(esc).join(' + ')}</div></div></div>`).join('')}
-      </div>`).join('') : ''}
-    ${hasOldItems ? `<div class="card">${s.items.map(x => `<div class="supp"><img class="meal-image" loading="lazy" alt="${esc(x.name)}" src="${suppPhoto(x.name)}" onerror="imgFallback(this)"><div><b>${esc(x.name)}</b><br><small>${esc(x.category)}</small></div><div>${esc(x.dosage)}</div><div>${esc(x.timing)}</div><div>${esc(x.instructions)}</div></div>`).join('')}</div>` : ''}
-    ${!hasSchedule && !hasGroups && !hasOldItems ? (s ? '<div class="empty">این برگه مکمل خالیه.</div>' : '<div class="empty">برای این ورزشکار هنوز برنامه مکمل تخصیص داده نشده.</div>') : ''}
-  `;
-  bindPlanTabs(suppView);
-  document.querySelectorAll('#suppPills [data-sf]').forEach(b=>b.onclick=()=>{state.suppF=b.dataset.sf;suppView();});
-}
 
 /* -------------------------------------------------------------------------
  * Progress page
@@ -1214,155 +872,16 @@ function compareBlock(photos) {
   </div>`;
 }
 
-function progressView() {
-  const d = state.data, logs = d.logs || [], photos = d.photos || [];
-  $('main').innerHTML = `
-    <div class="hero"><div><h1>پیشرفت</h1><p>ثبت وزن، دور کمر، درصد چربی و کالری روزانه</p></div></div>
-    <div class="grid grid-2">
-      <div class="card"><h2>ثبت / ویرایش</h2>
-        <form id="logForm" class="form">
-          <div class="form grid-2">
-            <div class="field"><label>تاریخ</label><input id="lgDate" type="date" value="${todayISO()}"></div>
-            <div class="field"><label>تاریخ شمسی (اختیاری)</label><input id="lgJalali" placeholder="1405/07/06"></div>
-            <div class="field"><label>وزن (kg)</label><input id="lgWeight" type="number" step="0.1" value="${esc(d.profile.weight)}"></div>
-            <div class="field"><label>دور کمر (cm)</label><input id="lgWaist" type="number" step="0.1"></div>
-            <div class="field"><label>درصد چربی</label><input id="lgBF" type="number" step="0.1"></div>
-            <div class="field"><label>کالری مصرفی</label><input id="lgCal" type="number" step="1"></div>
-          </div>
-          <div class="field"><label>یادداشت</label><textarea id="lgNote" placeholder="مثلاً خواب، انرژی، تمرین..."></textarea></div>
-          <button type="button" class="btn secondary small" id="barcodeBtn" style="display:inline-flex;align-items:center;gap:6px;width:fit-content">${icon('barcode')} افزودن کالری با بارکد غذا</button>
-          <div id="barcodePanel" class="hidden"></div>
-          <button class="btn">ذخیره ثبت</button>
-        </form>
-      </div>
-      <div class="card"><h2>روند وزن</h2>${weightChart(logs.slice(0, 14).reverse(), d.profile.goalWeight)}</div>${metricCard('دور کمر','waist','cm')}${metricCard('درصد چربی','bodyFat','%')}
-    </div>
 
-    <div class="card" id="photoUploadCard">
-      <h2>عکس پیشرفت</h2>
-      <form id="photoForm" class="form grid-2" style="align-items:end">
-        <div class="field"><label>عکس</label><input id="phFile" type="file" accept="image/*" capture="environment"></div>
-        <div class="field"><label>برچسب (اختیاری)</label><input id="phLabel" placeholder="مثلاً هفته 4"></div>
-      </form>
-      <button class="btn small" id="phUploadBtn" style="margin-top:8px">آپلود عکس</button>
-      <div style="margin-top:14px">${photoGallery(photos)}</div>
-    </div>
-    ${compareBlock(photos)}
-
-    <div class="card" style="margin-top:14px"><h2>تاریخچه</h2>
-      <div class="table-wrap"><table class="table">
-        <thead><tr><th>تاریخ</th><th>وزن</th><th>کمر</th><th>چربی</th><th>کالری</th><th>یادداشت</th><th></th></tr></thead>
-        <tbody>${logs.length ? logs.map(x => `<tr><td>${esc(x.jalali || x.date)}</td><td>${fmt(x.weight)}</td><td>${fmt(x.waist)}</td><td>${fmt(x.bodyFat)}</td><td>${fmt(x.calories)}</td><td>${esc(x.notes)}</td><td><button class="btn danger small" data-del="${esc(x.date)}">حذف</button></td></tr>`).join('') : '<tr><td colspan="7" class="sub">هنوز داده‌ای ثبت نشده.</td></tr>'}</tbody>
-      </table></div>
-    </div>`;
-
-  $('logForm').onsubmit = async e => {
-    e.preventDefault();
-    try {
-      const r = await server('saveLog', [state.token, {
-        date: $('lgDate').value, jalali: $('lgJalali').value, weight: $('lgWeight').value,
-        waist: $('lgWaist').value, bodyFat: $('lgBF').value, calories: $('lgCal').value, notes: $('lgNote').value
-      }]);
-      state.data.logs = r.logs; state.data.streak = r.streak;
-      toast('ثبت شد'); render();
-    } catch (err) { toast(err.message, true); }
-  };
-
-  // Barcode food lookup (Open Food Facts) — manual entry always works;
-  // camera auto-scan is a progressive enhancement where BarcodeDetector exists.
-  $('barcodeBtn').onclick = () => {
-    const panel = $('barcodePanel');
-    const opening = panel.classList.contains('hidden');
-    panel.classList.toggle('hidden');
-    if (!opening) return;
-    panel.innerHTML = `
-      <div class="row" style="margin-top:8px">
-        <input id="bcCode" placeholder="بارکد را وارد کن یا با دوربین اسکن کن" style="direction:ltr;text-align:left">
-        <button type="button" class="btn small" id="bcLookup">جستجو</button>
-        ${'BarcodeDetector' in window ? `<button type="button" class="btn secondary small" id="bcScan">${icon('camera')} اسکن</button>` : ''}
-      </div>
-      <div id="bcResult" class="sub" style="margin-top:6px"></div>`;
-    $('bcLookup').onclick = async () => {
-      const code = $('bcCode').value.trim();
-      if (!code) { toast('بارکد رو وارد کن', true); return; }
-      $('bcResult').textContent = 'در حال جستجو...';
-      try {
-        const food = await server('getFoodByBarcode', [state.token, code]);
-        $('bcResult').innerHTML = `<b>${esc(food.name)}</b>${food.brand ? ' — ' + esc(food.brand) : ''}${food.kcal100 != null ? ` — ${fmt(food.kcal100)} kcal/100g` : ' — کالری نامشخص'}
-          ${food.kcal100 != null ? `<div class="row" style="margin-top:6px"><input id="bcGrams" type="number" value="100" placeholder="گرم"><button type="button" class="btn small" id="bcAdd">افزودن به کالری امروز</button></div>` : ''}`;
-        if (food.kcal100 != null) $('bcAdd').onclick = () => {
-          const grams = Number($('bcGrams').value) || 100;
-          const add = Math.round(food.kcal100 * grams / 100);
-          $('lgCal').value = (Number($('lgCal').value) || 0) + add;
-          toast(`${fmt(add)} کالری اضافه شد`);
-        };
-      } catch (e) { $('bcResult').textContent = e.message; }
-    };
-    if ($('bcScan')) $('bcScan').onclick = () => startBarcodeScan(code => { $('bcCode').value = code; $('bcLookup').click(); });
-  };
-  document.querySelectorAll('[data-del]').forEach(b => b.onclick = async () => {
-    if (!confirm('این ثبت حذف شود؟')) return;
-    try { const r = await server('deleteLog', [state.token, b.dataset.del]); state.data.logs = r.logs; state.data.streak = r.streak; toast('حذف شد'); render(); }
-    catch (e) { toast(e.message, true); }
-  });
-
-  $('phUploadBtn').onclick = async () => {
-    const file = $('phFile').files[0];
-    if (!file) { toast('یک عکس انتخاب کن', true); return; }
-    try {
-      const base64 = await fileToBase64(file);
-      state.data.photos = (await server('uploadProgressPhoto', [state.token, base64, file.type, $('phLabel').value])).photos;
-      toast('عکس ثبت شد'); progressView();
-    } catch (e) { toast(e.message, true); }
-  };
-  if (photos.length >= 2) {
-    $('cmpBefore').value = state.compare.before; $('cmpAfter').value = state.compare.after;
-    $('cmpBefore').onchange = () => { state.compare.before = $('cmpBefore').value; $('cmpBeforeImg').style.backgroundImage = `url(${state.compare.before})`; };
-    $('cmpAfter').onchange = () => { state.compare.after = $('cmpAfter').value; $('cmpAfterImg').style.backgroundImage = `url(${state.compare.after})`; };
-  }
-}
 
 /* -------------------------------------------------------------------------
  * Chat page
  * ---------------------------------------------------------------------- */
-function renderMessages(messages, me) {
-  if (!messages.length) return '<div class="empty">هنوز پیامی نیست.</div>';
-  return `<div class="chat-thread">${messages.map(m => `<div class="msg ${m.sender === me ? 'me' : ''}"><div>${esc(m.text)}</div><div class="meta">${m.sender === me ? 'من' : esc(m.sender)}</div></div>`).join('')}</div>`;
-}
+
 function chatView() {
   localStorage.setItem('fc_chat_seen', new Date().toISOString());
-  const d = state.data, isCoach = ['coach', 'admin'].includes(String(d.user.role).toLowerCase());
-  const athletes = d.athletes || [];
-  if (isCoach) {
-    $('main').innerHTML = `
-      <div class="hero"><div><h1>پیام‌ها</h1><p>گفتگو با ورزشکاران</p></div></div>
-      <div class="card" id="chatCard">
-        <div class="field" style="margin-bottom:10px"><label>ورزشکار</label><select id="chatAthlete">${athletes.map(a => `<option value="${esc(a.username)}">${esc(a.name)} — ${esc(a.username)}</option>`).join('')}</select></div>
-        <div id="chatThread"></div>
-        <form class="chat-form" id="chatForm"><input id="chatText" placeholder="پیام..."><button class="btn small">ارسال</button></form>
-      </div>
-      <div class="card" id="noteCard">
-        <div class="section-title"><h2>یادداشت خصوصی مربی</h2><span class="sub">فقط شما این را می‌بینید</span></div>
-        <textarea id="coachNote" class="field" style="width:100%;min-height:90px;background:var(--input-bg);border:1px solid var(--line);border-radius:12px;padding:9px 11px"></textarea>
-        <button class="btn small" id="saveNoteBtn" style="margin-top:8px">ذخیره یادداشت</button>
-      </div>`;
-    const loadThread = async () => {
-      const athlete = $('chatAthlete').value;
-      $('chatThread').innerHTML = '<div class="sub">در حال بارگذاری...</div>';
-      try { $('chatThread').innerHTML = renderMessages(await server('getMessages', [state.token, athlete]), d.user.username); } catch (e) { toast(e.message, true); }
-      try { $('coachNote').value = (await server('getCoachNote', [state.token, athlete])).note; } catch (e) {}
-    };
-    $('chatAthlete').onchange = loadThread;
-    loadThread();
-    $('chatForm').onsubmit = async e => {
-      e.preventDefault();
-      const text = $('chatText').value.trim();
-      if (!text) return;
-      try { $('chatThread').innerHTML = renderMessages((await server('sendMessage', [state.token, $('chatAthlete').value, text])).messages, d.user.username); $('chatText').value = ''; }
-      catch (err) { toast(err.message, true); }
-    };
-    $('saveNoteBtn').onclick = async () => { try { await server('saveCoachNote', [state.token, $('chatAthlete').value, $('coachNote').value]); toast('یادداشت ذخیره شد'); } catch (e) { toast(e.message, true); } };
-  } else {
+  const d = state.data;
+  
     $('main').innerHTML = `
       <div class="hero"><div><h1>پیام‌ها</h1><p>گفتگو با مربی</p></div></div>
       <div class="card" id="chatCard">
@@ -1378,7 +897,7 @@ function chatView() {
       try { $('chatThread').innerHTML = renderMessages((await server('sendMessage', [state.token, d.user.username, text])).messages, d.user.username); $('chatText').value = ''; }
       catch (err) { toast(err.message, true); }
     };
-  }
+  
 }
 
 /* -------------------------------------------------------------------------
@@ -1559,82 +1078,7 @@ function coachView() {
 /* -------------------------------------------------------------------------
  * Admin panel — user management (separate from the coach panel)
  * ---------------------------------------------------------------------- */
-function adminView() {
-  $('main').innerHTML = `
-    <div class="hero"><div><h1>پنل ادمین</h1><p>مدیریت کاربران، نقش‌ها و رمزها</p></div></div>
-    <div id="sfAdminApp" style="margin-bottom:14px"></div>
-    <div class="grid grid-2">
-      <div class="card">
-        <h2>کاربر جدید</h2>
-        <form id="newUserForm" class="form">
-          <div class="field"><label>نام کاربری</label><input id="nuUser" style="direction:ltr;text-align:right"></div>
-          <div class="field"><label>رمز عبور (خالی بمونه خودکار ساخته می‌شه)</label><input id="nuPass" style="direction:ltr;text-align:right"></div>
-          <div class="field"><label>نقش</label><select id="nuRole"><option value="user">ورزشکار</option><option value="coach">مربی</option><option value="admin">ادمین</option></select></div>
-          <button class="btn">ساخت کاربر</button>
-        </form>
-      </div>
-      <div class="card">
-        <h2>عکس دستی غذا (MealImages)</h2>
-        <form id="mealImgForm" class="form">
-          <div class="field"><label>عبارت جستجو (دقیقاً مثل چیزی که تو رژیم می‌بینی)</label><input id="miQuery"></div>
-          <div class="field"><label>لینک عکس</label><input id="miUrl" style="direction:ltr;text-align:right"></div>
-          <button class="btn small">ذخیره</button>
-        </form>
-        <div id="miList" class="sub" style="margin-top:10px">در حال بارگذاری...</div>
-      </div>
-    </div>
-    <div class="card" style="margin-top:14px" id="usersCard">
-      <div class="section-title"><h2>کاربران</h2></div>
-      <div class="table-wrap"><table class="table"><thead><tr><th>نام کاربری</th><th>نقش</th><th></th></tr></thead><tbody id="usersBody"></tbody></table></div>
-    </div>`;
 
-  const loadUsers = async () => {
-    try {
-      const users = await server('adminListUsers', [state.token]);
-      $('usersBody').innerHTML = users.map(u => `
-        <tr>
-          <td class="ltr">${esc(u.username)}</td>
-          <td><select data-role-for="${esc(u.username)}"><option value="user" ${u.role==='user'?'selected':''}>ورزشکار</option><option value="coach" ${u.role==='coach'?'selected':''}>مربی</option><option value="admin" ${u.role==='admin'?'selected':''}>ادمین</option></select></td>
-          <td style="display:flex;gap:6px"><button class="btn secondary small" data-reset="${esc(u.username)}">ریست رمز</button><button class="btn danger small" data-remove="${esc(u.username)}">حذف</button></td>
-        </tr>`).join('');
-      document.querySelectorAll('[data-role-for]').forEach(sel => sel.onchange = async () => {
-        try { await server('adminSetRole', [state.token, sel.dataset.roleFor, sel.value]); toast('نقش بروزرسانی شد'); } catch (e) { toast(e.message, true); }
-      });
-      document.querySelectorAll('[data-reset]').forEach(b => b.onclick = async () => {
-        try { const r = await server('adminResetPassword', [state.token, b.dataset.reset]); alert('رمز جدید: ' + r.tempPassword); } catch (e) { toast(e.message, true); }
-      });
-      document.querySelectorAll('[data-remove]').forEach(b => b.onclick = async () => {
-        if (!confirm('این کاربر حذف شود؟')) return;
-        try { await server('adminDeleteUser', [state.token, b.dataset.remove]); loadUsers(); toast('حذف شد'); } catch (e) { toast(e.message, true); }
-      });
-    } catch (e) { toast(e.message, true); }
-  };
-  loadUsers();
-
-  $('newUserForm').onsubmit = async e => {
-    e.preventDefault();
-    try {
-      const r = await server('adminCreateUser', [state.token, { username: $('nuUser').value, password: $('nuPass').value, role: $('nuRole').value }]);
-      alert('کاربر ساخته شد. رمز عبور: ' + r.tempPassword);
-      $('nuUser').value = ''; $('nuPass').value = '';
-      loadUsers();
-    } catch (err) { toast(err.message, true); }
-  };
-
-  const loadMealImages = async () => {
-    try {
-      const images = await server('adminListMealImages', [state.token]);
-      $('miList').innerHTML = images.length ? images.map(i => `<div>${esc(i.query)} → <span class="ltr">${esc(i.url)}</span></div>`).join('') : 'هنوز چیزی اضافه نشده.';
-    } catch (e) {}
-  };
-  loadMealImages();
-  $('mealImgForm').onsubmit = async e => {
-    e.preventDefault();
-    try { await server('adminSaveMealImage', [state.token, $('miQuery').value, $('miUrl').value]); $('miQuery').value = ''; $('miUrl').value = ''; toast('ذخیره شد'); loadMealImages(); }
-    catch (err) { toast(err.message, true); }
-  };
-  sfAdminInit();
-}
 
 /* =========================================================================
  * Saeedi Fit — Training System client (bank، برنامه‌ساز ادمین، نمایش شاگرد)
@@ -1671,18 +1115,7 @@ function sfGifAllowed() {
   try { if (window.sf4Sub) { var s = window.sf4Sub(); if (s && s.features) return !!s.features.gif; } } catch (e2) {}
   return true;
 }
-function sfMediaHtml(info, small) {
-  if (!sfGifAllowed()) {
-    return `<div class="sf-media ${small ? "sm " : ""}locked"><div class="sf-ph"><div class="sf-lock">گیف این حرکت با اشتراک فعال می‌شود<button type="button" class="btn secondary small" style="margin-top:6px" data-sf-upsell="1">فعال‌سازی اشتراک</button></div></div></div>`;
-  }
-  const m = (info && info.media) || { gif: [], frames: [] };
-  let inner = '';
-  if (m.gif && m.gif.length) inner = sfImg(m.gif);
-  else if (m.frames && m.frames.length >= 2) inner = `<div class="sf-anim">${sfImg(m.frames[0])}${sfImg(m.frames[1])}</div>`;
-  else if (m.frames && m.frames.length === 1) inner = sfImg(m.frames[0]);
-  const ph = `<div class="sf-ph">${icon('dumbbell')}<small>تصویر ندارد</small></div>`;
-  return `<div class="sf-media ${small ? 'sm' : ''} ${inner ? '' : 'empty'}">${inner || ph}</div>`;
-}
+
 function sfYtHtml(info) {
   if (typeof sfGifAllowed === 'function' && !sfGifAllowed()) return '';
   if (!info || !info.yt) return '';
@@ -1780,22 +1213,7 @@ function sfBindShared(root, ctx) {
 }
 
 /* ---------------- نمایش شاگرد ---------------- */
-function sfStudentHtml() {
-  const t = (state.data && state.data.sfTraining) || { plans: [] };
-  if (!t.plans || !t.plans.length) return '';
-  const sel = state.sfSel = state.sfSel || { plan: 0, day: 0 };
-  sel.plan = Math.min(sel.plan, t.plans.length - 1);
-  const p = t.plans[sel.plan];
-  sel.day = Math.min(sel.day, Math.max(0, p.days.length - 1));
-  const day = p.days[sel.day];
-  return `<div class="card" id="sfStudent">
-    <div class="section-title"><h2>${icon('dumbbell')} ${esc(p.planName)}</h2><span class="pill">برنامه مربی</span></div>
-    ${t.plans.length > 1 ? `<div class="favs">${t.plans.map((x, i) => `<button type="button" class="chip ${i === sel.plan ? 'on' : ''}" data-sf-plan="${i}">${esc(x.planName)}</button>`).join('')}</div>` : ''}
-    ${p.coachNotes ? `<div class="notice">${esc(p.coachNotes)}</div>` : ''}
-    <div class="favs sf-days">${p.days.map((d, i) => `<button type="button" class="chip ${i === sel.day ? 'on' : ''}" data-sf-day="${i}">${esc(d.title || ('روز ' + sfFa(d.dayNo)))}</button>`).join('')}</div>
-    <div id="sfDayBody">${day ? sfDayHtml(day, p, t.exercises, { interactive: true, today: t.today, last: t.last }) : ''}</div>
-  </div>`;
-}
+
 function sfBindStudent() {
   const root = $('sfStudent'); if (!root) return;
   const t = state.data.sfTraining;
@@ -1822,69 +1240,16 @@ function sfMatch(ex, q) {
   return sfNorm([ex.fa, ex.en, ex.group, ex.sub, ex.equip, ex.sec, ex.aliases].join(' ')).includes(n);
 }
 
-async function sfAdminInit() {
-  const host = $('sfAdminApp'); if (!host) return;
-  host.innerHTML = '<div class="card"><div class="sub">در حال بارگذاری بانک حرکات…</div></div>';
-  try {
-    SF.meta = await server('sfAdminMeta', [state.token]);
-    SF.byId = {}; SF.meta.exercises.forEach(e => { SF.byId[e.id] = e; });
-    if (!SF.B) SF.B = sfNewBuilder();
-    sfAdminRender();
-  } catch (e) { host.innerHTML = `<div class="card"><div class="notice">${esc(e.message)}</div></div>`; }
-}
-function sfAdminRender() {
-  const host = $('sfAdminApp');
-  const tabs = [['build', 'ساخت برنامه'], ['plans', 'برنامه‌های ثبت‌شده'], ['lib', 'بانک حرکات'], ['prog', 'پیشرفت شاگردان'], ['media', 'گیف و ویدیو']];
-  host.innerHTML = `<div class="card sf-admin"><div class="section-title"><h2>${icon('dumbbell')} مدیریت تمرین</h2><span class="pill">${sfFa(SF.meta.exercises.length)} حرکت</span></div>
-    <div class="favs">${tabs.map(t => `<button type="button" class="chip ${SF.tab === t[0] ? 'on' : ''}" data-sf-tab="${t[0]}">${t[1]}</button>`).join('')}</div>
-    <div id="sfTabBody"></div></div>`;
-  host.querySelectorAll('[data-sf-tab]').forEach(b => b.onclick = () => { SF.tab = b.dataset.sfTab; sfAdminRender(); });
-  ({ build: sfTabBuild, plans: sfTabPlans, lib: sfTabLib, prog: sfTabProg, media: sfTabMedia })[SF.tab]();
-}
+
+
 
 /* ---- تب ساخت برنامه ---- */
 function sfExName(id) { return (SF.byId[id] || {}).fa || id; }
 function sfSlotsOk(c) { const T = SF.meta.techniques.find(x => x.key === c.tech); return c.slots.length >= T.min && c.slots.every(Boolean); }
 /* ---- سبک ست: 12-10-8-6*12 (ست آخر سوپرست 6+12) ---- */
-function sfRepScheme(s) {
-  var t = String(s == null ? '' : s).trim().replace(/[–—]/g, '-');
-  if (!t || !/[-*]/.test(t)) return null;
-  var out = t.split('-').map(function (p) {
-    p = p.trim();
-    var m = p.split('*');
-    if (m.length > 1) return String(m[0] || '').trim() + '+' + String(m[1] || '').trim();
-    return p;
-  }).filter(function (x) { return !!x; });
-  return out.length ? out : null;
-}
-function sfRepsText(r) {
-  var s = String(r == null ? '' : r).trim();
-  if (!s) return '';
-  if (s.indexOf('+') >= 0) return s.replace(/\s*\+\s*/g, ' + ') + ' تکرار (سوپرست)';
-  return s + ' تکرار';
-}
-function sfGenSets(c) {
-  const T = c.tech, n = c.tech === 'fst7' ? 7 : Math.max(1, Math.min(20, Number(c.nSets) || 1));
-  const pyr = [15, 12, 10, 8, 6, 5, 4, 3, 2, 1];
-  const out = [];
-  for (let i = 0; i < n; i++) {
-    const cells = c.slots.map((id, pi) => {
-      const ex = SF.byId[id] || {};
-      let reps = (c.reps[pi] || ex.reps || '10').toString();
-      const sch = sfRepScheme(c.reps[pi] || "");
-      if (sch && sch.length) reps = sch[Math.min(i, sch.length - 1)];
-      if (T === 'pyramid') reps = String(pyr[Math.min(i, pyr.length - 1)]);
-      if (T === 'reverse_pyramid') reps = String(pyr.slice(0, n).reverse()[i]);
-      if (T === 'cardio') reps = (c.minutes || '20') + ' دقیقه';
-      if (T === 'restpause') reps = c.reps[pi] || '8-10';
-      if (T === 'myoreps' && i === 0) reps = String(c.activation);
-      if (T === 'myoreps' && i > 0) reps = '4-5';
-      return { reps, weight: '' };
-    });
-    out.push({ restAfterSec: c.rest, cells, extra: {} });
-  }
-  return out;
-}
+
+
+
 function sfItemName(it) { it = it || {}; if (it.name) return String(it.name); return sfItemName(it); }
 function sfComposerBlock(c) {
   const sets = c.sets.length ? c.sets : sfGenSets(c);
@@ -1897,70 +1262,8 @@ function sfComposerBlock(c) {
   return { dayNo: SF.B.day, dayTitle: SF.B.dayTitles[SF.B.day] || ('روز ' + SF.B.day), technique: c.tech, notes: c.notes, restBetweenSec: c.restBetween, extra,
     items: c.slots.map(id => ({ exerciseId: id })), sets: sets.map(s => ({ restAfterSec: s.restAfterSec, cells: s.cells, extra: s.extra || {} })) };
 }
-function sfBlockSummary(b) {
-  const first = b.sets[0] ? b.sets[0].cells.map(x => x.reps).join(' + ') : '';
-  return `${b.sets.length} ${b.items.length > 1 ? 'دور' : 'ست'} × ${first}`;
-}
-function sfTabBuild() {
-  const B = SF.B, c = B.c, body = $('sfTabBody'), M = SF.meta;
-  const T = M.techniques.find(x => x.key === c.tech);
-  const days = Array.from(new Set([1, 2, 3, 4, 5, 6, 7].filter(d => d <= Math.max(5, B.day, ...B.blocks.map(b => b.dayNo))).concat(B.blocks.map(b => b.dayNo)))).sort((a, b) => a - b);
-  const groups = ['همه'].concat(M.groups);
-  const list = M.exercises.filter(e => (c.group === 'همه' || e.group === c.group) && sfMatch(e, c.q)).slice(0, 60);
-  const dayBlocks = B.blocks.map((b, i) => ({ b, i })).filter(x => x.b.dayNo === B.day);
-  body.innerHTML = `
-    <div class="grid grid-2">
-      <div class="field"><label>نام برنامه</label><input id="sfpName" value="${esc(B.name)}" placeholder="مثلاً برنامه 4 روزه آبان"></div>
-      <div class="field"><label>شاگرد</label><select id="sfpUser"><option value="">انتخاب کن…</option>${M.users.map(u => `<option ${u.username === B.user ? 'selected' : ''}>${esc(u.username)}</option>`).join('')}</select></div>
-      <div class="field"><label>هدف (اختیاری)</label><input id="sfpGoal" value="${esc(B.goal)}" placeholder="عضله‌سازی / کات / قدرت"></div>
-      <div class="field"><label>یادداشت مربی برای شاگرد</label><input id="sfpNotes" value="${esc(B.notes)}"></div>
-    </div>
-    <div class="section-title" style="margin-top:12px"><h2>روزهای برنامه</h2></div>
-    <div class="favs">${days.map(d => `<button type="button" class="chip ${d === B.day ? 'on' : ''}" data-sf-d="${d}">روز ${sfFa(d)}</button>`).join('')}<button type="button" class="chip" id="sfAddDay">+ روز</button></div>
-    <div class="field"><label>عنوان روز ${sfFa(B.day)}</label><input id="sfDayTitle" value="${esc(B.dayTitles[B.day] || '')}" placeholder="مثلاً سینه و پشت بازو"></div>
 
-    <div class="sf-composer">
-      <div class="section-title"><h2>${c.editIdx >= 0 ? 'ویرایش بلوک' : 'افزودن حرکت به روز ' + sfFa(B.day)}</h2>
-        <div style="display:flex;gap:6px"><button type="button" class="btn secondary small" id="sfQuickCardio">+ هوازی</button><button type="button" class="btn secondary small" id="sfQuickAbs">+ شکم و پهلو</button></div></div>
-      <div class="grid grid-2">
-        <div class="field"><label>روش / سیستم تمرینی</label><select id="sfTech">${M.techniques.map(t => `<option value="${t.key}" ${t.key === c.tech ? 'selected' : ''}>${t.label}</option>`).join('')}</select></div>
-        <div class="field"><label>توضیح روش</label><div class="sub" style="padding:10px 0">${esc(T.desc)}</div></div>
-      </div>
-      <div class=\"sf-custom-row\" style=\"display:flex;gap:6px;margin:10px 0;flex-wrap:wrap;align-items:center\">
-  <input id=\"sfCustomEx\" placeholder=\"نام حرکت دلخواه (مثلاً پرس پا دستگاه)\" style=\"flex:1;min-width:170px\">
-  <button type=\"button\" class=\"btn small\" id=\"sfAddCustomEx\">+ افزودن حرکت دلخواه</button>
-  <span class=\"sub\" style=\"font-size:11.5px\">تعداد ست و تکرار از بالا (مرحلهٔ 3) گرفته می‌شود.</span>
-</div>
-<div class="sf-slots">${c.slots.map((id, i) => `<button type="button" class="sf-slot ${i === c.active ? 'on' : ''}" data-sf-slot="${i}"><span class="sf-letter">${SF_LETTERS[i]}</span>${id ? esc(sfExName(id)) : 'حرکت را انتخاب کن'}${c.slots.length > T.min ? `<i data-sf-del-slot="${i}">×</i>` : ''}</button>`).join('')}
-        ${c.slots.length < T.max ? '<button type="button" class="sf-slot add" id="sfAddSlot">+ حرکت</button>' : ''}</div>
-      <div class="favs">${groups.map(g => `<button type="button" class="chip ${g === c.group ? 'on' : ''}" data-sf-g="${esc(g)}">${esc(g)}</button>`).join('')}</div>
-      <div class="field"><input id="sfSearch" placeholder="جستجو: نام فارسی/انگلیسی، وسیله، عضله…" value="${esc(c.q)}"></div>
-      <div class="sf-pick">${list.length ? list.map(e => `<button type="button" class="sf-card" data-sf-pick="${esc(e.id)}">${sfMediaHtml(e, true)}<b>${esc(e.fa)}</b><small>${esc(e.group)} • ${esc(e.equip)}</small></button>`).join('') : '<div class="sub">حرکتی پیدا نشد.</div>'}</div>
-      ${list.length === 60 ? '<div class="sub">فقط 60 مورد اول نمایش داده شد؛ جستجو را دقیق‌تر کن.</div>' : ''}
 
-      <div class="grid grid-3 sf-params">
-        ${c.tech === 'cardio' ? `<div class="field"><label>مدت (دقیقه)</label><input id="sfMin" value="${esc(c.minutes)}"></div><div class="field"><label>شدت</label><select id="sfInt">${['کم', 'متوسط', 'زیاد', 'خیلی زیاد'].map(x => `<option ${x === c.intensity ? 'selected' : ''}>${x}</option>`).join('')}</select></div>` :
-          `<div class="field"><label>تعداد ${c.slots.length > 1 ? 'دور' : 'ست'}</label><input id="sfNSets" type="number" min="1" max="20" value="${c.nSets}" ${c.tech === 'fst7' ? 'disabled' : ''}></div>
-           ${c.slots.map((id, i) => `<div class="field"><label>تکرار ${c.slots.length > 1 ? SF_LETTERS[i] : ''}</label><input data-sf-reps="${i}" value="${esc(c.reps[i] ?? (SF.byId[id] || {}).reps ?? '')}" placeholder="12-10-8-6*12"><div class="sub" style="font-size:11px;line-height:1.6;margin-top:2px">مثال <b>12-10-8-6*12</b> = ست1 12، ست2 10، ست3 8، ست4 6 سنگین + 12 سبک (سوپرست). «تعداد ست» خودکار تنظیم می‌شود.</div></div>`).join('')}`}
-        <div class="field"><label>استراحت بعد از ${c.slots.length > 1 ? 'دور' : 'ست'} (ثانیه)</label><input id="sfRest" type="number" min="0" value="${c.rest}"></div>
-        ${c.slots.length > 1 ? `<div class="field"><label>استراحت بین حرکت‌ها (ثانیه)</label><input id="sfRestBetween" type="number" min="0" value="${c.restBetween}"></div>` : ''}
-        ${c.tech === 'restpause' || c.tech === 'myoreps' ? `<div class="field"><label>مکث (ثانیه)</label><input id="sfPause" type="number" value="${c.pause}"></div><div class="field"><label>تعداد مینی‌ست</label><input id="sfMini" type="number" value="${c.mini}"></div>` : ''}
-        ${c.tech === 'myoreps' ? `<div class="field"><label>تکرار ست فعال‌سازی</label><input id="sfAct" type="number" value="${c.activation}"></div>` : ''}
-        ${c.tech === 'tempo' ? `<div class="field"><label>تمپو (پایین-مکث-بالا)</label><input id="sfTempo" value="${esc(c.tempo)}"></div>` : ''}
-      </div>
-      ${c.tech === 'dropset' ? `<div class="sf-steps"><label class="sub">مراحل دراپ (بعد از ناتوانی در هر ست)</label>${c.steps.map((s, i) => `<div class="sf-step"><span>مرحله ${sfFa(i + 1)}</span><input type="number" data-sf-pct="${i}" value="${esc(s.pct)}" min="5" max="80"> ٪ کاهش وزنه <input data-sf-sreps="${i}" value="${esc(s.reps)}" placeholder="تکرار (خالی=تا ناتوانی)"><button type="button" class="btn danger small" data-sf-del-step="${i}">×</button></div>`).join('')}<button type="button" class="btn secondary small" id="sfAddStep">+ مرحله</button></div>` : ''}
-      <div class="field"><label>یادداشت این بلوک (اختیاری)</label><input id="sfBNotes" value="${esc(c.notes)}"></div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap;margin:8px 0"><button type="button" class="btn secondary" id="sfGen">ساخت / بازسازی جدول ست‌ها</button><button type="button" class="btn" id="sfAddBlock">${c.editIdx >= 0 ? 'ذخیره تغییرات بلوک' : 'افزودن به برنامه'}</button>${c.editIdx >= 0 ? '<button type="button" class="btn secondary" id="sfCancelEdit">انصراف</button>' : ''}</div>
-      ${c.sets.length ? `<div class="table-wrap"><table class="table"><thead><tr><th>${c.slots.length > 1 ? 'دور' : 'ست'}</th>${c.slots.map((id, i) => `<th>${c.slots.length > 1 ? SF_LETTERS[i] + ' ' : ''}تکرار</th><th>وزنه هدف</th>`).join('')}<th>استراحت</th></tr></thead><tbody>${c.sets.map((s, si) => `<tr><td>${sfFa(si + 1)}</td>${s.cells.map((x, ci) => `<td><input data-sf-sr="${si}|${ci}" value="${esc(x.reps)}" style="width:80px"></td><td><input data-sf-sw="${si}|${ci}" value="${esc(x.weight)}" placeholder="kg" style="width:70px"></td>`).join('')}<td><input data-sf-ss="${si}" type="number" value="${esc(s.restAfterSec)}" style="width:70px"></td></tr>`).join('')}</tbody></table></div>` : '<div class="sub">جدول ست‌ها خودکار ساخته می‌شود؛ برای ویرایش تکرار/وزنه هر ست، «ساخت جدول ست‌ها» را بزن.</div>'}
-    </div>
-
-    <div class="section-title" style="margin-top:14px"><h2>حرکات روز ${sfFa(B.day)}</h2><span class="pill">${sfFa(dayBlocks.length)} بلوک</span></div>
-    ${dayBlocks.length ? dayBlocks.map(({ b, i }) => `<div class="sf-qrow"><div><span class="pill sf-tech">${esc(SF_TECH[b.technique])}</span> <b>${b.items.map(it => esc(sfItemName(it))).join(' + ')}</b><div class="sub">${esc(sfBlockSummary(b))}</div></div>
-      <div class="sf-qbtn"><button type="button" class="btn secondary small" data-sf-up="${i}">▲</button><button type="button" class="btn secondary small" data-sf-down="${i}">▼</button><button type="button" class="btn secondary small" data-sf-edit="${i}">ویرایش</button><button type="button" class="btn danger small" data-sf-rm="${i}">حذف</button></div></div>`).join('') : '<div class="sub">هنوز حرکتی برای این روز اضافه نشده.</div>'}
-    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px"><button type="button" class="btn secondary" id="sfPreview">پیش‌نمایش (مثل شاگرد)</button><button type="button" class="btn" id="sfSave">${B.planId ? 'ذخیره ویرایش برنامه' : 'ذخیره و اختصاص به شاگرد'}</button>${B.planId || B.blocks.length ? '<button type="button" class="btn secondary" id="sfReset">برنامه جدید</button>' : ''}</div>
-    <div id="sfPreviewBox"></div>`;
-  sfBindBuild();
-}
 function sfRead_inputs() {
   const B = SF.B, c = B.c, g = id => $(id);
   if (g('sfpName')) { B.name = g('sfpName').value; B.user = g('sfpUser').value; B.goal = g('sfpGoal').value; B.notes = g('sfpNotes').value; B.dayTitles[B.day] = g('sfDayTitle').value; }
@@ -2251,12 +1554,7 @@ setTimeout(() => { const sp = document.getElementById('splash'); if (sp) { sp.cl
 
 load();
 
-var SF_LOGO_URI = "data:image/png;base64," +
-"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";
+var SF_LOGO_URI = SF_OFFICIAL_LOGO_URI;
 
 /* =====================================================================
  * Saeedi Fit — patch v11
@@ -2268,27 +1566,13 @@ var SF_LOGO_URI = "data:image/png;base64," +
  * ===================================================================== */
 
 /* ---------- 1) لوگو ---------- */
-function brandLogo(cls) {
-  return '<img class="brand-logo ' + (cls || '') + '" alt="Saeedi Fit Body" src="' + SF_LOGO_URI + '">';
-}
+
 
 /* اگر کاربر تم حذف‌شده «آدیداس» را ذخیره کرده بود، به تم تیره برگردد */
 try { if (localStorage.getItem('fc_theme') === 'adidas') applyTheme('dark'); } catch (e) {}
 
 /* ---------- 2) فهرست تم‌ها ---------- */
-function moreView(){
-  var cur=document.documentElement.getAttribute('data-theme')||'dark';
-  var T=[['navyred','Navy Blue & Red','سرمه‌ای و قرمز','linear-gradient(135deg,#0b1b3a 0%,#ff3b46 100%)'],['dark','Dark','تیره','linear-gradient(135deg,#0b1210,#1f3a2c)'],['light','Light','روشن','linear-gradient(135deg,#ffffff,#d8e4de)'],['nike','Nike','نایکی','linear-gradient(135deg,#07090c,#b7ff00)']];
-  var tiles=[['workout','dumbbell','تمرین'],['reminders','bell','یادآورها'],['checkin','check','چک‌این'],['diet','apple','تغذیه'],['progress','chart','پیشرفت'],['supp','pill','مکمل‌ها'],['calendar','calendar','تقویم'],['chat','chat','گفت‌وگو'],['profile','user','پروفایل']];
-if(['coach','admin'].includes(String(state.data.user.role).toLowerCase())) tiles.push(['coach','trophy','مربی']);
-  $('main').innerHTML=`<div class="hero"><div><h1>بیشتر</h1><p>ابزارها و تنظیمات</p></div></div>
-  <div class="more-grid">${tiles.map(t=>`<button class="card more-tile" data-more-go="${t[0]}">${icon(t[1])}${t[0]==='chat'&&hasUnread()?'<i class="ndot"></i>':''}<span>${t[2]}</span></button>`).join('')}<button class="card more-tile" id="moreLogout">${icon('logout')}<span>خروج</span></button></div>
-  <div class="card" style="margin-top:14px"><h2>پوسته</h2><div class="theme-list">${T.map(t=>`<button class="theme-row ${cur===t[0]?'on':''}" data-theme-pick="${t[0]}"><span class="sw" style="background:${t[3]}"></span><span class="tn">${t[1]} <small>· ${t[2]}</small></span><span class="tk">${cur===t[0]?icon('check'):''}</span></button>`).join('')}</div></div>
-  ${coachContactCard()}`;
-  document.querySelectorAll('[data-theme-pick]').forEach(b=>b.onclick=()=>{ applyTheme(b.dataset.themePick); render(); });
-  document.querySelectorAll('[data-more-go]').forEach(b=>b.onclick=()=>{ state.tab=b.dataset.moreGo; render(); });
-  $('moreLogout').onclick=()=>$('logout').click();
-}
+
 
 /* ---------- 5) عکس پروفایل: اگر لینک درایو لود نشد، فرم‌های دیگر را امتحان کن ---------- */
 document.addEventListener('error', function (e) {
@@ -2311,167 +1595,10 @@ document.addEventListener('error', function (e) {
 }, true);
 
 /* ---------- 4) برنامه تمرینی: گیف/تصویر و تعداد ست ---------- */
-function workoutView() {
-  const customHtml = sfStudentHtml();
-  const workouts = state.data.workouts;
-  const idx = Math.min(state.selected.workout, workouts.length - 1);
-  const w = workouts[idx];
-  const done = doneMap();
-  const todayDayIdx = w ? Number(localStorage.getItem('fc_today_day_' + w.name) || 0) : 0;
 
-  $('main').innerHTML = `
-    <div class="hero"><div><h1>برنامه تمرینی</h1><p>${w ? esc(w.name.trim()) : 'تخصیص داده نشده'}</p></div></div>
-    ${customHtml}
-    ${planTabs('workout', workouts)}
-    ${w && w.days.length ? w.days.map((day, di) => `
-      <div class="card day-card">
-        <div class="day-head"><h2>${di + 1}. ${esc(day.title)} ${di === todayDayIdx ? '<span class="pill">امروز</span>' : ''}</h2>
-          <span class="pill">${day.isRest ? 'روز استراحت' : day.exercises.length + ' حرکت'}</span>
-        </div>
-        ${day.isRest ? '<div class="empty">استراحت و ریکاوری 😴</div>' : day.exercises.map((ex, xi) => {
-          const key = w.name + '_' + di + '_' + xi;
-          const bank = ex.bank || null;
-          const bankInfo = bank ? { media: { gif: bank.gif || [], frames: bank.frames || [] } } : null;
-          const sets = ex.sets || (bank && bank.sets) || '';
-          const reps = ex.reps || (bank && bank.reps) || '';
-          const fallbackYt = 'https://www.youtube.com/results?search_query=' + encodeURIComponent(ex.name + ' آموزش');
-          return `<div class="exercise ${done[key] ? 'done' : ''}" data-ex-key="${esc(key)}" data-rest-s="${restFor(ex)}">
-            <span class="chk-wrap"><input type="checkbox" data-done-key="${esc(key)}" ${done[key] ? 'checked' : ''}><span class="chk-box">${icon('check')}</span></span>
-            <div class="ex-main">
-              ${bankInfo ? sfMediaHtml(bankInfo, true) : ''}
-              <div class="name">${esc(ex.name)}</div>
-            </div>
-            <div class="meta">${sets ? esc(sets) + ' ست' : ''}${(!ex.sets && bank && bank.sets) ? '<span class="bank-tag">بانک</span>' : ''}</div>
-            <div class="meta ltr">${esc(reps)}</div>
-            <div class="notes">${esc(ex.notes) || '—'}</div>
-            <div style="display:flex;gap:6px">
-              <a class="yt-link" target="_blank" rel="noopener" href="${fallbackYt}" data-yt-query="${esc(ex.name)}">▶ ویدیو</a>
-              <button type="button" class="ex-toggle" data-log-toggle="${esc(key)}" data-ex-name="${esc(ex.name)}" title="ثبت وزنه و نمودار قدرت">${icon('chart')}</button>
-              <button type="button" class="ex-toggle rest-btn" data-rest="${esc(key)}" data-ex-name="${esc(ex.name)}" title="تایمر استراحت">${icon('clock')}<small>${restFor(ex)}s</small></button>
-            </div>
-            <div class="ex-detail hidden" id="detail-${esc(key)}"></div>
-            <div class="rest-chips hidden" id="rest-${esc(key)}"></div>
-          </div>`;
-        }).join('')}
-      </div>`).join('') : '<div class="empty">برای این ورزشکار هنوز برنامه تمرینی تخصیص داده نشده.</div>'}
-    ${w && w.notes.length ? `<div class="card"><h2>توصیه‌های عمومی</h2>${w.notes.map(n => `<div class="notice">${esc(n)}</div>`).join('')}</div>` : ''}
-  `;
-  bindPlanTabs(workoutView);
-  document.querySelectorAll('.exercise input[type=checkbox]').forEach(cb => {
-    cb.onchange = () => {
-      setDone(cb.dataset.doneKey, cb.checked);
-      cb.closest('.exercise').classList.toggle('done', cb.checked);
-      if (cb.checked) startRestTimer(Number(cb.closest('.exercise').dataset.restS) || 90);
-    };
-  });
-  document.querySelectorAll('[data-rest]').forEach(b => b.onclick = () => {
-    const box = $('rest-' + b.dataset.rest), wasOpen = !box.classList.contains('hidden');
-    document.querySelectorAll('.rest-chips').forEach(x => x.classList.add('hidden'));
-    if (wasOpen) return;
-    const name = b.dataset.exName, cur = restFor({ name });
-    box.innerHTML = [30, 45, 60, 90, 120, 180].map(v => `<button type="button" class="chip ${v === cur ? 'on' : ''}" data-rv="${v}">${v}s</button>`).join('');
-    box.classList.remove('hidden');
-    box.querySelectorAll('[data-rv]').forEach(c => c.onclick = () => {
-      const v = Number(c.dataset.rv); localStorage.setItem('fc_rest_' + name, String(v));
-      b.querySelector('small').textContent = v + 's'; b.closest('.exercise').dataset.restS = v;
-      box.classList.add('hidden'); startRestTimer(v);
-    });
-  });
-  document.querySelectorAll('[data-log-toggle]').forEach(btn => btn.onclick = () => toggleExerciseLog(btn.dataset.logToggle, btn.dataset.exName, w.name));
-  sfBindStudent();
-  loadMedia();
-}
 
 /* ---------- 3) پنل ادمین: رمز دستی + چیدمان تمیزتر ---------- */
-function adminView() {
-  $('main').innerHTML = `
-    <div class="hero"><div><h1>پنل ادمین</h1><p>ساخت برنامه، کاربران و تنظیمات</p></div></div>
-    <div id="sfAdminApp" style="margin-bottom:14px"></div>
-    <details class="card adm-fold">
-      <summary>${icon('user')} کاربران و رمز عبور</summary>
-      <div class="grid grid-2" style="margin-top:12px">
-        <div>
-          <h2>کاربر جدید</h2>
-          <form id="newUserForm" class="form">
-            <div class="field"><label>نام کاربری</label><input id="nuUser" style="direction:ltr;text-align:right" autocomplete="off"></div>
-            <div class="field"><label>رمز عبور (خودت تعیین کن — حداقل 6 کاراکتر)</label><input id="nuPass" type="password" style="direction:ltr;text-align:right" autocomplete="new-password" placeholder="مثلاً Ali1404"></div>
-            <div class="field"><label>نقش</label><select id="nuRole"><option value="user">ورزشکار</option><option value="coach">مربی</option><option value="admin">ادمین</option></select></div>
-            <button class="btn">ساخت کاربر</button>
-          </form>
-        </div>
-        <div>
-          <h2>عکس دستی غذا (MealImages)</h2>
-          <form id="mealImgForm" class="form">
-            <div class="field"><label>عبارت جستجو (دقیقاً مثل چیزی که تو رژیم می‌بینی)</label><input id="miQuery"></div>
-            <div class="field"><label>لینک عکس</label><input id="miUrl" style="direction:ltr;text-align:right"></div>
-            <button class="btn small">ذخیره</button>
-          </form>
-          <div id="miList" class="sub" style="margin-top:10px">در حال بارگذاری...</div>
-        </div>
-      </div>
-      <div class="section-title" style="margin-top:14px"><h2>کاربران</h2></div>
-      <div class="table-wrap"><table class="table"><thead><tr><th>نام کاربری</th><th>نقش</th><th></th></tr></thead><tbody id="usersBody"></tbody></table></div>
-    </details>`;
 
-  const loadUsers = async () => {
-    try {
-      const users = await server('adminListUsers', [state.token]);
-      $('usersBody').innerHTML = users.map(u => `
-        <tr>
-          <td class="ltr">${esc(u.username)}</td>
-          <td><select data-role-for="${esc(u.username)}"><option value="user" ${u.role==='user'?'selected':''}>ورزشکار</option><option value="coach" ${u.role==='coach'?'selected':''}>مربی</option><option value="admin" ${u.role==='admin'?'selected':''}>ادمین</option></select></td>
-          <td><div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn secondary small" data-reset="${esc(u.username)}">ریست رمز</button><button class="btn danger small" data-remove="${esc(u.username)}">حذف</button><span class="pwbox"></span></div></td>
-        </tr>`).join('');
-      document.querySelectorAll('[data-role-for]').forEach(sel => sel.onchange = async () => {
-        try { await server('adminSetRole', [state.token, sel.dataset.roleFor, sel.value]); toast('نقش بروزرسانی شد'); } catch (e) { toast(e.message, true); }
-      });
-      document.querySelectorAll('[data-reset]').forEach(b => b.onclick = () => {
-        const u = b.dataset.reset, host = b.closest('tr').querySelector('.pwbox');
-        if (host.dataset.on === '1') { host.dataset.on = ''; host.innerHTML = ''; return; }
-        host.dataset.on = '1';
-        host.innerHTML = '<input type="password" placeholder="رمز جدید" autocomplete="new-password" style="width:130px"><button class="btn small">ثبت</button>';
-        const inp = host.querySelector('input'); inp.focus();
-        host.querySelector('button').onclick = async () => {
-          const p = String(inp.value || '').trim();
-          if (p.length < 6) return toast('رمز باید حداقل 6 کاراکتر باشد.', true);
-          try { await server('adminResetPassword', [state.token, u, p]); toast('رمز ' + u + ' تغییر کرد.'); host.dataset.on = ''; host.innerHTML = ''; } catch (e) { toast(e.message, true); }
-        };
-      });
-      document.querySelectorAll('[data-remove]').forEach(b => b.onclick = async () => {
-        if (!confirm('این کاربر حذف شود؟')) return;
-        try { await server('adminDeleteUser', [state.token, b.dataset.remove]); loadUsers(); toast('حذف شد'); } catch (e) { toast(e.message, true); }
-      });
-    } catch (e) { toast(e.message, true); }
-  };
-  loadUsers();
-
-  $('newUserForm').onsubmit = async e => {
-    e.preventDefault();
-    const user = $('nuUser').value.trim(), pwd = String($('nuPass').value || '').trim();
-    if (!user) return toast('نام کاربری را وارد کن.', true);
-    if (pwd.length < 6) return toast('رمز عبور را خودت تعیین کن (حداقل 6 کاراکتر).', true);
-    try {
-      await server('adminCreateUser', [state.token, { username: user, password: pwd, role: $('nuRole').value }]);
-      toast('کاربر «' + user + '» ساخته شد.');
-      $('nuUser').value = ''; $('nuPass').value = '';
-      loadUsers();
-    } catch (err) { toast(err.message, true); }
-  };
-
-  const loadMealImages = async () => {
-    try {
-      const images = await server('adminListMealImages', [state.token]);
-      $('miList').innerHTML = images.length ? images.map(i => `<div>${esc(i.query)} → <span class="ltr">${esc(i.url)}</span></div>`).join('') : 'هنوز چیزی اضافه نشده.';
-    } catch (e) {}
-  };
-  loadMealImages();
-  $('mealImgForm').onsubmit = async e => {
-    e.preventDefault();
-    try { await server('adminSaveMealImage', [state.token, $('miQuery').value, $('miUrl').value]); $('miQuery').value = ''; $('miUrl').value = ''; toast('ذخیره شد'); loadMealImages(); }
-    catch (err) { toast(err.message, true); }
-  };
-  sfAdminInit();
-}
 
 /* ---------- 3) برنامه‌ساز ساده‌شده (4 مرحله + حالت پیشرفته) ---------- */
 function sfTabBuild() {
@@ -2562,10 +1689,10 @@ function sfTabBuild() {
   sfBindBuild();
 }
 /* Saeedi Fit logo - built from the original brand file (green) + brand-red variant */
-var SF2_LOGO_GREEN = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjMyMSAxNTAgNDM4IDUwMCIgd2lkdGg9IjQzOCIgaGVpZ2h0PSI1MDAiPgogIDxkZWZzPgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJsaW1lIiB4MT0iMCIgeTE9IjAiIHgyPSIxIiB5Mj0iMSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iI2I1ZTg0YSIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjAuNTUiIHN0b3AtY29sb3I9IiM0ZmI4NDgiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjMGY3YTQ1Ii8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJuYXZ5IiB4MT0iMCIgeTE9IjAiIHgyPSIxIiB5Mj0iMSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iIzFmMmQzZCIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiMwYTE2MjQiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9InB1bHNlIiB4MT0iMCIgeTE9IjAiIHgyPSIxIiB5Mj0iMCI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iI2I1ZTg0YSIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiMyZmFlNWEiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgICA8bWFzayBpZD0iZ2FwTWFzayIgbWFza1VuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeD0iMCIgeT0iMCIgd2lkdGg9IjEwODAiIGhlaWdodD0iMTA4MCI+CiAgICAgIDxyZWN0IHdpZHRoPSIxMDgwIiBoZWlnaHQ9IjEwODAiIGZpbGw9IiNmZmYiLz4KICAgICAgPHBvbHlnb24gcG9pbnRzPSI1NDAsMTkwIDcyMiwyOTUgNzIyLDUwNSA1NDAsNjEwIDM1OCw1MDUgMzU4LDI5NSIgZmlsbD0iIzAwMCIvPgogICAgPC9tYXNrPgogICAgPGNsaXBQYXRoIGlkPSJpbm5lckNsaXAiPgogICAgICA8cG9seWdvbiBwb2ludHM9IjU0MCwyMDIgNzExLDMwMSA3MTEsNDk5IDU0MCw1OTggMzY5LDQ5OSAzNjksMzAxIi8+CiAgICA8L2NsaXBQYXRoPgogIDwvZGVmcz4KCgogIDwhLS0gSGV4YWdvbiBiYWRnZTogb3V0ZXIgZ3JlZW4gcmluZywgd2hpdGUgZ2FwLCBuYXZ5IGNvcmUgLS0+CiAgPGcgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+CiAgICA8cG9seWdvbiBwb2ludHM9IjU0MCwxNzAgNzM5LDI4NSA3MzksNTE1IDU0MCw2MzAgMzQxLDUxNSAzNDEsMjg1IiBmaWxsPSJ1cmwoI2xpbWUpIiBzdHJva2U9InVybCgjbGltZSkiIHN0cm9rZS13aWR0aD0iMTYiIG1hc2s9InVybCgjZ2FwTWFzaykiLz4KICAgIDxwb2x5Z29uIHBvaW50cz0iNTQwLDIwMiA3MTEsMzAxIDcxMSw0OTkgNTQwLDU5OCAzNjksNDk5IDM2OSwzMDEiIGZpbGw9InVybCgjbmF2eSkiLz4KICA8L2c+CgogIDwhLS0gU3VidGxlIHNpeC1wYWNrIHBhdHRlcm4gLS0+CiAgPGcgY2xpcC1wYXRoPSJ1cmwoI2lubmVyQ2xpcCkiIGZpbGw9IiNiNWU4NGEiIG9wYWNpdHk9IjAuMTAiPgogICAgPHJlY3QgeD0iNDQ1IiB5PSI0NDAiIHdpZHRoPSI4MCIgaGVpZ2h0PSI0NiIgcng9IjE0Ii8+CiAgICA8cmVjdCB4PSI1NTUiIHk9IjQ0MCIgd2lkdGg9IjgwIiBoZWlnaHQ9IjQ2IiByeD0iMTQiLz4KICAgIDxyZWN0IHg9IjQ0NSIgeT0iNDk4IiB3aWR0aD0iODAiIGhlaWdodD0iNDYiIHJ4PSIxNCIvPgogICAgPHJlY3QgeD0iNTU1IiB5PSI0OTgiIHdpZHRoPSI4MCIgaGVpZ2h0PSI0NiIgcng9IjE0Ii8+CiAgICA8cmVjdCB4PSI0NTAiIHk9IjU1NiIgd2lkdGg9Ijc1IiBoZWlnaHQ9IjQwIiByeD0iMTQiLz4KICAgIDxyZWN0IHg9IjU1NSIgeT0iNTU2IiB3aWR0aD0iNzUiIGhlaWdodD0iNDAiIHJ4PSIxNCIvPgogIDwvZz4KCiAgPCEtLSBEeW5hbWljIFMgbW9ub2dyYW0gLS0+CiAgPGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoNjYgLTYpIHNrZXdYKC0xMCkiPgogICAgPHBhdGggZD0iTSA2MTggMzQyIEggNDkyIFEgNDY0IDM0MiA0NjQgMzY4IFEgNDY0IDM5NCA0OTIgMzk3IEwgNTkwIDQxMyBRIDYxOCA0MTggNjE4IDQ0NCBRIDYxOCA0NzAgNTkwIDQ3MCBIIDQ1OCIKICAgICAgICAgIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2ZmZmZmZiIgc3Ryb2tlLXdpZHRoPSI0MCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgc3Ryb2tlLWxpbmVjYXA9ImJ1dHQiLz4KICAgIDxwYXRoIGQ9Ik0gNjE4IDQ3MCBIIDQ1OCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjYjVlODRhIiBzdHJva2Utd2lkdGg9IjAiLz4KICA8L2c+CgogIDwhLS0gSGVhcnRiZWF0IC8gcHVsc2UgbGluZSAtLT4KICA8cGF0aCBkPSJNIDQyMCA1NDAgSCA0ODggTCA1MDggNTA4IEwgNTM3IDU2OCBMIDU2MiA1MjAgTCA1NzggNTQwIEggNjYwIgogICAgICAgIGZpbGw9Im5vbmUiIHN0cm9rZT0idXJsKCNwdWxzZSkiIHN0cm9rZS13aWR0aD0iMTIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPgoKICA8IS0tIEJyYW5kIG5hbWUgLS0+CiAgPHRleHQgeD0iNTQwIiB5PSI4MDAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJNb250c2VycmF0LCAnQXJpYWwgQmxhY2snLCBJbXBhY3QsIHNhbnMtc2VyaWYiCiAgICAgICAgZm9udC13ZWlnaHQ9IjkwMCIgZm9udC1zaXplPSIxMjgiIGxldHRlci1zcGFjaW5nPSI4IiBmaWxsPSIjMGYxYzJiIj5TQUVFREk8L3RleHQ+CgogIDxnPgogICAgPHJlY3QgeD0iMjYyIiB5PSI4NTMiIHdpZHRoPSIxMjAiIGhlaWdodD0iNiIgcng9IjMiIGZpbGw9InVybCgjbGltZSkiLz4KICAgIDxyZWN0IHg9IjY5OCIgeT0iODUzIiB3aWR0aD0iMTIwIiBoZWlnaHQ9IjYiIHJ4PSIzIiBmaWxsPSJ1cmwoI2xpbWUpIi8+CiAgICA8dGV4dCB4PSI1NDAiIHk9Ijg3MCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9Ik1vbnRzZXJyYXQsIEFyaWFsLCBzYW5zLXNlcmlmIgogICAgICAgICAgZm9udC13ZWlnaHQ9IjcwMCIgZm9udC1zaXplPSI0NCIgbGV0dGVyLXNwYWNpbmc9IjE2IiBmaWxsPSIjMWM4YTRhIj5GSVQgQk9EWTwvdGV4dD4KICA8L2c+Cjwvc3ZnPgo=";
-var SF2_LOGO_RED = SF2_LOGO_GREEN;
+var SF2_LOGO_GREEN = SF_OFFICIAL_LOGO_URI;
+var SF2_LOGO_RED = SF_OFFICIAL_LOGO_URI;
 /* default = original green brand mark (theme "navyred" uses the red one) */
-var SF2_LOGO = SF2_LOGO_GREEN;
+var SF2_LOGO = SF_OFFICIAL_LOGO_URI;
 
 /* =====================================================================
  * patch v12 — بخش 1: لوگو، تصویر/گیف، کارت حرکت، تایمر استراحت، ظاهر روان‌تر
@@ -2692,14 +1819,7 @@ try { sf2Style(); } catch (e) {}
 
 /* ---------- 1) لوگوی کامل (بدون برش) ---------- */
 /* SF2_LOGO_GREEN (پیش‌فرض) و SF2_LOGO_RED (تم «سرمه‌ای و قرمز») در logo_part تعریف می‌شوند */
-function sfLogoForTheme() {
-  var th = 'dark';
-  try { th = document.documentElement.getAttribute('data-theme') || 'dark'; } catch (e) {}
-  var green = (typeof SF2_LOGO_GREEN === 'string' && SF2_LOGO_GREEN) ? SF2_LOGO_GREEN : '';
-  var red = (typeof SF2_LOGO_RED === 'string' && SF2_LOGO_RED) ? SF2_LOGO_RED : '';
-  if (th === 'navyred' && red) return red;
-  return green || red || (typeof SF2_LOGO === 'string' ? SF2_LOGO : '');
-}
+
 function sfApplyLogo() {
   var uri = '';
   try { uri = sfLogoForTheme(); SF_LOGO_URI = uri; } catch (e) { return; }
@@ -2722,9 +1842,7 @@ try {
     window.__sfLogoPatched = 1;
   }
 } catch (e) {}
-function brandLogo(cls) {
-  return '<img class="brand-logo ' + (cls || '') + '" alt="Saeedi Fit Body" src="' + sfLogoForTheme() + '" decoding="async">';
-}
+
 
 /* ---------- 1-3) هدف پروتئین: اول مقدار پروفایل (تعیین‌شده توسط مربی)، بعد تخمین وزنی ---------- */
 function proteinTarget(p) {
@@ -3314,29 +2432,7 @@ function server(name, args) {
   });
 }
 var SF2_FLUSHING = false;
-function sf2Flush(loud) {
-  if (SF2_FLUSHING || !sf2OnLine()) { sf2OffBadge(); return; }
-  var list = sf2Queue();
-  if (!list.length) { sf2OffBadge(); if (loud) toast('همه‌ی ثبت‌های آفلاین قبلاً همگام شده ✅'); return; }
-  SF2_FLUSHING = true;
-  var step = function () {
-    var l = sf2Queue();
-    if (!l.length) {
-      SF2_FLUSHING = false; sf2OffBadge();
-      if (loud) { toast('همه‌ی ثبت‌های آفلاین همگام شد ✅'); try { load(); } catch (e) {} }
-      return;
-    }
-    var item = l[0];
-    if (!item || !item.n) { l.shift(); sf2QueueSet(l); step(); return; }
-    var runner = google.script.run
-      .withSuccessHandler(function () { var m = sf2Queue(); m.shift(); sf2QueueSet(m); step(); })
-      .withFailureHandler(function () { SF2_FLUSHING = false; sf2OffBadge(); if (loud) toast('همگام‌سازی نشد؛ بعداً دوباره تلاش می‌شود', true); });
-    var fn = runner[item.n];
-    if (typeof fn !== 'function') { l.shift(); sf2QueueSet(l); step(); return; }
-    try { fn.apply(runner, item.a || []); } catch (err) { SF2_FLUSHING = false; sf2OffBadge(); if (loud) toast('همگام‌سازی ناموفق بود', true); }
-  };
-  step();
-}
+
 window.addEventListener('online', function () { sf2OffBadge(); sf2Flush(false); });
 window.addEventListener('offline', function () { sf2OffBadge(); });
 
@@ -3424,21 +2520,7 @@ async function sfAdminInit() {
     host.innerHTML = '<div class="notice">' + esc(e.message) + '</div>';
   }
 }
-function sfAdminRender() {
-  var host = sfAdminHost();
-  if (!host || !SF.meta) return;
-  var tabs = [['build', 'ساخت برنامه'], ['plans', 'برنامه‌های ثبت‌شده'], ['lib', 'بانک حرکات'], ['prog', 'پیشرفت شاگردان'], ['media', 'گیف و ویدیو']];
-  host.innerHTML = '<div class="section-title"><h2>' + icon('dumbbell') + ' مدیریت تمرین</h2>' +
-    '<span class="pill">' + sfFa(SF.meta.exercises.length) + ' حرکت</span></div>' +
-    '<div class="favs">' + tabs.map(function (t) {
-      return '<button type="button" class="chip' + (SF.tab === t[0] ? ' on' : '') + '" data-sf-tab="' + t[0] + '">' + t[1] + '</button>';
-    }).join('') + '</div><div id="sfTabBody"></div>';
-  host.querySelectorAll('[data-sf-tab]').forEach(function (b) {
-    b.onclick = function () { SF.tab = b.getAttribute('data-sf-tab'); sfAdminRender(); };
-  });
-  ({ build: sfTabBuild, plans: sfTabPlans, lib: sfTabLib, prog: sfTabProg, media: sfTabMedia })[SF.tab]();
-  sf2AfterTab();
-}
+
 function sf2AfterTab() {
   var body = document.getElementById('sfTabBody');
   if (!body || SF.tab !== 'build' || document.getElementById('sfQuickRow')) return;
@@ -3546,7 +2628,7 @@ function sfAdminHome() {
   sf2UsersRender();
   loadMedia();
 }
-function adminView() { sfAdminHome(); }
+
 
 /* ---------- 12) شاگردها + ورک‌شیت گوگل ---------- */
 function sf2UsersRender() {
@@ -3747,29 +2829,7 @@ function sf2UsersRender() {
 }
 
 /* ---------- 13) تغذیه و مکمل: نمایش داده‌ی شاگرد برای ادمین ---------- */
-function dietView() {
-  var D = sfViewData(), mine = D === state.data;
-  var diets = D.diets || [];
-  var idx = Math.min(state.selected.diet || 0, Math.max(0, diets.length - 1));
-  var d = diets[idx];
-  $('main').innerHTML =
-    '<div class="hero"><div><h1>برنامه غذایی</h1><p>' + (d ? esc(d.name.trim()) : 'تخصیص داده نشده') + '</p></div><span class="pill">' + fmt(D.profile && D.profile.targetCalories) + ' kcal/day</span></div>' +
-    sfStuBar('diet') +
-    (mine ? mealLogCard() : '') +
-    planTabs('diet', diets) +
-    (d && d.sections.length ? d.sections.map(function (s) {
-      return '<div class="card"><div class="section-title"><h2>' + esc(s.title) + '</h2><span class="pill">' + s.items.length + ' مورد</span></div>' +
-        s.items.map(function (it) {
-          return '<div class="meal"><div class="meal-thumb" data-img-query="' + esc(mealSearchQuery(it)) + '">🍽️</div><div><div class="meal-title">' + esc(it.title || 'گزینه') + (it.kcal != null ? '<span class="pill kcal">~' + fmt(it.kcal) + ' kcal</span>' : '') + '</div><div class="meal-text">' + esc(it.description) + '</div></div>' +
-            (mine ? '<button class="logbtn" data-lt="' + esc(it.title || 'وعده') + '" data-lk="' + (it.kcal || 0) + '" title="ثبت در امروز">' + icon('plus') + '</button>' : '') + '</div>';
-        }).join('') + '</div>';
-    }).join('') : '<div class="empty">برای این ورزشکار هنوز برنامه غذایی تخصیص داده نشده.</div>') +
-    (d && d.sections.length && mine ? '<div class="notice">🍽️ عکس‌ها خودکار پیدا می‌شن و همیشه دقیق نیستن؛ کالری هم فقط یک تخمین تقریبیه.</div>' : '');
-  bindPlanTabs(dietView);
-  sfStuBind('diet');
-  if (mine) bindMealLog(dietView);
-  loadMedia();
-}
+
 function suppView() {
   var D = sfViewData();
   var supps = D.supplements || [];
@@ -3920,25 +2980,7 @@ function sf5Style() {
 try { sf5Style(); } catch (e) {}
 
 /* ---------- 1) فهرست تم‌ها: افزودن «صورتی»، حذف آدیداس ---------- */
-function moreView() {
-  var cur = document.documentElement.getAttribute('data-theme') || 'dark';
-  var T = [
-    ['dark', 'Dark', 'سبز تیره (پیش‌فرض)', 'linear-gradient(135deg,#0b1210,#1f3a2c)'],
-    ['light', 'Light', 'روشن', 'linear-gradient(135deg,#ffffff,#d8e4de)'],
-    ['navyred', 'Navy & Red', 'سرمه‌ای و قرمز', 'linear-gradient(135deg,#0b1a33,#e0243c)'],
-    ['pink', 'Pink', 'صورتی دخترونه', 'linear-gradient(135deg,#ff9ec7,#ff4f9a)'],
-    ['nike', 'Nike', 'نایکی', 'linear-gradient(135deg,#07090c,#b7ff00)']
-  ];
-  var tiles = [['workout', 'dumbbell', 'تمرین'], ['reminders', 'bell', 'یادآورها'], ['checkin', 'check', 'چک‌این'], ['diet', 'apple', 'تغذیه'], ['supp', 'pill', 'مکمل‌ها'], ['progress', 'chart', 'پیشرفت'], ['calendar', 'calendar', 'تقویم'], ['chat', 'chat', 'گفت‌وگو'], ['profile', 'user', 'پروفایل']];
-if (['coach', 'admin'].includes(String(state.data.user.role).toLowerCase())) tiles.push(['coach', 'trophy', 'مربی']);
-  $('main').innerHTML = '<div class="hero"><div><h1>بیشتر</h1><p>ابزارها و تنظیمات</p></div></div>' +
-    '<div class="more-grid">' + tiles.map(function (t) { return '<button class="card more-tile" data-more-go="' + t[0] + '">' + icon(t[1]) + (t[0] === 'chat' && hasUnread() ? '<i class="ndot"></i>' : '') + '<span>' + t[2] + '</span></button>'; }).join('') + '<button class="card more-tile" id="moreLogout">' + icon('logout') + '<span>خروج</span></button></div>' +
-    '<div class="card" style="margin-top:14px"><h2>پوسته</h2><div class="theme-list">' + T.map(function (t) { return '<button class="theme-row ' + (cur === t[0] ? 'on' : '') + '" data-theme-pick="' + t[0] + '"><span class="sw" style="background:' + t[3] + '"></span><span class="tn">' + t[1] + ' <small>· ' + t[2] + '</small></span><span class="tk">' + (cur === t[0] ? icon('check') : '') + '</span></button>'; }).join('') + '</div></div>' +
-    coachContactCard();
-  document.querySelectorAll('[data-theme-pick]').forEach(function (b) { b.onclick = function () { applyTheme(b.getAttribute('data-theme-pick')); render(); }; });
-  document.querySelectorAll('[data-more-go]').forEach(function (b) { b.onclick = function () { state.tab = b.getAttribute('data-more-go'); render(); }; });
-  $('moreLogout').onclick = function () { $('logout').click(); };
-}
+
 
 /* ---------- 2) لوگوی اسپلش (قبل از ورود) = لوگوی برند ---------- */
 function sf5Splash() {
@@ -4212,16 +3254,7 @@ function sf5UsersOptions(cur) {
 
 function sf5DietNew() { return { planId: '', username: '', planName: '', sections: [] }; }
 function sf5DietEnsure() { if (!SF.D) SF.D = sf5DietNew(); return SF.D; }
-function sf5DietPreset() {
-  return [
-    { title: 'صبحانه', items: [{ title: 'املت 3 عددی با نان سنگک', description: '3 عدد تخم‌مرغ + 2 برش نان سنگک + سبزیجات', kcal: '420' }] },
-    { title: 'میان‌وعده صبح', items: [{ title: 'میوه و مغزها', description: '1 عدد سیب + 15 گرم بادام', kcal: '210' }] },
-    { title: 'ناهار', items: [{ title: 'مرغ و برنج', description: '200 گرم سینه مرغ + 1 پیمانه برنج + سالاد', kcal: '620' }] },
-    { title: 'عصرانه', items: [{ title: 'ماست و پروتئین', description: '1 کاسه ماست کم‌چرب + 1 اسکوپ وی', kcal: '250' }] },
-    { title: 'شام', items: [{ title: 'ماهی و سبزیجات', description: '200 گرم ماهی + سبزیجات بخارپز', kcal: '430' }] },
-    { title: 'قبل خواب', items: [{ title: 'پنیر و گردو', description: '30 گرم پنیر + 2 عدد گردو', kcal: '180' }] }
-  ];
-}
+
 
 function sf5DietRead() {
   var D = sf5DietEnsure();
@@ -4237,50 +3270,7 @@ function sf5DietRead() {
   });
 }
 
-function sf5DietDraw() {
-  var D = sf5DietEnsure();
-  var host = document.getElementById('sfdSections'); if (!host) return;
-  host.innerHTML = D.sections.map(function (sec, si) {
-    return '<div class="card sf5-sec"><div class="sf5-sec-h">' +
-      '<input class="sf5-sec-title" data-sec-in="' + si + '" value="' + esc(sec.title) + '" placeholder="نام وعده (صبحانه، ناهار…)" list="sf5MealTitles">' +
-      '<button type="button" class="btn danger small" data-dels="' + si + '">حذف وعده</button></div>' +
-      sec.items.map(function (it, ii) {
-        return '<div class="sf5-item" data-item-in="' + si + '|' + ii + '">' +
-          '<input data-f="title" value="' + esc(it.title) + '" placeholder="نام غذا">' +
-          '<input data-f="description" value="' + esc(it.description) + '" placeholder="مقدار و توضیح">' +
-          '<input data-f="kcal" type="number" value="' + esc(it.kcal) + '" placeholder="kcal">' +
-          '<button type="button" class="btn secondary small" data-est="' + si + '|' + ii + '">تخمین</button>' +
-          '<button type="button" class="btn danger small" data-deli="' + si + '|' + ii + '">×</button></div>';
-      }).join('') +
-      '<button type="button" class="btn secondary small" data-addi="' + si + '">+ افزودن گزینه</button></div>';
-  }).join('') + '<datalist id="sf5MealTitles"><option>صبحانه</option><option>میان‌وعده صبح</option><option>ناهار</option><option>عصرانه</option><option>شام</option><option>قبل خواب</option><option>بعد از تمرین</option></datalist>';
-  var tot = 0;
-  D.sections.forEach(function (s) { s.items.forEach(function (it) { tot += Number(it.kcal) || 0; }); });
-  var tEl = document.getElementById('sfdTotal'); if (tEl) tEl.textContent = fmt(tot);
 
-  host.querySelectorAll('[data-dels]').forEach(function (b) {
-    b.onclick = function () { sf5DietRead(); D.sections.splice(Number(b.getAttribute('data-dels')), 1); sf5DietDraw(); };
-  });
-  host.querySelectorAll('[data-deli]').forEach(function (b) {
-    b.onclick = function () { sf5DietRead(); var pp = b.getAttribute('data-deli').split('|'); D.sections[Number(pp[0])].items.splice(Number(pp[1]), 1); sf5DietDraw(); };
-  });
-  host.querySelectorAll('[data-addi]').forEach(function (b) {
-    b.onclick = function () { sf5DietRead(); D.sections[Number(b.getAttribute('data-addi'))].items.push({ title: '', description: '', kcal: '' }); sf5DietDraw(); };
-  });
-  host.querySelectorAll('[data-est]').forEach(function (b) {
-    b.onclick = function () {
-      sf5DietRead();
-      var pp = b.getAttribute('data-est').split('|'), si = Number(pp[0]), ii = Number(pp[1]);
-      var it = D.sections[si].items[ii]; if (!it) return;
-      var v = sf5KcalFromText(it.title + ' ' + it.description);
-      if (!v) { toast('تخمینی پیدا نشد؛ عدد را خودت وارد کن.', true); return; }
-      it.kcal = String(v); sf5DietDraw(); toast('کالری تخمینی: ' + fmt(v));
-    };
-  });
-  host.querySelectorAll('input').forEach(function (inp) {
-    inp.onkeydown = function (e) { if (e.key === 'Enter') e.preventDefault(); };
-  });
-}
 
 function sf5DietTotalNow() {
   var D = sf5DietEnsure(), tot = 0;
@@ -4288,35 +3278,7 @@ function sf5DietTotalNow() {
   return tot;
 }
 
-function sfTabDiet() {
-  var D = sf5DietEnsure();
-  var body = document.getElementById('sfTabBody'); if (!body) return;
-  body.innerHTML =
-    '<div class="grid grid-2">' +
-      '<div class="field"><label>نام برنامه غذایی</label><input id="sfdName" placeholder="مثلاً رژیم کات مهر" value="' + esc(D.planName) + '"></div>' +
-      '<div class="field"><label>شاگرد</label><select id="sfdUser">' + sf5UsersOptions(D.username) + '</select></div>' +
-    '</div>' +
-    '<div class="sf5-row"><button type="button" class="btn secondary small" id="sfdPreset">قالب 6 وعده</button>' +
-      '<button type="button" class="btn secondary small" id="sfdAddSec">+ افزودن وعده</button>' +
-      '<button type="button" class="btn secondary small" id="sfdLoad">برنامه‌های ذخیره‌شده</button></div>' +
-    '<div id="sfdSections"></div>' +
-    '<div class="sf5-savebar"><span class="sub">جمع تخمینی: <b id="sfdTotal">0</b> kcal</span>' +
-      '<span><button type="button" class="btn secondary small" id="sfdReset">برنامه جدید</button>' +
-      '<button type="button" class="btn" id="sfdSave">ذخیره و اختصاص</button></span></div>' +
-    '<div id="sfdList"></div>';
-  sf5DietDraw();
-  document.getElementById('sfdAddSec').onclick = function () { sf5DietRead(); D.sections.push({ title: 'وعده', items: [{ title: '', description: '', kcal: '' }] }); sf5DietDraw(); };
-  document.getElementById('sfdPreset').onclick = function () {
-    if (D.sections.length && !confirm('قالب جای برنامه‌ی فعلی را می‌گیرد. ادامه؟')) return;
-    sf5DietRead(); D.sections = sf5DietPreset(); sf5DietDraw();
-  };
-  document.getElementById('sfdReset').onclick = function () {
-    if (D.sections.length && !confirm('تغییرات ذخیره‌نشده از بین می‌رود. ادامه؟')) return;
-    SF.D = sf5DietNew(); sfTabDiet();
-  };
-  document.getElementById('sfdLoad').onclick = function () { sf5DietList(); };
-  document.getElementById('sfdSave').onclick = sf5DietSave;
-}
+
 function sf5DietSave() {
   var D = sf5DietEnsure(); sf5DietRead();
   if (!D.username) return toast('شاگرد را انتخاب کن.', true);
@@ -4353,16 +3315,7 @@ function sf5DietList() {
     });
   }).catch(function (e) { host.innerHTML = '<div class="notice">' + esc(e.message) + '</div>'; });
 }
-function sf5DietEdit(user, plan) {
-  server('sfAdminGetDiet', [state.token, user, plan]).then(function (d) {
-    var D = sf5DietEnsure();
-    D.planId = d.planId || ''; D.username = d.username || user; D.planName = d.planName || plan;
-    D.sections = (d.sections || []).map(function (s) {
-      return { title: s.title, items: (s.items || []).map(function (it) { return { title: it.title, description: it.description, kcal: it.kcal == null ? '' : String(it.kcal) }; }) };
-    });
-    sfTabDiet(); toast('برنامه برای ویرایش باز شد ✏️');
-  }).catch(function (e) { toast(e.message, true); });
-}
+
 
 
 /* =====================================================================
@@ -4629,7 +3582,7 @@ function sf6CloseModal() {
 }
 
 /* ---------- 2) لوگوی صورتی ---------- */
-var SF6_LOGO_PINK = '';
+var SF6_LOGO_PINK = SF_OFFICIAL_LOGO_URI;
 var SF6_PINK_BUSY = false;
 
 function sf6RgbToHsl(r, g, b) {
@@ -4653,52 +3606,10 @@ function sf6HslToRgb(h, s, l) {
   return [Math.round((r + m) * 255), Math.round((g + m) * 255), Math.round((b + m) * 255)];
 }
 /** لوگوی سبز را بدون تغییر شکل، به صورتی تبدیل می‌کند (روی canvas). */
-function sf6BuildPinkLogo() {
-  if (SF6_LOGO_PINK || SF6_PINK_BUSY) return;
-  var src = (typeof SF2_LOGO_GREEN === 'string' && SF2_LOGO_GREEN) ? SF2_LOGO_GREEN : '';
-  if (!src || typeof Image === 'undefined') return;
-  SF6_PINK_BUSY = true;
-  var img = new Image();
-  img.onload = function () {
-    try {
-      var c = document.createElement('canvas');
-      c.width = img.naturalWidth || img.width;
-      c.height = img.naturalHeight || img.height;
-      var g = c.getContext('2d');
-      g.drawImage(img, 0, 0);
-      var d = g.getImageData(0, 0, c.width, c.height), px = d.data;
-      for (var i = 0; i < px.length; i += 4) {
-        if (px[i + 3] < 8) continue;
-        var hsl = sf6RgbToHsl(px[i], px[i + 1], px[i + 2]);
-        if (hsl[1] < 0.06) continue;                 /* خاکستری‌ها دست‌نخورده */
-        hsl[0] = 330;                                 /* صورتی */
-        hsl[1] = Math.min(1, hsl[1] * 0.9 + 0.30);
-        var rgb = sf6HslToRgb(hsl[0], hsl[1], hsl[2]);
-        px[i] = rgb[0]; px[i + 1] = rgb[1]; px[i + 2] = rgb[2];
-      }
-      g.putImageData(d, 0, 0);
-      SF6_LOGO_PINK = c.toDataURL('image/png');
-      SF6_PINK_BUSY = false;
-      try { sfApplyLogo(); } catch (e) {}
-    } catch (e) { SF6_PINK_BUSY = false; }
-  };
-  img.onerror = function () { SF6_PINK_BUSY = false; };
-  img.src = src;
-}
+
 
 /** نسخهٔ اصلی + تم صورتی */
-function sfLogoForTheme() {
-  var th = 'dark';
-  try { th = document.documentElement.getAttribute('data-theme') || 'dark'; } catch (e) {}
-  if (th === 'pink') {
-    if (SF6_LOGO_PINK) return SF6_LOGO_PINK;
-    sf6BuildPinkLogo();                      /* اول سبز نشان بده، بعد عوض می‌شود */
-  }
-  var green = (typeof SF2_LOGO_GREEN === 'string' && SF2_LOGO_GREEN) ? SF2_LOGO_GREEN : '';
-  var red = (typeof SF2_LOGO_RED === 'string' && SF2_LOGO_RED) ? SF2_LOGO_RED : '';
-  if (th === 'navyred' && red) return red;
-  return green || red || (typeof SF2_LOGO === 'string' ? SF2_LOGO : '');
-}
+
 
 /* ---------- 3) آفلاین: ثبت غذا هم باید در صف برود ---------- */
 try { SF2_MUT.sfLogFood = 1; } catch (e) {}
@@ -5088,65 +3999,7 @@ async function addMeal(o) {
   } catch (e) { toast(e.message, true); return false; }
 }
 
-function bindMealLog(rerender) {
-  var s = $('mlSearch');
-  if (!s) return;
-  s.oninput = function () {
-    var q = s.value.trim();
-    if (!q) { $('mlSug').innerHTML = ''; return; }
-    clearTimeout(SF6_BANK_T);
-    SF6_BANK_T = setTimeout(function () {
-      server('sfFoodBank', [state.token, { q: q, limit: 8 }]).then(function (b) {
-        if (!b.foods.length) { $('mlSug').innerHTML = '<span class="sub" style="padding:6px">پیدا نشد — می‌توانی مقدار را دستی وارد کنی.</span>'; return; }
-        $('mlSug').innerHTML = b.foods.map(sf6FoodRow).join('') +
-          '<button type="button" data-open-bank="1">📚 دیدن همهٔ بانک غذا</button>';
-        $('mlSug').querySelectorAll('[data-fi]').forEach(function (btn) {
-          btn.onclick = function () { sf6PickToForm(b.foods[Number(btn.getAttribute('data-fi'))]); $('mlSug').innerHTML = ''; s.value = ''; };
-        });
-        var ob = $('mlSug').querySelector('[data-open-bank]');
-        if (ob) ob.onclick = function () { $('mlSug').innerHTML = ''; sf6BankPicker(sf6PickToForm); };
-      }).catch(function () {
-        var f = FOODS.filter(function (x) { return x[0].indexOf(q) >= 0; }).slice(0, 6);
-        $('mlSug').innerHTML = f.map(function (x) { return '<button type="button" data-ff="' + FOODS.indexOf(x) + '">' + esc(x[0]) + ' <small>' + fmt(x[1]) + ' kcal / 100g</small></button>'; }).join('');
-        $('mlSug').querySelectorAll('[data-ff]').forEach(function (b) {
-          b.onclick = function () { var x = FOODS[Number(b.getAttribute('data-ff'))]; sf6PickToForm({ name: x[0], kcal100: x[1], protein100: x[2], carb100: x[3], fat100: x[4], servingGrams: 100 }); $('mlSug').innerHTML = ''; };
-        });
-      });
-    }, 300);
-  };
-  $('mlGram').oninput = function () { if (SF6_CUR) sf6FillFrom(SF6_CUR); };
-  var bankBtn = $('mlBank');
-  if (bankBtn) bankBtn.onclick = function () { sf6BankPicker(sf6PickToForm); };
-  $('mlAdd').onclick = async function () {
-    var o = {
-      slot: ($('mlSlot') ? $('mlSlot').value : ''), title: $('mlTitle').value,
-      grams: Number($('mlGram').value) || 0, kcal: $('mlKcal').value, protein: $('mlProt').value,
-      carbs: $('mlCarb').value, fat: $('mlFat').value, foodId: SF6_CUR ? SF6_CUR.id : ''
-    };
-    if (await addMeal(o)) { SF6_CUR = null; rerender(); }
-  };
-  $('mlScan').onclick = function () {
-    startBarcodeScan(async function (code) {
-      try {
-        var f = await server('getFoodByBarcode', [state.token, code]);
-        if (!f) { toast('محصول پیدا نشد', true); return; }
-        SF6_CUR = { name: f.name || 'محصول', per: [f.kcal100 || f.kcal || 0, f.protein100 || 0, f.carb100 || 0, f.fat100 || 0] };
-        sf6FillFrom(SF6_CUR);
-      } catch (e) { toast(e.message, true); }
-    });
-  };
-  var cp = $('mlCopy');
-  if (cp) cp.onclick = async function () {
-    try {
-      var r = await server('copyYesterdayMeals', [state.token, todayISO()]);
-      state.data.meals = r.meals || r;
-      toast('وعده‌های دیروز کپی شد');
-      rerender();
-    } catch (e) { toast(e.message, true); }
-  };
-  if (window.__sf6MealBound) return;
-  window.__sf6MealBound = 1;
-}
+
 
 
 /* =====================================================================
@@ -5721,51 +4574,13 @@ var SF6_DROP_THEMES = ['light', 'navyred', 'nike', 'adidas'];
 /* ---------- 1) تم پیش‌فرض تیره ---------- */
 /* توجه: این تابع در همان ثانیهٔ اول اجرا می‌شود، پیش از مقدارگیری
    متغیرهای بالا؛ پس نباید به SF6_DROP_THEMES وابسته باشد. */
-function initTheme() {
-  var saved = null;
-  try { saved = localStorage.getItem('fc_theme'); } catch (e) {}
-  var drop = ['light', 'navyred', 'nike', 'adidas'];
-  if (saved && drop.indexOf(saved) < 0) {
-    try { applyTheme(saved); } catch (e) {}
-    if (saved === 'pink') { try { sf6BuildPinkLogo(); } catch (e) {} }
-    return;
-  }
-  try { applyTheme('dark'); } catch (e) {}
-}
+
 
 /* ---------- 2) چرخش تم: تیره ⇄ صورتی ---------- */
-function toggleTheme() {
-  var cur = document.documentElement.getAttribute('data-theme') || 'dark';
-  applyTheme(cur === 'pink' ? 'dark' : 'pink');
-  try { sf6BuildPinkLogo(); } catch (e) {}
-  render();
-}
+
 
 /* ---------- 3) فهرست تم‌ها در تب «بیشتر» ---------- */
-function moreView() {
-  var cur = document.documentElement.getAttribute('data-theme') || 'dark';
-  if (SF6_DROP_THEMES.indexOf(cur) >= 0) cur = 'dark';
-  var T = [
-    ['dark', 'Dark', 'سبز تیره (پیش‌فرض)', 'linear-gradient(135deg,#0b1210,#1f3a2c)'],
-    ['pink', 'Pink', 'صورتی دخترونه', 'linear-gradient(135deg,#ff9ec7,#ff4f9a)']
-  ];
-  var tiles = [['workout', 'dumbbell', 'تمرین'], ['reminders', 'bell', 'یادآورها'], ['checkin', 'check', 'چک‌این'], ['diet', 'apple', 'تغذیه'], ['supp', 'pill', 'مکمل‌ها'], ['progress', 'chart', 'پیشرفت'], ['calendar', 'calendar', 'تقویم'], ['chat', 'chat', 'گفت‌وگو'], ['profile', 'user', 'پروفایل']];
-if (['coach', 'admin'].includes(String(state.data.user.role).toLowerCase())) tiles.push(['coach', 'trophy', 'مربی']);
-  $('main').innerHTML = '<div class="hero"><div><h1>بیشتر</h1><p>ابزارها و تنظیمات</p></div></div>' +
-    '<div class="more-grid">' + tiles.map(function (t) { return '<button class="card more-tile" data-more-go="' + t[0] + '">' + icon(t[1]) + (t[0] === 'chat' && hasUnread() ? '<i class="ndot"></i>' : '') + '<span>' + t[2] + '</span></button>'; }).join('') + '<button class="card more-tile" id="moreLogout">' + icon('logout') + '<span>خروج</span></button></div>' +
-    '<div class="card" style="margin-top:14px"><h2>پوسته</h2><div class="theme-list">' + T.map(function (t) { return '<button class="theme-row ' + (cur === t[0] ? 'on' : '') + '" data-theme-pick="' + t[0] + '"><span class="sw" style="background:' + t[3] + '"></span><span class="tn">' + t[1] + ' <small>· ' + t[2] + '</small></span><span class="tk">' + (cur === t[0] ? icon('check') : '') + '</span></button>'; }).join('') + '</div></div>' +
-    coachContactCard();
-  document.querySelectorAll('[data-theme-pick]').forEach(function (b) {
-    b.onclick = function () {
-      var t = b.getAttribute('data-theme-pick');
-      applyTheme(t);
-      if (t === 'pink') { try { sf6BuildPinkLogo(); } catch (e) {} }
-      render();
-    };
-  });
-  document.querySelectorAll('[data-more-go]').forEach(function (b) { b.onclick = function () { state.tab = b.getAttribute('data-more-go'); render(); }; });
-  $('moreLogout').onclick = function () { $('logout').click(); };
-}
+
 
 /* ---------- 4) اصلاح فوری تم ذخیره‌شدهٔ حذف‌شده ---------- */
 try {
@@ -6060,29 +4875,10 @@ function sf7SplashFix() {
   else if (!img.parentNode) sp.insertBefore(img, sp.firstChild);
 }
 /* لوگوی جدید در همه‌جای اپ (به‌جای SVG قدیمی) — با حفظ fallback */
-function brandLogo(cls) {
-  var uri = '';
-  try { uri = sfLogoForTheme(); } catch (e) { uri = ''; }
-  if (!uri) {
-    return '<img class="brand-logo ' + (cls || '') + '" alt="Saeedi Fit Body" src="" style="display:none">';
-  }
-  return '<img class="brand-logo ' + (cls || '') + '" alt="Saeedi Fit Body" decoding="async" src="' + uri + '">';
-}
+
 
 /* تم‌ها را با لوگو هم‌رنگ کن: صورتی ⇒ لوگوی صورتی، بقیه ⇒ لوگوی سبز */
-function sfLogoForTheme() {
-  var th = sf7ThemeId();
-  var green = (typeof SF2_LOGO_GREEN === 'string' && SF2_LOGO_GREEN) ? SF2_LOGO_GREEN : '';
-  var red = (typeof SF2_LOGO_RED === 'string' && SF2_LOGO_RED) ? SF2_LOGO_RED : '';
-  if (th === 'pink') {
-    if (typeof SF6_LOGO_PINK !== 'undefined' && SF6_LOGO_PINK) return SF6_LOGO_PINK;
-    try { sf6BuildPinkLogo(); } catch (e) {}
-    return green;
-  }
-  if (th === 'navyred' && red) return red;
-  if (th === 'nike' && red) return red;
-  return green;
-}
+
 
 /* ---------------------------------------------------------------------
  * 3) تقویم کامل: کلیک روی روز + جزئیات + نمای شاگرد
@@ -6246,7 +5042,7 @@ function moreView() {
   ];
   var d = state.data || {};
   var roleNow = String((d.user || {}).role || '').toLowerCase();
-  if (d.isAdmin || roleNow === 'coach' || roleNow === 'admin') tiles.unshift(['coach', 'trophy', 'کنسول مربی']);
+
   if (state.stuName && !d.isAdmin) tiles = tiles.filter(function (t) { return t[0] !== 'profile'; });
   $('main').innerHTML =
     '<div class="hero"><div><h1>بیشتر</h1><p>تنظیمات، تاریخچه و ابزارهایی که در نوار پایین نیستند</p></div></div>' +
@@ -6473,10 +5269,9 @@ function sf7EnsureAdmUsers() {
 function render() {
   var d = state.data;
   if (!d) { loginView(); return; }
-  /* حالت کنسول مربی: پوستهٔ کاملاً جدا از اپ شاگرد */
-  /* ادمین: خانه = پنل مدیریت (همان URL). کنسول مربی فقط با انتخاب تب «مربی». */
-  var _coachShell = (typeof sf7CoachMode === 'function' && sf7CoachMode()) && (d.isAdmin ? (state.mode === 'coach') : true);
-  if (_coachShell) { try { sf7CoachShell(); return; } catch (eCo) { try { console.error('sf7CoachShell', eCo); } catch (e0) {} } }
+  // The athlete application has no entry into the separate management portal.
+  if (['coach','students','student','dietTip','workoutTip','admin'].indexOf(state.tab)>=0) state.tab='home';
+  state.mode='athlete';
   var theme = sf7ThemeId();
   $('root').innerHTML = '<div class="topbar"><div class="topbar-inner">' +
     '<div class="brand"><div class="brand-mark">' + brandLogo() + '</div>' +
@@ -6499,7 +5294,7 @@ function render() {
     ['progress', 'پیشرفت', 'chart'], ['more', 'بیشتر', 'grid']
   ];
   var role = String(d.user.role).toLowerCase();
-  if (['coach', 'admin'].includes(role)) tabs.push(['coach', 'مربی', 'trophy']);
+
 $('nav').innerHTML = tabs.map(function (t) {
     return '<button data-tab="' + t[0] + '" class="' + (state.tab === t[0] ? 'active' : '') + '">' + icon(t[2]) + t[1] + '</button>';
   }).join('');
@@ -6531,7 +5326,7 @@ $('nav').innerHTML = tabs.map(function (t) {
     } catch (_e) {}
   }
   try { sf7AfterRender(); } catch (e) {}
-  try { sf7EnsureAdmUsers(); } catch (e) {}
+
 }
 
 /* ---------------------------------------------------------------------
@@ -6636,8 +5431,8 @@ function remindersView() {
 /* ---------------------------------------------------------------------
  * 10) جای‌گیرهای کنسول مربی (بخش 7-ب آن‌ها را کامل بازنویسی می‌کند)
  * ------------------------------------------------------------------ */
-function sf7CoachStudents() { $('main').innerHTML = '<div class="hero"><div><h1>شاگردان</h1><p>در حال بارگذاری…</p></div></div>'; }
-function sf7CoachStudent() { state.tab = 'students'; render(); }
+
+
 
 /* =====================================================================
  * patch v17 — بخش 7 (ب): کنسول حرفه‌ای مربی
@@ -9138,13 +7933,13 @@ sf6FoodAdmin = function () {
     var render = function () { msgs.innerHTML = ''; var h = hist(); if (!h.length) add('a', '<p>سلام! من دستیار هوشمند مربی‌ام. دربارهٔ تمرین، تغذیه و ریکاوری مربی آنلاین.</p>'); h.forEach(function (m) { add(m.role === 'user' ? 'u' : 'a', m.role === 'user' ? '<p>' + eh(m.text) + '</p>' : md(m.text)); }); sug(); left(); scroll(); };
     var close = function () { sh.classList.add('out'); setTimeout(function () { sh.remove(); D.body.classList.remove('sfai-open'); }, 220); };
     var go = function () {
-      var text = q.value.trim(); if (text.length < 2 || AI.busy) return; AI.busy = true; send.disabled = true; q.value = ''; q.style.height = ''; var __sendImg = __imgData;
+      var text = q.value.trim(); if (text.length < 2 || AI.busy) return; AI.busy = true; send.disabled = true; q.value = ''; q.style.height = ''; var __sendImg = null;
       var h = hist(), context = h.slice(-6).map(function (m) { return { role: m.role, text: m.text }; });
       add('u', '<p>' + eh(text) + '</p>' + (__sendImg ? '<img class=\'sfai-uimg\' src=\'' + __sendImg + '/>' : '')); D.getElementById('sfaiSug').innerHTML = '';
       var typing = add('a typing', '<span></span><span></span><span></span>');
       server('sfAiAsk', [state.token, text, context, __sendImg]).then(function (r) {
         typing.remove(); add('a', md(r.answer)); h.push({ role: 'user', text: text }); h.push({ role: 'model', text: r.answer }); lsSet('sfai_hist_' + uname(), h.slice(-40));
-        if (AI.st) AI.st.remaining = r.remaining; left(); __imgData = null; if (__prev) { __prev.style.display = 'none'; __prev.innerHTML = ''; } if (__fileIn) __fileIn.value = '';
+        if (AI.st) AI.st.remaining = r.remaining; left();
       }).catch(function (e) { typing.remove(); add('e', '<p>' + eh((e && e.message) || 'خطا در ارتباط') + '</p>'); q.value = text; })
         .then(function () { AI.busy = false; send.disabled = false; q.focus(); });
     };
@@ -9487,3 +8282,4 @@ function adminView() {
     '<p class="sub">این بخش از اپ شاگرد برداشته شده. مدیریت برنامه‌ها، بانک‌ها و کاربران فقط از پورتال اختصاصی انجام می‌شود.</p></div>';
   try { localStorage.removeItem('adm_token'); } catch (e) {}
 }
+</script>

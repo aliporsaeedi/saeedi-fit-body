@@ -93,6 +93,8 @@ var SFAI_SYSTEM_ = 'تو «دستیار هوشمند مربی» در اپ Saeedi
 
 function sfAiClean_(s, n) { return String(s == null ? '' : s).replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, '').trim().slice(0, n); }
 
+var SFAI_COACH_SYSTEM_ = 'تو دستیار حرفه‌ای مربی در Saeedi Fit Body هستی. مخاطب مربی است. به فارسی با اعداد انگلیسی، پیشنهاد مشخص و قابل‌ویرایش برای ترتیب حرکت، ست، تکرار، استراحت، تعادل عضلات و ساخت پیش‌نویس تمرین بده. فرضیات و محدودیت داده را روشن کن؛ اگر اطلاعات ضروری وجود ندارد آن را بپرس. دادهٔ واقعی شاگرد یا سابقهٔ پزشکی را حدس نزن. خروجی پیشنهادی است و مربی باید پیش از ثبت بررسی کند. تشخیص پزشکی، دارو، استروئید، هورمون یا دوز مکمل تجویز نکن. درد و آسیب و بیماری نیازمند ارزیابی متخصص است. هیچ ادعایی دربارهٔ ثبت برنامه، ارسال پیام یا دسترسی به شیت نکن، چون این گفتگو خودش داده را تغییر نمی‌دهد. فقط در زمینهٔ تمرین، تغذیه، ریکاوری و مربیگری پاسخ بده.';
+
 /* پرسش اصلی. آرگومان سوم (history از کلاینت) عمداً نادیده گرفته می‌شود؛ تاریخچه سمت سرور نگه داشته می‌شود. */
 function sfAiAsk(token, question /*, history */) {
   var s = requireSession_(token), user = String(s.username || '').toLowerCase();
@@ -134,9 +136,10 @@ function sfAiAsk(token, question /*, history */) {
   var status = 'ok', answer = '', model = '';
   try {
     model = sfAiModel_(key, false);
-    var res = sfAiCall_(key, model, contents, ctxLine, false);
-    if (res.code === 404) { model = sfAiModel_(key, true); res = sfAiCall_(key, model, contents, ctxLine, false); }   // مدل قدیمی شده → انتخاب دوباره
-    if (res.code === 400 && /2\.5/.test(model)) res = sfAiCall_(key, model, contents, ctxLine, true);                // شاید thinkingConfig پذیرفته نشد
+    var coachMode=isCoach_(s);
+    var res = sfAiCall_(key, model, contents, ctxLine, false, coachMode);
+    if (res.code === 404) { model = sfAiModel_(key, true); res = sfAiCall_(key, model, contents, ctxLine, false, coachMode); }   // مدل قدیمی شده → انتخاب دوباره
+    if (res.code === 400 && /2\.5/.test(model)) res = sfAiCall_(key, model, contents, ctxLine, true, coachMode);                // شاید thinkingConfig پذیرفته نشد
     if (res.code === 429) { status = 'quota'; throw new Error('ظرفیت رایگان هوش مصنوعی فعلاً پر است؛ چند دقیقه دیگر دوباره بپرس یا از مربی‌ات سؤال کن.'); }
     if (res.code === 400 || res.code === 401 || res.code === 403) { status = 'key'; throw new Error('اتصال به هوش مصنوعی برقرار نشد؛ به مربی‌ات خبر بده.'); }
     if (res.code !== 200) { status = 'err' + res.code; throw new Error('هوش مصنوعی الان جواب نداد؛ کمی بعد دوباره امتحان کن.'); }
@@ -154,10 +157,10 @@ function sfAiAsk(token, question /*, history */) {
   return { ok: true, answer: answer, remaining: left };
 }
 
-function sfAiCall_(key, model, contents, ctxLine, noThink) {
-  var gen = { temperature: 0.5, maxOutputTokens: 700 };
+function sfAiCall_(key, model, contents, ctxLine, noThink, coachMode) {
+  var gen = { temperature: 0.5, maxOutputTokens: coachMode ? 1300 : 700 };
   if (!noThink && /2\.5/.test(model)) gen.thinkingConfig = { thinkingBudget: 0 };
-  var body = { systemInstruction: { parts: [{ text: SFAI_SYSTEM_ + ctxLine }] }, contents: contents, generationConfig: gen };
+  var body = { systemInstruction: { parts: [{ text: (coachMode ? SFAI_COACH_SYSTEM_ : SFAI_SYSTEM_) + ctxLine }] }, contents: contents, generationConfig: gen };
   var r = UrlFetchApp.fetch(SFAI.API + '/models/' + encodeURIComponent(model) + ':generateContent', {
     method: 'post', contentType: 'application/json', headers: { 'x-goog-api-key': key }, payload: JSON.stringify(body), muteHttpExceptions: true });
   return { code: r.getResponseCode(), text: r.getContentText() };

@@ -1,6 +1,7 @@
 function sfErrSafe_(value, limit) {
   return String(value == null ? '' : value)
     .replace(/(?:password|passwd|token|authorization|api[_-]?key|secret|receipt|base64)(\s*[=:]\s*|\s+)[^\s,;]+/ig, '$1[redacted]')
+    .replace(/(https?:\/\/api\.telegram\.org\/bot)[^/\s]+/ig, '$1[redacted]')
     .replace(/Bearer\s+[A-Za-z0-9._~+\/-]+/ig, 'Bearer [redacted]')
     .replace(/([?&](?:k|token|key|auth|password)=)[^&#\s]+/ig, '$1[redacted]')
     .replace(/[\u0000-\u001F<>]/g, ' ')

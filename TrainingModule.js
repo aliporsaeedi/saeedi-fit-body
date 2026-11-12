@@ -18,13 +18,13 @@ const SF = {
   BANK: 'SF_ExerciseBank', PLANS: 'SF_Plans', BLOCKS: 'SF_Blocks', ITEMS: 'SF_BlockItems',
   SETS: 'SF_Sets', PROGRESS: 'SF_Progress',
   DRIVE_FOLDER: 'SaeediFit_Exercise_GIFs',
-  READY_PROP: 'SF_READY_V2',
+  READY_PROP: 'SF_READY_V3_PLANMETA',
   MAX_BLOCKS: 80, MAX_SETS: 20, MAX_ITEMS: 6
 };
 
 const SF_HEADERS = {
   SF_ExerciseBank: SF_BANK_HEADERS,
-  SF_Plans: ['PlanID', 'Username', 'PlanName', 'Goal', 'Level', 'Active', 'CreatedAt', 'UpdatedAt', 'CreatedBy', 'CoachNotes'],
+  SF_Plans: ['PlanID', 'Username', 'PlanName', 'Goal', 'Level', 'Active', 'CreatedAt', 'UpdatedAt', 'CreatedBy', 'CoachNotes', 'Audience'],
   SF_Blocks: ['BlockID', 'PlanID', 'DayNo', 'DayTitle', 'OrderNo', 'Technique', 'BlockNotes', 'RestBetweenSec', 'Extra'],
   SF_BlockItems: ['ItemID', 'BlockID', 'PlanID', 'PosNo', 'ExerciseID', 'ExerciseName', 'MuscleGroup', 'Category'],
   SF_Sets: ['SetID', 'BlockID', 'PlanID', 'SetNo', 'PosNo', 'ExerciseID', 'Reps', 'TargetWeightKg', 'RestAfterSec', 'Technique', 'Extra'],
@@ -87,7 +87,7 @@ function sfEnsureSheet_(ss, name) {
   } else {
     // ستون‌های جدید نسخه‌های بعدی را به انتها اضافه می‌کند؛ ستون‌های شما دست‌نخورده می‌مانند.
     const missing = headers.filter(h => current.indexOf(h) < 0);
-    if (missing.length) sh.getRange(1, current.filter(Boolean).length + 1, 1, missing.length).setValues([missing]);
+    if (missing.length) sh.getRange(1, current.length + 1, 1, missing.length).setValues([missing]);
   }
   if (created) {
     const cols = SF_TEXT_COLS[name];
@@ -256,7 +256,11 @@ function sfLibKeyMap_() {
     (SF_LIB || []).forEach(function (it) {
       const key = String(it.i || '').split('/').join('__');
       if (!key) return;
-      if (it.id) map[String(it.id)] = { key: key, url: String(it.gifSelf || '') };
+      const entry = { muscle:it.m, group:it.g, key:key, url:String(it.gifSelf || ''), original:String(it.gif || '') };
+      if (it.id) map[String(it.id)] = entry;
+      if (it.gifSelf) map['url:' + it.gifSelf] = entry;
+      if (it.n) map['en:' + sfLibKey_(it.n)] = entry;
+      if (it.fa) map['fa:' + sfLibKey_(it.fa)] = entry;
     });
   } catch (e) {}
   SF_LIB_KEY_MAP_ = map;
@@ -294,7 +298,8 @@ function sfLibInfo_(it) {
 function sfLibMediaMeta_(ex) {
   try {
     const id = normalize_((ex && ex.ExerciseID) || '');
-    return (id && sfLibKeyMap_()[id]) || null;
+    const map = sfLibKeyMap_();
+    return (id && map[id]) || map['url:' + normalize_(ex.GifSourceURL)] || map['url:' + normalize_(ex.GifNewURL)] || map['en:' + sfLibKey_(ex.EnglishName)] || map['fa:' + sfLibKey_(ex.PersianName)] || null;
   } catch (e) { return null; }
 }
 
@@ -327,7 +332,10 @@ function sfMediaOf_(ex) {
     if (c.length) media.frames.push(c);
   });
   /* رسانهٔ خودمان (WebP روی آینه) همیشه اول؛ اگر لود نشد، مرورگر آدرس بعدی را امتحان می‌کند */
-  if (libMeta && libMeta.url && media.gif.indexOf(libMeta.url) < 0) media.gif.unshift(libMeta.url);
+  if (libMeta) {
+    media.gif = (newId ? sfDriveCands_(newId) : []).concat([libMeta.url,libMeta.original]).filter(function(u,i,a) { return !!u && a.indexOf(u) === i; });
+    media.frames = []; media.src = 'lib';
+  }
   return media;
 }
 function sfYoutubeOf_(ex) {
@@ -338,7 +346,7 @@ function sfYoutubeOf_(ex) {
 }
 function sfExInfo_(ex) {
   return {
-    id: ex.ExerciseID, fa: ex.PersianName, en: ex.EnglishName, cat: ex.Category, group: ex.MuscleGroup, sub: ex.SubGroup,
+    region:sfExerciseRegion_(ex), id: ex.ExerciseID, fa: ex.PersianName, en: ex.EnglishName, cat: ex.Category, group: ex.MuscleGroup, sub: ex.SubGroup,
     sec: ex.SecondaryMuscle, equip: ex.Equipment, level: ex.Level, mech: ex.MovementType, ins: ex.Instructions, tips: ex.Tips,
     sets: ex.SuggestedSets, reps: ex.SuggestedReps, rest: ex.RestSec, intensity: ex.Intensity, aliases: ex.Aliases,
     media: sfMediaOf_(ex), yt: sfYoutubeOf_(ex), gifUrl: ex.GifURL || '', gifSrc: ex.GifSourceURL || '', cardio: ex.Category === 'هوازی'
@@ -565,6 +573,10 @@ function sfAdminYoutubeFill(token, limit) {
 
 function sfNewPlanId_() { return 'SF-' + Utilities.formatDate(new Date(), tz_(), 'yyMMdd') + '-' + Math.floor(1000 + Math.random() * 9000); }
 
+function sfIsUnifiedExercise_(exercise) {
+  return /ExerciseGymGifsDB|freebuff\.page\/gifs\//i.test(String(exercise.SourceNote || '') + ' ' + String(exercise.GifSourceURL || '') + ' ' + String(exercise.GifNewURL || ''));
+}
+
 function sfValidatePlan_(input, bank) {
   if (!input || typeof input !== 'object') throw new Error('اطلاعات برنامه ارسال نشد.');
   const planName = sfText_(input.planName, 120);
@@ -572,7 +584,7 @@ function sfValidatePlan_(input, bank) {
   const username = sfText_(input.username, 80);
   if (!username) throw new Error('شاگرد را انتخاب کن.');
   const users = sfObjects_(sfRead_(CONFIG.USERS_SHEET));
-  const u = users.find(o => normalize_(o.user || o.Username).toLowerCase() === username.toLowerCase());
+  const u = username === SF7_LIB ? { Username: SF7_LIB } : users.find(o => normalize_(o.user || o.Username).toLowerCase() === username.toLowerCase());
   if (!u) throw new Error('این شاگرد پیدا نشد.');
   if (!Array.isArray(input.blocks) || !input.blocks.length) throw new Error('حداقل یک حرکت به برنامه اضافه کن.');
   if (input.blocks.length > SF.MAX_BLOCKS) throw new Error('تعداد بلوک‌ها بیش از حد مجاز است.');
@@ -582,7 +594,7 @@ function sfValidatePlan_(input, bank) {
     const items = (b.items || []).map(it => {
       const ex = bank[normalize_(it.exerciseId)];
       if (!ex) throw new Error('حرکت انتخاب‌شده در بانک پیدا نشد (بلوک ' + (bi + 1) + ').');
-      return ex;
+      return Object.assign({}, ex, { PersianName: sfText_(it.name, 160) || ex.PersianName });
     });
     if (items.length < tech.min || items.length > Math.min(tech.max, SF.MAX_ITEMS))
       throw new Error('«' + tech.label + '» به ' + (tech.min === tech.max ? tech.min : tech.min + ' تا ' + tech.max) + ' حرکت نیاز دارد (بلوک ' + (bi + 1) + ').');
@@ -606,7 +618,7 @@ function sfValidatePlan_(input, bank) {
   });
   return {
     planName, username: normalize_(u.user || u.Username), goal: sfText_(input.goal, 80), level: sfText_(input.level, 40),
-    coachNotes: sfText_(input.coachNotes, 1500), blocks
+    coachNotes: sfText_(input.coachNotes, 1500), audience:sfText_(input.audience,800), blocks
   };
 }
 
@@ -617,11 +629,13 @@ function sfAdminSavePlan(token, input) {
     const v = sfValidatePlan_(input, bank);
     const editing = sfText_(input.planId, 60);
     const planRd = sfRead_(SF.PLANS);
-    let planId = editing, createdAt = new Date().toISOString(), createdBy = session.username;
+    let planId = editing, createdAt = new Date().toISOString(), createdBy = session.username, active = 'TRUE';
     if (editing) {
       const row = planRd.rows.find(r => normalize_(r[planRd.idx.PlanID]) === editing);
       if (!row) throw new Error('برنامه برای ویرایش پیدا نشد.');
       createdAt = row[planRd.idx.CreatedAt] || createdAt; createdBy = row[planRd.idx.CreatedBy] || createdBy;
+      active = row[planRd.idx.Active] == null ? 'TRUE' : row[planRd.idx.Active];
+      if(input.audience == null) v.audience=row[planRd.idx.Audience] || '';
     } else planId = sfNewPlanId_();
     const now = new Date().toISOString();
     let prevInfo = null; try { prevInfo = sfPrevPlanInfo_(v.username, planId); } catch (ePrev) {}
@@ -640,8 +654,8 @@ function sfAdminSavePlan(token, input) {
         SetNo: String(s.setNo), PosNo: String(pi + 1), ExerciseID: b.items[pi].ExerciseID, Reps: c.reps, TargetWeightKg: c.weight,
         RestAfterSec: String(s.rest), Technique: b.technique, Extra: pi === 0 ? JSON.stringify(s.extra) : '' })));
     });
-    const planObj = { PlanID: planId, Username: v.username, PlanName: v.planName, Goal: v.goal, Level: v.level, Active: 'TRUE',
-      CreatedAt: createdAt, UpdatedAt: now, CreatedBy: createdBy, CoachNotes: v.coachNotes };
+    const planObj = { PlanID: planId, Username: v.username, PlanName: v.planName, Goal: v.goal, Level: v.level, Active: active,
+      CreatedAt: createdAt, UpdatedAt: now, CreatedBy: createdBy, CoachNotes: v.coachNotes, Audience:v.audience };
     if (editing) {
       sfRewrite_(SF.PLANS, o => o.PlanID !== planId, [planObj]);
       sfRewrite_(SF.BLOCKS, o => o.PlanID !== planId, blockRows);
@@ -698,7 +712,7 @@ function sfBuildPlans_(planObjs, bank) {
         restBetweenSec: Number(b.RestBetweenSec) || 0, extra: sfJson_(b.Extra), items: its, sets: setList });
     });
     return { planId: p.PlanID, username: p.Username, planName: p.PlanName, goal: p.Goal, level: p.Level, active: sfIsTrue_(p.Active),
-      createdAt: p.CreatedAt, updatedAt: p.UpdatedAt, coachNotes: p.CoachNotes,
+      createdAt: p.CreatedAt, updatedAt: p.UpdatedAt, coachNotes: p.CoachNotes, audience:p.Audience || '',
       days: Object.keys(days).map(k => days[k]).sort((a, b) => a.dayNo - b.dayNo) };
   });
   return { plans, exercises };
@@ -2007,6 +2021,39 @@ function sfFoodGet(token, foodId) {
   return sfFoodObj_(r);
 }
 
+/** دریافت دسته‌ای تصویر دقیق بانک برای غذا/مکمل/ویتامین؛ فقط URL لازم به کلاینت برمی‌گردد. */
+function sfCatalogImageLookup(token, requests) {
+  requireSession_(token);
+  requests = (requests || []).slice(0, 60);
+  var configs = [
+    { kind: 'food', sheet: SF.FOODS, name: 'PersianName', en: 'EnglishName', image: 'ImageURL' },
+    { kind: 'supp', sheet: 'SF_SuppBank', name: 'PersianName', en: 'EnglishName', image: 'ImageURL' },
+    { kind: 'min', sheet: 'SF_MineralBank', name: 'PersianName', en: 'EnglishName', image: 'ImageURL' }
+  ];
+  var key = function (s) { return normalize_(s).toLowerCase().replace(/[\u0640\u200c\s\-_/]+/g, ' ').replace(/[^\u0600-\u06ff a-z0-9]/g, '').trim(); };
+  var banks = {};
+  configs.forEach(function (c) {
+    try { banks[c.kind] = sfObjects_(sfRead_(c.sheet)).filter(function (r) { return sfIsTrue_(r.Active); }).map(function (r) { return { name: normalize_(r[c.name]), en: normalize_(r[c.en]), image: normalize_(r[c.image]) }; }).filter(function (r) { return /^https?:\/\//i.test(r.image); }); }
+    catch (e) { banks[c.kind] = []; }
+  });
+  return requests.map(function (req) {
+    req = req || {}; var q = key(req.query), kind = String(req.kind || 'food'), rows = banks[kind] || [], best = null, score = 0;
+    if (!q) return { query: req.query || '', kind: kind, image: '' };
+    rows.forEach(function (r) {
+      var n = key(r.name), en = key(r.en), s = 0;
+      if (q === n || q === en) s = 1;
+      else if (n && (n.indexOf(q) >= 0 || q.indexOf(n) >= 0) || en && (en.indexOf(q) >= 0 || q.indexOf(en) >= 0)) s = 0.86;
+      else {
+        var a = q.split(' ').filter(function (x) { return x.length > 2; }), b = (n + ' ' + en).split(' ');
+        var hits = a.filter(function (x) { return b.indexOf(x) >= 0; }).length;
+        s = a.length ? hits / a.length : 0;
+      }
+      if (s > score) { score = s; best = r; }
+    });
+    return { query: req.query || '', kind: kind, image: best && score >= 0.6 ? best.image : '' };
+  });
+}
+
 function sfDietModels(token) {
   requireSession_(token);
   sfEnsure_(); sfEnsureV16_();
@@ -2524,7 +2571,10 @@ function sf7CopyWorkoutTo_(srcPlanId, toUsername, newName, createdBy) {
   const plans = sfObjects_(sfRead_(SF.PLANS));
   const src = plans.find(function (o) { return o.PlanID === normalize_(srcPlanId); });
   if (!src) throw new Error('برنامهٔ تمرینی پیدا نشد.');
-  const newId = sf7NewId_(), now = new Date().toISOString();
+  const finalName = sfText_(newName,120) || src.PlanName;
+  const existing = normalize_(toUsername) === SF7_LIB ? plans.find(function(p) { return normalize_(p.Username) === SF7_LIB && normalize_(p.PlanName) === normalize_(finalName); }) : null;
+  if (existing && existing.PlanID === src.PlanID) return src.PlanID;
+  const newId = existing ? existing.PlanID : sf7NewId_(), now = new Date().toISOString();
   const mapB = function (id) { return String(id).split(src.PlanID).join(newId); };
   const blocks = sfObjects_(sfRead_(SF.BLOCKS)).filter(function (o) { return o.PlanID === src.PlanID; })
     .map(function (o) { return Object.assign({}, o, { BlockID: mapB(o.BlockID), PlanID: newId }); });
@@ -2532,10 +2582,18 @@ function sf7CopyWorkoutTo_(srcPlanId, toUsername, newName, createdBy) {
     .map(function (o) { return Object.assign({}, o, { ItemID: mapB(o.ItemID), BlockID: mapB(o.BlockID), PlanID: newId }); });
   const sets = sfObjects_(sfRead_(SF.SETS)).filter(function (o) { return o.PlanID === src.PlanID; })
     .map(function (o) { return Object.assign({}, o, { SetID: mapB(o.SetID), BlockID: mapB(o.BlockID), PlanID: newId }); });
-  sfAppend_(SF.PLANS, [Object.assign({}, src, {
-    PlanID: newId, Username: toUsername, PlanName: sfText_(newName, 120) || src.PlanName,
-    Active: 'TRUE', CreatedAt: now, UpdatedAt: now, CreatedBy: createdBy || toUsername
-  })]);
+  const planRow=Object.assign({}, src, {
+    PlanID: newId, Username: toUsername, PlanName: finalName,
+    Active: existing ? existing.Active : 'TRUE', CreatedAt: existing ? existing.CreatedAt : now, UpdatedAt: now, CreatedBy: existing ? existing.CreatedBy : (createdBy || toUsername)
+  });
+  if (existing) {
+    sfRewrite_(SF.PLANS,function(o) { return o.PlanID !== newId; },[planRow]);
+    sfRewrite_(SF.BLOCKS,function(o) { return o.PlanID !== newId; },blocks);
+    sfRewrite_(SF.ITEMS,function(o) { return o.PlanID !== newId; },items);
+    sfRewrite_(SF.SETS,function(o) { return o.PlanID !== newId; },sets);
+    return newId;
+  }
+  sfAppend_(SF.PLANS, [planRow]);
   if (blocks.length) sfAppend_(SF.BLOCKS, blocks);
   if (items.length) sfAppend_(SF.ITEMS, items);
   if (sets.length) sfAppend_(SF.SETS, sets);
@@ -2592,7 +2650,7 @@ function sf7LibList(token) {
 
 /** ذخیرهٔ یک برنامهٔ موجود (از پروندهٔ شاگرد) در کتابخانه. */
 function sf7LibSaveFrom(token, kind, username, planName, libName) {
-  const s = sf7Coach_(token); kind = sf7Kind_(kind);
+  const s = sfAdmin_(token); kind = sf7Kind_(kind);
   const name = sfText_(libName, 120) || sfText_(planName, 120);
   if (!name) throw new Error('نام برنامه لازم است.');
   return sfWithLock_(function () {
@@ -2615,6 +2673,7 @@ function sf7LibAssign(token, kind, libName, toUsername, newName) {
   const s = sf7Coach_(token); kind = sf7Kind_(kind);
   const to = sfText_(toUsername, 80);
   if (!to) throw new Error('شاگرد مقصد را انتخاب کن.');
+  requireAssignedAthlete_(s,to);
   return sfWithLock_(function () {
     if (kind === 'workout') {
       const src = sfObjects_(sfRead_(SF.PLANS)).find(function (o) {
@@ -2635,6 +2694,8 @@ function sf7LibAssignFromStudent(token, kind, fromUsername, planName, toUsername
   const s = sf7Coach_(token); kind = sf7Kind_(kind);
   const to = sfText_(toUsername, 80);
   if (!to) throw new Error('شاگرد مقصد را انتخاب کن.');
+  requireAssignedAthlete_(s,to);
+  requireAssignedAthlete_(s,normalize_(fromUsername));
   return sfWithLock_(function () {
     if (kind === 'workout') {
       const src = sfObjects_(sfRead_(SF.PLANS)).find(function (o) {
@@ -2652,7 +2713,7 @@ function sf7LibAssignFromStudent(token, kind, fromUsername, planName, toUsername
 
 /** حذف یک برنامه از کتابخانه. */
 function sf7LibDelete(token, kind, libName) {
-  sf7Coach_(token); kind = sf7Kind_(kind);
+  sfAdmin_(token); kind = sf7Kind_(kind);
   const nm = normalize_(libName);
   return sfWithLock_(function () {
     if (kind === 'workout') {
@@ -5168,6 +5229,31 @@ function sf3TgInfo_() {
   return { configured: !!token, adminChat: chats.length > 0, chats: chats };
 }
 
+/** پایش فقط‌خواندنی سلامت ربات تلگرام برای پنل مدیریت؛ هیچ پیامی ارسال نمی‌کند. */
+function sfAdminTelegramHealth(token) {
+  sf3RequireCoach_(token);
+  var info = sf3TgInfo_(), out = { configured: info.configured, adminChat: info.adminChat, ok: false, botUsername: '', botName: '', webhookActive: false, pendingUpdates: null, lastWebhookError: '', error: '' };
+  out.pollingActive=ScriptApp.getProjectTriggers().some(function(t){return t.getHandlerFunction()==='botTick';});
+  out.lastPollTick=botProps_().getProperty('BOT_LAST_TICK') || '';
+  if (!info.configured) { out.error = 'توکن ربات در تنظیمات سرور ثبت نشده است.'; return out; }
+  var tg = sfTgToken_();
+  try {
+    var meRes = UrlFetchApp.fetch('https://api.telegram.org/bot' + tg + '/getMe', { muteHttpExceptions: true });
+    var me = JSON.parse(meRes.getContentText() || '{}');
+    if (!me.ok) throw new Error(me.description || 'پاسخ getMe نامعتبر است.');
+    out.botUsername = me.result.username || '';
+    out.botName = me.result.first_name || '';
+    var whRes = UrlFetchApp.fetch('https://api.telegram.org/bot' + tg + '/getWebhookInfo', { muteHttpExceptions: true });
+    var wh = JSON.parse(whRes.getContentText() || '{}');
+    if (!wh.ok) throw new Error(wh.description || 'پاسخ getWebhookInfo نامعتبر است.');
+    out.webhookActive = !!(wh.result && wh.result.url);
+    out.pendingUpdates = Number(wh.result && wh.result.pending_update_count) || 0;
+    out.lastWebhookError = String(wh.result && wh.result.last_error_message || '').slice(0, 500);
+    out.ok = true;
+  } catch (e) { out.error = sfErrSafe_(e && e.message || e,500); }
+  return out;
+}
+
 function sf3SendReceiptPhoto_(fileId, caption) {
   if (!fileId) return false;
   var info = sf3TgInfo_();
@@ -5440,9 +5526,10 @@ function sf3AdminTgTest(token) {
 
 /** لیست همهٔ برنامه‌ها برای صفحهٔ مدیریت */
 function sf3AdminAllPlans(token) {
-  sf3RequireCoach_(token);
+  var session = sf3RequireCoach_(token);
   sfEnsure_();
   var plans = sfObjects_(sfRead_(SF.PLANS));
+  if (!isAdmin_(session)) { var assigned={}; sfUserRecords_().forEach(function(u) { if (normalize_(u.coachUsername).toLowerCase() === normalize_(session.username).toLowerCase()) assigned[normalize_(u.username).toLowerCase()]=true; }); plans=plans.filter(function(p) { return normalize_(p.Username) === SF7_LIB || assigned[normalize_(p.Username).toLowerCase()]; }); }
   var blocks = sfObjects_(sfRead_(SF.BLOCKS));
   return plans.map(function (p) {
     var bs = blocks.filter(function (b) { return normalize_(b.PlanID) === normalize_(p.PlanID); });
@@ -5754,8 +5841,9 @@ function sfAutoDiet(token, username, opts) {
   const rnd = (function (seed) { let a = seed >>> 0; return function () { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; })(Number(opts.seed) * 7919 + (u.length * 131) + 17);
   const all = sfObjects_(sfRead_(SF.FOODS)).filter(function (r) { return sfIsTrue_(r.Active); }).map(sfFoodObj_);
   const avoid = {}; (opts.avoid || []).forEach(function (x) { avoid[normalize_(x)] = 1; });
-  const bad = /سیر|پیاز|ترب|کرفس|رشته آش|کشک|کره بادام|ارده|تخمه آفتابگردان نمکی/;
+  const bad = /سیر|پیاز|ترب|کرفس|رشته آش|کشک|کره بادام|ارده|تخمه آفتابگردان نمکی|بستنی|کیک|شیرینی|آب‌نبات/;
   const by = function (cat, filt) { return all.filter(function (f) { return f.category === cat && !avoid[f.id] && !bad.test(f.name) && (!filt || filt(f)); }); };
+  const leanDairy = function () { return by('لبنیات', function (f) { return !/پرچرب|بستنی|خامه|شیرینی|کیک/i.test(f.name); }); };
   const pick = function (list) { if (!list.length) return null; return list[Math.floor(rnd() * list.length)]; };
   const has = function (f, re) { return re.test(f.name); };
   const shares = { 3: [0.3, 0.4, 0.3], 4: [0.25, 0.33, 0.14, 0.28], 5: [0.22, 0.1, 0.3, 0.1, 0.28], 6: [0.2, 0.1, 0.28, 0.1, 0.25, 0.07] }[nm];
@@ -5772,18 +5860,19 @@ function sfAutoDiet(token, username, opts) {
     const prot = function (list, share) { const f = pick(list); if (f) add(f, clamp(mp * share / Math.max(0.05, f.protein100 / 100), 40, 320)); return f; };
     const carb = function (list, need) { const f = pick(list); if (f) add(f, clamp(need / Math.max(0.05, f.carb100 / 100), 30, 650)); return f; };
     if (kind === 'bf') {
-      const egg = by('پروتئین حیوانی', function (f) { return has(f, /تخم/); }), dairy = by('لبنیات', function (f) { return !/پرچرب/.test(f.name); });
-      prot(veg ? dairy : (rnd() < 0.5 ? egg : dairy).length ? (rnd() < 0.5 ? egg : dairy) : dairy.concat(egg), 0.7);
+      const egg = by('پروتئین حیوانی', function (f) { return has(f, /تخم/); }), dairy = leanDairy();
+      const breakfastProtein = veg ? dairy : (rnd() < 0.55 && egg.length ? egg : dairy.concat(egg));
+      prot(breakfastProtein, 0.7);
       carb(by('غلات و نان'), mc * 0.85); add(pick(by('سبزیجات')), 100); add(pick(by('مغزها و دانه‌ها')), clamp(mf * 0.3 / 0.55, 0, 25));
     } else if (kind === 'main') {
       prot(protMain(), 0.8); carb(i === shares.length - 1 && T.c < 200 ? by('غلات و نان') : by('برنج و ماکارونی').concat(by('غلات و نان')), mc * 0.8);
       add(pick(by('سبزیجات')), 150); add(pick(by('روغن و چربی', function (f) { return /زیتون|کنجد/.test(f.name); })), clamp(mf * 0.35 / 1.0, 0, 15));
     } else if (kind === 'snack') {
       const fr = pick(by('میوه‌ها')); if (fr) add(fr, clamp(mc * 0.7 / Math.max(0.05, fr.carb100 / 100), 80, 300));
-      const d = pick(by('لبنیات', function (f) { return !/پرچرب/.test(f.name); })); if (d) add(d, clamp(mp * 0.7 / Math.max(0.05, d.protein100 / 100), 100, 300));
+      const d = pick(leanDairy()); if (d) add(d, clamp(mp * 0.7 / Math.max(0.05, d.protein100 / 100), 100, 300));
       if (mf > 6) add(pick(by('مغزها و دانه‌ها')), clamp(mf * 0.5 / 0.55, 10, 30));
     } else {
-      const d = pick(by('لبنیات', function (f) { return !/پرچرب|بستنی/.test(f.name); })); if (d) add(d, clamp(mp * 0.9 / Math.max(0.05, d.protein100 / 100), 100, 300));
+      const d = pick(leanDairy()); if (d) add(d, clamp(mp * 0.9 / Math.max(0.05, d.protein100 / 100), 100, 300));
       add(pick(by('مغزها و دانه‌ها')), 15);
     }
     meals.push({ title: names[i], items: items, target: { k: Math.round(mk), p: Math.round(mp), c: Math.round(mc), f: Math.round(mf) } });
@@ -5796,8 +5885,10 @@ function sfAutoDiet(token, username, opts) {
     if (t.f > T.f * 1.1) { const rf = clamp(T.f * 1.05 / t.f, 0.4, 1); meals.forEach(function (m) { m.items.forEach(function (x) { if (x.food.category === 'روغن و چربی' || x.food.category === 'مغزها و دانه‌ها') x.g = Math.max(5, Math.round(x.g * rf / 5) * 5); }); }); }
     meals.forEach(function (m) { m.items.forEach(function (x, ix) {
       const cat = x.food.category;
-      if (cat === 'غلات و نان' || cat === 'برنج و ماکارونی' || cat === 'میوه‌ها') x.g = clamp(Math.round(x.g * (1 + (rk - 1) * 1.6) / 5) * 5, 20, 700);
-      else if (cat === 'پروتئین حیوانی' || cat === 'حبوبات' || cat === 'پروتئین گیاهی') x.g = clamp(Math.round(x.g * (1 + (T.p / Math.max(1, tot().p) - 1) * 0.6) / 5) * 5, 40, 380);
+      if (cat === 'غلات و نان' || cat === 'برنج و ماکارونی' || cat === 'میوه‌ها') {
+        const minG = cat === 'میوه‌ها' ? 80 : 30, maxG = cat === 'میوه‌ها' ? 300 : 650;
+        x.g = clamp(Math.round(x.g * (1 + (rk - 1) * 1.6) / 5) * 5, minG, maxG);
+      } else if (cat === 'پروتئین حیوانی' || cat === 'حبوبات' || cat === 'پروتئین گیاهی') x.g = clamp(Math.round(x.g * (1 + (T.p / Math.max(1, tot().p) - 1) * 0.6) / 5) * 5, 50, 380);
     }); });
   }
   const sections = meals.map(function (m) {

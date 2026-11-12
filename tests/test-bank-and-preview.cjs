@@ -1,0 +1,20 @@
+const fs=require('fs'),vm=require('vm'),assert=require('node:assert/strict');
+const source=fs.readFileSync('TrainingModule.js','utf8');
+function fn(name,next){return source.slice(source.indexOf('function '+name+'('),source.indexOf(next,source.indexOf('function '+name+'(')));}
+const db={plans:[{PlanID:'src',Username:'athlete',PlanName:'Original name',CreatedAt:'2020',Active:'TRUE'},{PlanID:'lib',Username:'__LIB__',PlanName:'Original name',CreatedAt:'2019',CreatedBy:'owner',Active:'FALSE'}],blocks:[{BlockID:'src-B1',PlanID:'src'},{BlockID:'lib-B9',PlanID:'lib'}],items:[{ItemID:'src-B1-I1',BlockID:'src-B1',PlanID:'src',ExerciseName:'Custom name'}],sets:[{SetID:'src-B1-S1-1',BlockID:'src-B1',PlanID:'src',Reps:'8-12',TargetWeightKg:'0'}]};
+let ids=0;
+const ctx=vm.createContext({console,SF:{PLANS:'plans',BLOCKS:'blocks',ITEMS:'items',SETS:'sets'},SF7_LIB:'__LIB__',normalize_:x=>String(x||'').trim(),sfText_:x=>String(x||'').trim(),sfRead_:n=>n,sfObjects_:n=>db[n].map(x=>({...x})),sfRewrite_:(n,keep,rows)=>{db[n]=db[n].filter(keep).concat(rows);},sfAppend_:(n,rows)=>{db[n].push(...rows);},sf7NewId_:()=>`new-${++ids}`});
+vm.runInContext(fn('sf7CopyWorkoutTo_','/** کپی ردیف‌های ساده'),ctx);
+assert.equal(ctx.sf7CopyWorkoutTo_('src','__LIB__','Original name','coach'),'lib');
+assert.equal(db.plans.length,2);assert.equal(db.blocks.find(x=>x.PlanID==='lib').BlockID,'lib-B1');assert.equal(db.items.find(x=>x.PlanID==='lib').ExerciseName,'Custom name');assert.equal(db.sets.find(x=>x.PlanID==='lib').TargetWeightKg,'0');assert.equal(db.plans.find(x=>x.PlanID==='lib').CreatedAt,'2019');assert.equal(db.plans.find(x=>x.PlanID==='lib').Active,'FALSE');
+ctx.sf7CopyWorkoutTo_('src','__LIB__','Original name','coach');assert.equal(db.plans.length,2);
+ctx.sf7CopyWorkoutTo_('lib','__LIB__','Original name','coach');assert.equal(db.plans.length,2);
+ctx.sf7CopyWorkoutTo_('src','athlete2','Original name','coach');assert.equal(db.plans.length,3);assert.equal(db.plans.at(-1).Username,'athlete2');
+const studio=vm.createContext({console});vm.runInContext(fs.readFileSync('ProgramStudio.js','utf8'),studio);
+Object.assign(studio,{requireSession_:()=>({username:'coach',role:'admin'}),isAdmin_:()=>true,isCoach_:()=>true,sfEnsure_:()=>{},SF:{BANK:'bank'},SF7_LIB:'__LIB__',normalize_:x=>String(x||'').trim(),sfText_:x=>String(x||'').trim(),sfRead_:x=>x,sfIsTrue_:()=>true,sfIsUnifiedExercise_:()=>true,sfMediaOf_:()=>({src:'lib'}),sfAdminSavePlan:()=>{throw new Error('Preview must never write!');}});
+studio.sfObjects_=()=>['سینه','پشت','پا','سرشانه','شکم'].flatMap((g,i)=>[{ExerciseID:'e'+i,PersianName:'Move '+i,MuscleGroup:g,Equipment:'دمبل',MovementType:'ترکیبی'}]);
+const draft=studio.sfPsSmartGenerate('token',{username:'u',daysPerWeek:1,goal:'gain',level:'متوسط',preview:true});
+assert.equal(draft.preview,true);assert.equal(draft.draft.blocks.length,5);assert.equal(draft.analysis.summary.gifs.NEW,5);assert.equal(draft.draft.blocks[0].items[0].name,'Move 0');assert.equal(draft.draft.blocks[0].sets[0].cells[0].reps,'8-12');
+studio.isAdmin_=s=>s.role==='admin';studio.sfPsCoach_=()=>({role:'coach',username:'c'});studio.sfPsPlanRow_=()=>({PlanID:'secret',Username:'unassigned'});studio.requireAssignedAthlete_=()=>{throw new Error('unassigned');};studio.sfBuildPlans_=()=>{throw new Error('Must authorize before reading child data');};
+assert.throws(()=>studio.sfPsPlanGet('t','secret'),/unassigned/);assert.throws(()=>studio.sfPsPlanAnalysis('t','secret'),/unassigned/);
+console.log('PASS: repeated bank save updates one template, preserves metadata and names, source stays intact; generated preview never writes; private plan access checked before data read.');

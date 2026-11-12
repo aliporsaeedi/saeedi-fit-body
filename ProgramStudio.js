@@ -37,8 +37,9 @@ function sfPsPlanRow_(planId) {
 
 /** برنامهٔ کامل (روزها، بلوک‌ها، ست‌ها) برای فرم ویرایش. */
 function sfPsPlanGet(token, planId) {
-  sfPsCoach_(token);
+  var session = sfPsCoach_(token);
   var plan = sfPsPlanRow_(planId);
+  if (!isAdmin_(session) && normalize_(plan.Username) !== SF7_LIB) requireAssignedAthlete_(session,normalize_(plan.Username));
   var built = sfBuildPlans_([plan], sfBankMap_());
   return { ok: true, plan: built.plans[0], exercises: built.exercises, techniques: SF_TECHNIQUES };
 }
@@ -72,7 +73,8 @@ function sfPsCanon_(group) {
   if (/جلو ?بازو|بایسپ/.test(g)) return 'جلوبازو';
   if (/ساق|کالف/.test(g)) return 'ساق پا';
   if (/باسن|سرین|گلوت/.test(g)) return 'باسن';
-  if (/پشت|لت|زیربغل/.test(g)) return 'پشت';
+  if (/پشت\s*پا|همسترینگ|hamstrings?|چهار\s*سر|جلو\s*پا|ران|quads?/i.test(g)) return 'پا';
+  if (/پشت|لت|زیر\s*بغل|lats?|upper\s*back/i.test(g)) return 'پشت';
   if (/سینه|پکت/.test(g)) return 'سینه';
   if (/سرشانه|دلت|شانه/.test(g)) return 'سرشانه';
   if (/شکم|پهلو|ابس|فیله/.test(g)) return 'شکم';
@@ -90,91 +92,31 @@ function sfPsGroupKey_(group) {
  * تعادل فشار/کشش، پوشش هوازی، پوشش گیف و هشدارهای قابل‌اصلاح.
  */
 function sfPsAnalyze_(plan, exMap) {
-  exMap = exMap || {};
-  var groups = {}, techs = {}, gifs = { NEW: 0, OLD: 0, NONE: 0 };
-  var days = (plan && plan.days) || [];
-  var blocksN = 0, itemsN = 0, setsN = 0, cardioSets = 0, maxDaySets = 0;
-  var daySets = [];
-
-  days.forEach(function (day) {
-    var dSets = 0;
-    (day.blocks || []).forEach(function (b) {
-      blocksN++;
-      techs[b.technique] = (techs[b.technique] || 0) + 1;
-      var nSets = (b.sets || []).length || 1;
-      (b.items || []).forEach(function (it) {
-        itemsN++;
-        var g = sfPsGroupKey_(it.group);
-        if (!groups[g]) groups[g] = { sets: 0, exercises: 0 };
-        groups[g].sets += nSets;
-        groups[g].exercises += 1;
-        dSets += nSets;
-        setsN += nSets;
-        var ex = exMap[it.exerciseId] || {};
-        if (g === 'هوازی' || ex.cardio) cardioSets += nSets;
-        var src = (ex.media && ex.media.src) || '';
-        if (src === 'new') gifs.NEW++;
-        else if (src) gifs.OLD++;
-        else gifs.NONE++;
-      });
+  exMap=exMap || {}; var groups={},techs={},gifs={NEW:0,OLD:0,NONE:0},daySets=[],blocksN=0,itemsN=0,setsN=0,cardioSets=0,unknown=[],conflicts=[],issues=[];
+  (plan.days || []).forEach(function(day) { var count=0; (day.blocks || []).forEach(function(block) { blocksN++; techs[block.technique]=(techs[block.technique] || 0)+1; var n=(block.sets || []).length;
+    (block.items || []).forEach(function(it) { itemsN++; var ex=exMap[it.exerciseId] || {},g=ex.region ? ({chest:'سینه',shoulders:'سرشانه',traps:'کول',lats:'زیربغل',back:'پشت',lowerback:'کمر',biceps:'جلوبازو',triceps:'پشت بازو',forearms:'ساعد',abs:'شکم',obliques:'پهلو',glutes:'باسن',quads:'چهارسر',hamstrings:'همسترینگ',calves:'ساق',adductors:'داخل ران',abductors:'خارج ران'}[ex.region] || 'نامشخص') : sfPsGroupKey_(ex.group || it.group),cardio=ex.cat ? ex.cat==='هوازی' : (typeof ex.cardio==='boolean' ? ex.cardio : block.technique==='cardio');
+      if(block.technique==='cardio' && !cardio) conflicts.push(it.name || it.exerciseId);
+      if(cardio) cardioSets+=n; else { if(!groups[g]) groups[g]={sets:0,exercises:0};groups[g].sets+=n;groups[g].exercises++;count+=n;setsN+=n; }
+      if(!cardio && (!g || /نامشخص|سایر|متفرقه/.test(g))) unknown.push(it.name || it.exerciseId);
+      var src=(ex.media || {}).src;if(src==='lib' || src==='new')gifs.NEW++;else if(src)gifs.OLD++;else gifs.NONE++;
     });
-    daySets.push(dSets);
-    if (dSets > maxDaySets) maxDaySets = dSets;
-  });
-
-  var warnings = [], tips = [];
-
-  /* گروه‌های اصلی که هیچ ستی ندارند (پا فقط با «پا» یا «باسن» یا «ساق پا» حساب می‌شود) */
-  var legSets = (groups['پا'] ? groups['پا'].sets : 0) + (groups['باسن'] ? groups['باسن'].sets : 0) + (groups['ساق پا'] ? groups['ساق پا'].sets : 0);
-  if (!days.length) warnings.push('برنامه هیچ روزی ندارد.');
-  if (!legSets) warnings.push('هیچ ستی برای پا/باسن/ساق ثبت نشده؛ برنامهٔ متعادل باید پایین‌تنه داشته باشد.');
-  if (!(groups['پشت'] && groups['پشت'].sets)) warnings.push('برای پشت (زیربغل/لت) ستی ثبت نشده؛ خطر ناهم‌ترازی فشار و کشش.');
-  if (!(groups['سینه'] && groups['سینه'].sets)) warnings.push('برای سینه ستی ثبت نشده.');
-
-  var chest = groups['سینه'] ? groups['سینه'].sets : 0;
-  var back = groups['پشت'] ? groups['پشت'].sets : 0;
-  if (chest && back && chest > back * 1.5) warnings.push('ست سینه (' + chest + ') بیش از ۱.۵ برابر ست پشت (' + back + ') است؛ سهم پشت را بیشتر کن.');
-  if (back && chest && back > chest * 1.8) warnings.push('ست پشت (' + back + ') خیلی بیشتر از سینه (' + chest + ') است؛ سینه را تقویت کن.');
-
-  var press = (groups['سرشانه'] ? groups['سرشانه'].sets : 0) + chest;
-  var pull = back + ((groups['جلوبازو'] ? groups['جلوبازو'].sets : 0));
-  if (press && pull && press > pull * 1.6) warnings.push('نسبت «فشار به کشش» به نفع فشار است؛ کشش (پشت/جلوبازو) را متعادل کن.');
-  if (press && pull && pull > press * 1.8) warnings.push('نسبت «کشش به فشار» به نفع کشش است؛ سرشانه/سینه را بیشتر کن.');
-
-  Object.keys(groups).forEach(function (g) {
-    if (groups[g].sets > 24) warnings.push('حجم «' + g + '» در یک دوره ' + groups[g].sets + ' ست است؛ بالای ۲۴ ست در دوره برای یک گروه زیاد است.');
-  });
-  if (maxDaySets > 32) warnings.push('یک روز ' + maxDaySets + ' ست دارد؛ جلسه بیش از حد طولانی می‌شود.');
-  if (days.length && maxDaySets && maxDaySets < 6) tips.push('جلسه‌ها خیلی کوتاه‌اند؛ برای هر روز حداقل ۸ تا ۱۲ ست در نظر بگیر.');
-
-  var goal = normalize_(plan && plan.goal);
-  if (/چربی|lose|کاهش/i.test(goal) && !cardioSets) warnings.push('هدف کاهش چربی است ولی هیچ بلوک هوازی در برنامه نیست.');
-  if (/قدرت|strength/i.test(goal) && maxDaySets > 24) tips.push('برای هدف قدرتی، ست‌های کم با تکرار پایین (۳ تا ۶) بهتر جواب می‌دهد.');
-  if (/حجم|gain/i.test(goal) && maxDaySets && maxDaySets < 12) tips.push('برای افزایش حجم، ۱۴ تا ۲۰ ست در هر جلسه منطقی‌تر است.');
-
-  if (itemsN && gifs.NONE) tips.push(gifs.NONE + ' حرکت گیف ندارد؛ از کارت «گیف‌های جدید حرکات» تطبیق را اجرا کن.');
-  if (gifs.OLD && !gifs.NEW) tips.push('همهٔ گیف‌های این برنامه قدیمی‌اند؛ اگر گیف جدید ساخته‌ای، تطبیق را اجرا کن.');
-
-  var penalty = warnings.length * 12 + (gifs.NONE && itemsN ? Math.min(15, Math.round(gifs.NONE / itemsN * 15)) : 0);
-  var score = Math.max(20, Math.min(100, 100 - penalty));
-
-  return {
-    planId: plan && plan.planId, planName: plan && plan.planName, username: plan && plan.username,
-    goal: goal, level: normalize_(plan && plan.level),
-    summary: {
-      days: days.length, blocks: blocksN, exercises: itemsN, sets: setsN,
-      cardioSets: cardioSets, maxDaySets: maxDaySets, daySets: daySets,
-      groups: groups, techs: techs, gifs: gifs
-    },
-    score: score,
-    warnings: warnings,
-    tips: tips
-  };
+  });daySets.push(count); });
+  function issue(title,evidence,action) { issues.push({title:title,evidence:evidence,action:action}); }
+  if(unknown.length) issue('گروه عضلانی ناقص است',unknown.length+' حرکت: '+unknown.slice(0,8).join('، '),'گروه اصلی و عضلات کمکی این حرکت‌ها را در بانک حرکات تکمیل کن؛ تحلیل فعلی همهٔ فشار تمرین را پوشش نمی‌دهد.');
+  if(conflicts.length) issue('روش ثبت‌شده با حرکت همخوان نیست',conflicts.join('، '),'این بلوک‌ها هوازی ثبت شده‌اند اما حرکت در بانک مقاومتی است؛ روش و ست‌ها را در ویرایش برنامه با مبدا تطبیق بده.');
+  if(!normalize_(plan.goal)) issue('هدف ثبت نشده است','فیلد هدف برنامه خالی است.','در ویرایش برنامه هدف را مشخص کن؛ بدون آن دربارهٔ تناسب حجم و روش تمرینی قضاوت نمی‌شود.');
+  if(!normalize_(plan.level)) issue('سطح مخاطب ثبت نشده است','سطح برنامه مشخص نیست.','سطح مناسب را بر اساس سابقه و توان واقعی شاگرد در ویرایش برنامه ثبت کن.');
+  if(!normalize_(plan.audience)) issue('مخاطب برنامه مشخص نشده است','گروه مخاطب و محدودیت‌های استفاده ثبت نشده‌اند.','در فیلد «مناسب برای / محدودیت‌ها» سابقهٔ تمرین، وسایل و موارد نیازمند بررسی مربی را وارد کن.');
+  if(!itemsN) issue('برنامه حرکت ندارد','هیچ حرکت ثبت‌شده‌ای پیدا نشد.','روز و حرکت را در برنامه‌ساز اضافه کن.');
+  var covered=Object.keys(groups).filter(function(k) { return !/نامشخص|سایر|متفرقه/.test(k); });
+  var completeness=Math.round(([!!plan.goal,!!plan.level,!!plan.audience,itemsN>0 && !unknown.length].filter(Boolean).length/4)*100);
+  return {ok:true,planId:plan.planId,planName:plan.planName,username:plan.username,goal:plan.goal || '',level:plan.level || '',audience:plan.audience || '',score:completeness,scoreLabel:'کامل‌بودن اطلاعات',issues:issues,summary:{days:(plan.days || []).length,blocks:blocksN,exercises:itemsN,sets:setsN,cardioSets:cardioSets,maxDaySets:Math.max.apply(null,[0].concat(daySets)),daySets:daySets,groups:groups,techs:techs,gifs:gifs},warnings:[],tips:['ست‌های مقاومتی ثبت‌شده در هر چرخهٔ برنامه گزارش شده‌اند؛ این عدد، شدت درگیری یا تعداد ست هفتگی نیست.','ناحیه‌های دارای ست مستقیم: '+(covered.join('، ') || 'هنوز مشخص نیست')+'؛ نبودن یک ناحیه تنها زمانی نیازمند اصلاح است که در هدف این برنامه قرار داشته باشد.']};
 }
 
 function sfPsPlanAnalysis(token, planId) {
-  sfPsCoach_(token);
+  var session = sfPsCoach_(token);
   var plan = sfPsPlanRow_(planId);
+  if (!isAdmin_(session) && normalize_(plan.Username) !== SF7_LIB) requireAssignedAthlete_(session,normalize_(plan.Username));
   var built = sfBuildPlans_([plan], sfBankMap_());
   var a = sfPsAnalyze_(built.plans[0], built.exercises);
   return Object.assign({ ok: true }, a, { techniques: SF_TECHNIQUES });
@@ -192,7 +134,7 @@ function sfPsBankList(token) {
     return {
       planId: p.planId, name: p.planName, goal: p.goal || '', level: p.level || '',
       days: a.summary.days, blocks: a.summary.blocks, exercises: a.summary.exercises,
-      sets: a.summary.sets, score: a.score, gifs: a.summary.gifs, updatedAt: p.updatedAt || p.createdAt || ''
+      sets: a.summary.sets, audience:p.audience || '', score: a.score, gifs: a.summary.gifs, updatedAt: p.updatedAt || p.createdAt || ''
     };
   }).sort(function (x, y) { return String(y.updatedAt).localeCompare(String(x.updatedAt)); });
   return { ok: true, items: items, total: items.length };
@@ -204,7 +146,7 @@ function sfPsPlanToBank(token, planId, name) {
   var plan = sfPsPlanRow_(planId);
   var nm = sfText_(name, 120) || normalize_(plan.PlanName);
   if (!nm) throw new Error('نام برنامه لازم است.');
-  sf7CopyWorkoutTo_(plan.PlanID, SF7_LIB, nm, s.username);
+  sfWithLock_(function() { sf7CopyWorkoutTo_(plan.PlanID, SF7_LIB, nm, s.username); });
   return { ok: true, name: nm };
 }
 
@@ -328,6 +270,7 @@ function sfPsSmartGenerate(token, opts) {
   var bank = sfObjects_(sfRead_(SF.BANK)).filter(function (e) { return sfIsTrue_(e.Active); });
   if (!bank.length) throw new Error('بانک حرکات خالی است.');
   var pool = bank.filter(function (e) {
+    if (opts.standardMedia !== false && !sfIsUnifiedExercise_(e)) return false;
     if (!sfPsEquipMatch_(e.Equipment, equip)) return false;
     if (level === 'مبتدی' && normalize_(e.Level) === 'پیشرفته') return false;
     return true;
@@ -356,7 +299,7 @@ function sfPsSmartGenerate(token, opts) {
   var split = SF_PS_SPLITS[daysPerWeek] || SF_PS_SPLITS[3];
   var perGroup = minutes >= 75 ? 2 : 1;
   var used = {};
-  var blocks = [], rotation = 0;
+  var blocks = [], rotation = Math.max(0,Math.min(10000,Number(opts.rotation) || 0));
   var cardioEx = pool.filter(function (e) { return normalize_(e.Category) === 'هوازی'; });
 
   split.forEach(function (day, di) {
@@ -388,8 +331,17 @@ function sfPsSmartGenerate(token, opts) {
   var coachNotes = (note ? note + '\n' : '') + 'تولید خودکار بر اساس هدف ' + SF_PS_GOAL_LABEL[goal] + ' — ' + daysPerWeek + ' روز در هفته، سطح ' + level + '.';
   var payload = {
     planName: planName, username: username, goal: SF_PS_GOAL_LABEL[goal], level: level,
-    coachNotes: coachNotes, blocks: blocks
+    coachNotes: coachNotes, audience:'سطح '+level+'؛ '+daysPerWeek+' روز تمرین؛ وسایل: '+(equip==='all' ? 'باشگاه کامل' : equip), blocks: blocks
   };
+  if (opts.preview) {
+    var previewMap={},previewDays={},analysisMap={}; bank.forEach(function(ex) { previewMap[ex.ExerciseID]=ex; });
+    payload.blocks.forEach(function(block) {
+      block.items=block.items.map(function(it) { var ex=previewMap[it.exerciseId] || {}; analysisMap[it.exerciseId]={media:sfMediaOf_(ex),cardio:normalize_(ex.Category) === 'هوازی'}; return {exerciseId:it.exerciseId,name:ex.PersianName || '',group:ex.MuscleGroup || ''}; });
+      var day=previewDays[block.dayNo] || (previewDays[block.dayNo]={dayNo:block.dayNo,title:block.dayTitle,blocks:[]}); day.blocks.push(block);
+    });
+    var analysis=sfPsAnalyze_({planName:planName,username:username,goal:payload.goal,level:level,days:Object.keys(previewDays).map(function(k) { return previewDays[k]; })},analysisMap);
+    return {ok:true,preview:true,draft:payload,planName:planName,goal:payload.goal,days:analysis.summary.days,blocks:blocks.length,sets:analysis.summary.sets,analysis:analysis};
+  }
   var saved = sfAdminSavePlan(token, payload);
   var planId = (saved && saved.planId) || '';
 
@@ -397,7 +349,7 @@ function sfPsSmartGenerate(token, opts) {
   if (opts.saveToBank) {
     try {
       bankName = sfText_(opts.bankName, 120) || planName;
-      sf7CopyWorkoutTo_(planId, SF7_LIB, bankName, s.username);
+      sfWithLock_(function() { sf7CopyWorkoutTo_(planId, SF7_LIB, bankName, s.username); });
     } catch (eB) { bankName = ''; }
   }
 
@@ -428,4 +380,24 @@ function sfPsVolumeBrief(token) {
     byGoal[g] = (byGoal[g] || 0) + 1;
   });
   return { ok: true, plans: plans.length, blocks: blocks.length, byGoal: byGoal };
+}
+
+/** Descriptive statistics of the coach's original Sheet templates, not a trained model. */
+function sfPsStyleProfile(token, save) {
+  var session=sfPsCoach_(token);
+  if (save && !isAdmin_(session)) throw new Error('ثبت الگوی مرجع فقط برای ادمین است.');
+  var legacy={}; (adm_legacyBankPreview(token).items || []).filter(function(item) { return !item.template; }).forEach(function(item) { legacy[normalize_(item.name)]=true; });
+  var byName={}; sfObjects_(sfRead_(SF.PLANS)).filter(function(p) { return normalize_(p.Username) === SF7_LIB && legacy[normalize_(p.PlanName)] && !/^قالب\s+برنامه$/.test(normalize_(p.PlanName)); }).forEach(function(p) { var n=normalize_(p.PlanName); if(!byName[n] || String(p.UpdatedAt)>String(byName[n].UpdatedAt)) byName[n]=p; });
+  var built=sfBuildPlans_(Object.keys(byName).map(function(n) { return byName[n]; }),sfBankMap_());
+  var sets=[],rests=[],days=[],reps={},techniques={},groups={},blocks=0,exercises=0;
+  built.plans.forEach(function(p) { days.push(p.days.length); p.days.forEach(function(d) { d.blocks.forEach(function(b) { blocks++; sets.push(b.sets.length); rests.push(Number(b.restBetweenSec) || 0); techniques[b.technique]=(techniques[b.technique] || 0)+1; b.items.forEach(function(it) { exercises++; var g=sfPsGroupKey_(it.group); groups[g]=(groups[g] || 0)+b.sets.length; }); b.sets.forEach(function(s) { s.cells.forEach(function(c) { var r=normalize_(c.reps); if(r) reps[r]=(reps[r] || 0)+1; }); }); }); }); });
+  function median(values) { if(!values.length) return 0; var a=values.slice().sort(function(x,y) { return x-y; }),n=a.length; return n%2 ? a[(n-1)/2] : (a[n/2-1]+a[n/2])/2; }
+  var result={ok:true,templates:built.plans.length,names:Object.keys(byName),blocks:blocks,exercises:exercises,medianDays:median(days),medianSets:median(sets),medianRest:median(rests),techniques:techniques,groups:groups,reps:reps,calculatedAt:new Date().toISOString(),saved:false};
+  if(save) {
+    if(!result.templates) throw new Error('ابتدا برنامه‌های اصلی شیت را به بانک منتقل کن.');
+    sfWithLock_(function() { var ss=getSS_(),name='SF_CoachStyle',sh=ss.getSheetByName(name); if(!sh) { sh=ss.insertSheet(name); sh.getRange(1,1,1,4).setValues([['CoachUsername','CalculatedAt','TemplateCount','StyleJSON']]); sh.setFrozenRows(1); }
+      sfInvalidate_(name); sfRewrite_(name,function(row) { return normalize_(row.CoachUsername) !== normalize_(session.username); },[{CoachUsername:session.username,CalculatedAt:result.calculatedAt,TemplateCount:String(result.templates),StyleJSON:JSON.stringify(result)}]);
+    }); result.saved=true;
+  }
+  return result;
 }

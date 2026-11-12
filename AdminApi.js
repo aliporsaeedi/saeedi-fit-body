@@ -12,23 +12,29 @@
 /* roles: چه نقش‌هایی می‌بینند. sub: زیرمجموعه‌ها (کلیک روی عنوان باز/بسته می‌شود). */
 const ADM_MENU = [
   { id: 'dashboard', title: 'داشبورد', icon: '◧', roles: ['admin', 'coach'] },
-  { id: 'users', title: 'کاربران', icon: '☺', roles: ['admin'], sub: [
-    { id: 'users.list', title: 'فهرست کاربران' },
-    { id: 'users.create', title: 'افزودن کاربر' },
-    { id: 'users.progress', title: 'پیشرفت و رتبه‌بندی' },
-    { id: 'users.mealImages', title: 'عکس دستی غذا' }
+  { id: 'users', title: 'شاگردها', icon: '☺', roles: ['admin', 'coach'], sub: [
+    { id: 'users.list', title: 'فهرست کاربران', roles: ['admin'] },
+    { id: 'users.create', title: 'افزودن کاربر', roles: ['admin'] },
+    { id: 'users.activity', title: 'حضور و پیگیری تمرین' },
+    { id: 'users.progress', title: 'پیشرفت و رتبه‌بندی', roles: ['admin'] },
+    { id: 'users.mealImages', title: 'عکس دستی غذا', roles: ['admin'] }
   ] },
   { id: 'plans', title: 'برنامه‌ها', icon: '☰', roles: ['admin', 'coach'], sub: [
     { id: 'plans.workout', title: 'برنامه‌های تمرینی' },
-    { id: 'plans.create', title: 'برنامه‌ساز (برنامهٔ تازه)' },
-    { id: 'plans.edit', title: 'ویرایش ست و تکرار' },
-    { id: 'plans.generate', title: 'تولید هوشمند برنامه' },
+    { id: 'plans.create', title: 'برنامه‌ساز (برنامهٔ تازه)', roles: ['admin'] },
+    { id: 'plans.edit', title: 'ویرایش ست و تکرار', roles: ['admin'] },
     { id: 'plans.bank', title: 'بانک برنامه‌ها' },
-    { id: 'plans.analysis', title: 'تحلیل برنامه' },
     { id: 'plans.anatomy', title: 'آناتومی و تعادل عضلانی' },
-    { id: 'plans.diet', title: 'برنامه‌های غذایی' },
-    { id: 'plans.supp', title: 'برنامه‌های مکمل' },
-    { id: 'plans.library', title: 'کتابخانهٔ قالب‌ها' }
+    { id: 'plans.supp', title: 'برنامه‌های مکمل', roles: ['admin'] }
+  ] },
+  { id: 'smart', title: 'مربی هوشمند و AI', icon: '✦', roles: ['admin', 'coach'], sub: [
+    { id: 'smart.coach', title: 'دستیار مربی' },
+    { id: 'plans.generate', title: 'ساخت هوشمند تمرین', roles: ['admin'] },
+    { id: 'plans.diet', title: 'ساخت هوشمند تغذیه', roles: ['admin'] },
+    { id: 'plans.analysis', title: 'تحلیل تمرین' },
+    { id: 'smart.style', title: 'الگوی برنامه‌نویسی من', roles: ['admin'] },
+    { id: 'smart.ai', title: 'تنظیمات هوش مصنوعی', roles: ['admin'] },
+    { id: 'smart.logs', title: 'گزارش استفاده از AI', roles: ['admin'] }
   ] },
   { id: 'banks', title: 'بانک‌های اطلاعات', icon: '▤', roles: ['admin', 'coach'], sub: [
     { id: 'bank.exercises', title: 'حرکات تمرینی' },
@@ -36,7 +42,7 @@ const ADM_MENU = [
     { id: 'bank.library', title: 'کتابخانهٔ گیف‌ها (۱۳۲۳ حرکت)' },
     { id: 'bank.foods', title: 'غذاها' },
     { id: 'bank.supps', title: 'مکمل‌ها' },
-    { id: 'bank.minerals', title: 'ویتامین و مینرال' },
+    { id: 'bank.minerals', title: 'مکمل‌های ویتامین و مواد معدنی' },
     { id: 'bank.models', title: 'مدل‌های رژیم' },
     { id: 'bank.techniques', title: 'روش‌های تمرینی' }
   ] },
@@ -44,6 +50,7 @@ const ADM_MENU = [
     { id: 'finance.membership', title: 'اعتبار و اشتراک' }
   ] },
   { id: 'comms', title: 'ارتباط', icon: '✉', roles: ['admin', 'coach'], sub: [
+    { id: 'comms.chat', title: 'گفت‌وگو با شاگردها' },
     { id: 'comms.alerts', title: 'هشدارهای مربی' },
     { id: 'comms.telegram', title: 'تلگرام' }
   ] },
@@ -69,7 +76,7 @@ function adm_who_(token, adminOnly) {
 function adm_boot(token) {
   const s = adm_who_(token, false);
   const role = String(s.role || '').toLowerCase();
-  const menu = ADM_MENU.filter(m => m.roles.indexOf(role) >= 0);
+  const menu = ADM_MENU.filter(m => m.roles.indexOf(role) >= 0).map(m => Object.assign({}, m, { sub: (m.sub || []).filter(x => !x.roles || x.roles.indexOf(role) >= 0) }));
   return { ok: true, user: { username: s.username, role: role }, menu: menu, appUrl: ScriptApp.getService().getUrl(), banks: adm_bankSchemas_(), techniques: SF_TECHNIQUES };
 }
 
@@ -123,7 +130,7 @@ const ADM_BANKS = {
     ]
   },
   minerals: {
-    title: 'ویتامین و مینرال', sheet: 'SF_MineralBank', id: 'MinID', prefix: 'MN', name: 'PersianName', sub: 'EnglishName',
+    title: 'مکمل‌های ویتامین و مواد معدنی', sheet: 'SF_MineralBank', id: 'MinID', prefix: 'MN', name: 'PersianName', sub: 'EnglishName',
     search: ['PersianName', 'EnglishName', 'Functions', 'FoodSources'], facets: ['Type'],
     media: { img: ['ImageURL'], video: 'VideoURL' },
     fields: [
@@ -159,11 +166,11 @@ function adm_register_() {
 function adm_ensure_() {
   adm_register_();
   const props = PropertiesService.getScriptProperties();
-  if (props.getProperty('ADM_READY_V2') === '1') return;
+  if (props.getProperty('ADM_READY_V3_REVIEW') === '1') return;
   props.deleteProperty(SF.READY_PROP);
   sfEnsure_();
   try { sfEnsureV16_(); } catch (e) {}
-  props.setProperty('ADM_READY_V2', '1');
+  props.setProperty('ADM_READY_V3_REVIEW', '1');
 }
 function adm_bank_(name) {
   const b = ADM_BANKS[name];
@@ -186,6 +193,7 @@ function adm_bankList(token, bank, opts) {
   all.forEach(function (o) { b.facets.forEach(function (f) { const v = normalize_(o[f]); if (v) facetVals[f][v] = (facetVals[f][v] || 0) + 1; }); });
   const imgCols = (b.media.img || []);
   const rows = all.filter(function (o) {
+    if (bank === 'exercises' && opts.standardMedia && !sfIsUnifiedExercise_(o)) return false;
     for (var i = 0; i < b.facets.length; i++) { const f = b.facets[i]; if (facets[f] && normalize_(o[f]) !== facets[f]) return false; }
     if (opts.onlyInactive && sfIsTrue_(o.Active)) return false;
     if (opts.onlyMissingMedia && imgCols.every(function (c) { return normalize_(o[c]); })) return false;
@@ -197,7 +205,7 @@ function adm_bankList(token, bank, opts) {
   const slice = rows.slice((page - 1) * size, page * size).map(function (o) {
     const light = adm_light_(b, o);
     /* گیف‌های جدید مربی بر گیف قدیمی اولویت دارند (نصب‌شده در GifLibrary.js) */
-    if (bank === 'exercises' && typeof sfBestGif_ === 'function') { const g = sfBestGif_(o); light._gif = g.url; light._gifSrc = g.src; }
+    if (bank === 'exercises' && typeof sfBestGif_ === 'function') { const g = sfBestGif_(o); light._gif = g.url; light._gifSrc = g.src; light._gifCandidates = g.candidates || []; }
     return light;
   });
   return { ok: true, total: rows.length, all: all.length, page: page, size: size, items: slice, facets: facetVals };
@@ -294,67 +302,152 @@ function adm_wikiThumb_(resp) {
 function adm_productImageReq_(query, bank) {
   var q = String(query || '').trim();
   if (!q) return null;
-  if (bank === 'supps' || bank === 'minerals') q += ' supplement package';
   var url = 'https://world.openfoodfacts.org/cgi/search.pl?search_terms=' + encodeURIComponent(q) +
-    '&search_simple=1&action=process&json=1&page_size=8&fields=code,product_name,brands,image_front_url,photographers_tags';
+    '&search_simple=1&action=process&json=1&page_size=20&fields=code,product_name,brands,image_front_url,photographers_tags,categories_tags';
   return { url: url, muteHttpExceptions: true, headers: { 'User-Agent': 'SaeediFit/2.1' } };
 }
-function adm_productImage_(resp, query) {
-  try {
-    if (!resp || resp.getResponseCode() !== 200) return null;
-    var products = (JSON.parse(resp.getContentText()) || {}).products || [];
-    var terms = String(query || '').toLowerCase().replace(/[^a-z0-9\u0600-\u06ff]+/g, ' ').split(/\s+/).filter(function (x) { return x.length > 2; });
-    var best = null, bestScore = 0;
-    products.forEach(function (p) {
-      var image = String(p.image_front_url || '');
-      if (!/^https:\/\/images\.openfoodfacts\.org\//i.test(image)) return;
-      var title = String((p.product_name || '') + ' ' + (p.brands || '')).toLowerCase();
-      var score = terms.length ? terms.filter(function (t) { return title.indexOf(t) >= 0; }).length / terms.length : 0;
-      if (!best || score > bestScore) { best = p; bestScore = score; }
-    });
-    if (!best || bestScore < 0.34) return null;
-    var code = String(best.code || '');
-    var photographers = (best.photographers_tags || []).join(', ');
-    return { image: String(best.image_front_url), source: code ? 'https://world.openfoodfacts.org/product/' + encodeURIComponent(code) : 'https://world.openfoodfacts.org/',
-      credit: 'Open Food Facts' + (photographers ? ' · ' + photographers : '') + ' · CC BY-SA 3.0' };
-  } catch (e) { return null; }
+function adm_foodImageReq_(query) {
+  return {url:'https://en.wikipedia.org/w/api.php?action=query&format=json&generator=search&gsrlimit=10&gsrsearch=' + encodeURIComponent(query + ' food') + '&prop=pageimages%7Cinfo&piprop=thumbnail&pithumbsize=640&inprop=url',muteHttpExceptions:true,headers:{'User-Agent':'SaeediFit-Admin/3.0 (image review)'}};
 }
-/** تصاویر محصول را از بانک محصول می‌گیرد؛ ردیف‌های بی‌نتیجه را علامت می‌زند تا جستجو دور بی‌نهایت نسازد. */
-function adm_mediaFill(token, bank, limit) {
+function adm_mediaCandidates_(name, english, bank, foodResponse) {
+  var query = String(english || name || '').trim();
+  if (!query) return [];
+  if (bank !== 'foods' && typeof sfReviewedProductImage_ === 'function') { var selected = sfReviewedProductImage_(english); if (selected) return [selected]; }
+  if (bank === 'foods') {
+    var cacheKey='adm_food_img_' + Utilities.base64EncodeWebSafe(query).slice(0,180),cache=CacheService.getScriptCache();
+    try { var saved=cache.get(cacheKey); if(saved && !foodResponse) return JSON.parse(saved); } catch(e) {}
+    var request=adm_foodImageReq_(query), response=foodResponse || UrlFetchApp.fetch(request.url,{muteHttpExceptions:true,headers:request.headers});
+    var pages = {}; try { pages = (JSON.parse(response.getContentText()).query || {}).pages || {}; } catch (e) {}
+    var terms = query.toLowerCase().replace(/[^a-z0-9\u0600-\u06ff]+/g, ' ').split(/\s+/).filter(function (x) { return x.length > 2; });
+    var candidates=Object.keys(pages).map(function (k) {
+      var p = pages[k], title = String(p.title || ''), hay = title.toLowerCase().replace(/[^a-z0-9\u0600-\u06ff]+/g, ' ');
+      var hits = terms.filter(function (t) { return hay.indexOf(t) >= 0; }).length, score = terms.length ? hits / terms.length : 0;
+      return { code: String(p.pageid || ''), image: String(p.thumbnail && p.thumbnail.source || ''), title: title, brand: '', score: Math.round(score * 100), source: p.fullurl || ('https://en.wikipedia.org/?curid=' + k), credit: 'Wikipedia · مجوز تصویر در صفحهٔ منبع بررسی شود' };
+    }).filter(function (p) { return /^https:\/\//i.test(p.image) && p.score >= 60; }).sort(function (a, b) { return b.score - a.score; }).slice(0, 4);
+    try { if(candidates.length) cache.put(cacheKey,JSON.stringify(candidates),3600); } catch(e) {}
+    return candidates;
+  }
+  var req = adm_productImageReq_(query, bank), res = UrlFetchApp.fetch(req.url, { muteHttpExceptions: true, headers: req.headers }), products = [];
+  try { products = (JSON.parse(res.getContentText()).products || []); } catch (e) {}
+  var tokens = query.toLowerCase().replace(/[^a-z0-9\u0600-\u06ff]+/g, ' ').split(/\s+/).filter(function (x) { return x.length > 2 && !/^(powder|capsules?|tablets?|supplement|nutrition|food|pure|unflavou?red|servings?|package|product)$/.test(x); });
+  return products.map(function (p) {
+    var title = String(p.product_name || ''), brand = String(p.brands || ''), hay = (title + ' ' + brand).toLowerCase();
+    var categories = (p.categories_tags || []).join(' ');
+    if (!/supplement|vitamin|amino|protein-powder|creatine/i.test(categories + ' ' + title) && !/capsules?|tablets?|softgels?|whey|creatine|casein|gainer|collagen|bcaa|electrolyte/i.test(title)) return { score:0 };
+    var vitamin = query.match(/vitamin\s+([a-z]\d*)/i);
+    if (vitamin) { var form = vitamin[1].toLowerCase(), normalized = hay.replace(/[^a-z0-9]+/g,' '); if (!(new RegExp('(^| )' + form + (form === 'd' ? '[23]?' : '') + '( |$)')).test(normalized)) return { score:0 }; }
+    var hits = tokens.filter(function (t) { return hay.indexOf(t) >= 0; }).length, score = tokens.length ? hits / tokens.length : 0;
+    return { code: String(p.code || ''), image: String(p.image_front_url || ''), title: title, brand: brand, score: Math.round(score * 100), source: p.code ? 'https://world.openfoodfacts.org/product/' + encodeURIComponent(p.code) : '', credit: 'Open Food Facts · CC BY-SA 3.0' };
+  }).filter(function (p) { return /^https:\/\/images\.openfoodfacts\.org\//i.test(p.image) && p.title && p.score >= 60; }).sort(function (a, b) { return b.score - a.score; }).slice(0, 4);
+}
+/** جستجو فقط پیش‌نمایش است و تا تأیید ادمین هیچ داده‌ای در شیت تغییر نمی‌کند. */
+function adm_mediaPreview(token, bank, id) {
   adm_who_(token, true); adm_ensure_();
-  const b = adm_bank_(bank);
-  if (bank === 'exercises') throw new Error('برای حرکات از تصاویر آمادهٔ بانک استفاده می‌شود (همگام‌سازی).');
-  return sfWithLock_(function () {
-    sfInvalidate_(b.sheet);
-    const rd = sfRead_(b.sheet);
-    const todo = []; rd.rows.forEach(function (r, i) {
-      var image = normalize_(r[rd.idx.ImageURL]), status = normalize_(r[rd.idx.ImageSearchStatus]);
-      var placeholder = /^data:image\/svg\+xml/i.test(image);
-      if (normalize_(r[0]) && (!image || placeholder) && status !== 'not-found') todo.push(i);
-    });
-    const batch = todo.slice(0, Math.max(1, Math.min(40, Number(limit) || 25)));
-    const reqs = batch.map(function (i) { const r = rd.rows[i]; return adm_productImageReq_(normalize_(r[rd.idx.EnglishName]) || normalize_(r[rd.idx.PersianName]), bank); });
-    const resp = reqs.length ? UrlFetchApp.fetchAll(reqs.map(function (r) { return r || { url: 'https://world.openfoodfacts.org/', muteHttpExceptions: true }; })) : [];
-    let found = 0, unmatched = 0;
-    function put(row, col, value) { if (rd.idx[col] == null) return; var c = rd.sh.getRange(row + 2, rd.idx[col] + 1); c.setNumberFormat('@'); c.setValue(value); }
-    batch.forEach(function (i, n) {
-      var r = rd.rows[i], name = normalize_(r[rd.idx.EnglishName]) || normalize_(r[rd.idx.PersianName]);
-      var image = adm_productImage_(resp[n], name);
-      if (image) {
-        put(i, 'ImageURL', image.image); put(i, 'ImageCredit', image.credit); put(i, 'ImageSourceURL', image.source); put(i, 'ImageSearchStatus', 'product');
-        found++;
-      } else { put(i, 'ImageSearchStatus', 'not-found'); unmatched++; }
-    });
-    sfInvalidate_(b.sheet);
-    if (bank === 'foods') sfBumpFoodCache_();
-    return { ok: true, tried: batch.length, found: found, unmatched: unmatched, remaining: Math.max(0, todo.length - batch.length), missingTotal: todo.length };
+  if (bank === 'exercises') throw new Error('برای حرکات از همگام‌سازی کتابخانهٔ گیف استفاده کن.');
+  var b = adm_bank_(bank), rd = sfRead_(b.sheet), row = sfObjects_(rd).filter(function (o) { return normalize_(o[b.id]) === normalize_(id); })[0];
+  if (!row) throw new Error('مورد پیدا نشد.');
+  return { ok: true, id: normalize_(row[b.id]), name: normalize_(row[b.name]), english: normalize_(row[b.sub]), current: normalize_(row.ImageURL), candidates: adm_mediaCandidates_(normalize_(row[b.name]), normalize_(row[b.sub]), bank) };
+}
+function adm_mediaQueue(token, bank, excludeIds, limit) {
+  adm_who_(token, true); adm_ensure_();
+  if (bank === 'exercises') throw new Error('برای حرکات از همگام‌سازی کتابخانهٔ گیف استفاده کن.');
+  var b = adm_bank_(bank), rd = sfRead_(b.sheet), seen = {};
+  (excludeIds || []).slice(0, 500).forEach(function (x) { seen[normalize_(x)] = true; });
+  var rows = sfObjects_(rd).filter(function (o) {
+    var img = normalize_(o.ImageURL), placeholder = /^data:image\/svg\+xml/i.test(img);
+    return normalize_(o[b.id]) && (!img || placeholder || normalize_(o.ImageSearchStatus) !== 'reviewed-approved') && !seen[normalize_(o[b.id])];
+  }).slice(0, Math.max(5, Math.min(30, Number(limit) || 20))).map(function (o) { return { id: normalize_(o[b.id]), name: normalize_(o[b.name]), english: normalize_(o[b.sub]) }; });
+  return { ok: true, totalMissing: rd.rows.filter(function (r) { var x = normalize_(r[rd.idx.ImageURL]); return normalize_(r[rd.idx[b.id]]) && (!x || /^data:image\/svg\+xml/i.test(x)); }).length, items: rows };
+}
+/** ادمین یک نامزد را می‌بیند و انتخاب می‌کند؛ سرور نامزد را دوباره می‌سنجد و سپس ثبت می‌کند. */
+function adm_mediaCommit(token, bank, id, candidateCode, expectedImage) {
+  adm_who_(token, true); adm_ensure_();
+  if (bank === 'exercises') throw new Error('برای حرکات از همگام‌سازی کتابخانهٔ گیف استفاده کن.');
+  var b = adm_bank_(bank), rd = sfRead_(b.sheet), i = rd.rows.findIndex(function (r) { return normalize_(r[rd.idx[b.id]]) === normalize_(id); });
+  if (['ImageURL','ImageCredit','ImageSourceURL','ImageSearchStatus'].some(function(key) { return rd.idx[key] == null; })) throw new Error('ستون‌های بازبینی تصویر در شیت کامل نیستند؛ مهاجرت بانک را دوباره اجرا کن.');
+  if (i < 0) throw new Error('مورد پیدا نشد.');
+  var row = sfObj_(rd, rd.rows[i]), list = adm_mediaCandidates_(normalize_(row[b.name]), normalize_(row[b.sub]), bank);
+  var chosen = list.filter(function (x) { return String(x.code) === String(candidateCode); })[0];
+  if (!chosen || chosen.score < 60) throw new Error('تطبیق تصویر با نام محصول کافی نیست؛ چیزی ثبت نشد.');
+  sfWithLock_(function () {
+    sfInvalidate_(b.sheet); var fresh = sfRead_(b.sheet), at = fresh.rows.findIndex(function (r) { return normalize_(r[fresh.idx[b.id]]) === normalize_(id); });
+    if (at < 0) throw new Error('مورد در این فاصله حذف شده است.');
+    var imageNow = normalize_(fresh.rows[at][fresh.idx.ImageURL]);
+    if (imageNow && !/^data:image\/svg\+xml/i.test(imageNow) && imageNow !== String(expectedImage || '')) throw new Error('تصویر حین بازبینی تغییر کرده است؛ دوباره بازبینی کن.');
+    var now = sfObj_(fresh, fresh.rows[at]);
+    if (normalize_(now[b.name]) !== normalize_(row[b.name]) || normalize_(now[b.sub]) !== normalize_(row[b.sub])) throw new Error('نام محصول حین بازبینی تغییر کرده است؛ دوباره جستجو کن.');
+    var vals = { ImageURL: chosen.image, ImageCredit: chosen.credit, ImageSourceURL: chosen.source, ImageSearchStatus: 'reviewed-approved' };
+    Object.keys(vals).forEach(function (k) { if (fresh.idx[k] != null) { var c = fresh.sh.getRange(at + 2, fresh.idx[k] + 1); c.setNumberFormat('@'); c.setValue(vals[k]); } });
   });
+  sfInvalidate_(b.sheet); if (bank === 'foods') sfBumpFoodCache_();
+  return { ok: true, name: normalize_(row[b.name]), title: chosen.title, score: chosen.score };
+}
+/* سازگاری با کلاینت قدیمی بدون نوشتن خودکار در دیتابیس. */
+function adm_mediaFill(token) { adm_who_(token, true); return { ok: false, message: 'جستجوی مستقیم خاموش است؛ پیش‌نمایش تصویر را ببین و هر مورد را جداگانه تأیید کن.' }; }
+
+// Preserve every original plan name; repeat imports never create another template.
+function adm_legacyBankPreview(token) {
+  adm_who_(token, true); sfEnsure_();
+  var plans = sfObjects_(sfRead_(SF.PLANS)), names = {}, existing = {};
+  plans.forEach(function(p) { var n = normalize_(p.PlanName); if (!n) return; if (normalize_(p.Username) === SF7_LIB) existing[n] = true; else names[n] = 'structured'; });
+  (listPlanSheets_().workout || []).forEach(function(n) { if (!names[n]) names[n] = 'sheet'; });
+  return { ok:true, items:Object.keys(names).sort().map(function(n) { return { name:n, source:names[n], exists:!!existing[n], template:/^قالب\s+برنامه$/.test(normalize_(n)) }; }) };
+}
+function adm_legacyBankImport(token, name) {
+  var s = adm_who_(token, true); sfEnsure_();
+  name = String(name || '').trim();
+  if (/^قالب\s+برنامه$/.test(normalize_(name))) throw new Error('این شیت قالب مرجع است؛ برنامهٔ واقعی شاگرد محسوب نمی‌شود.');
+  var plans = sfObjects_(sfRead_(SF.PLANS));
+  var prior = plans.find(function(p) { return normalize_(p.Username) === SF7_LIB && normalize_(p.PlanName) === name; });
+  if (prior) return { ok:true, name:name, skipped:true, planId:prior.PlanID };
+  var src = plans.find(function(p) { return normalize_(p.PlanName) === name; });
+  if (src) return sfWithLock_(function() { return { ok:true, name:name, planId:sf7CopyWorkoutTo_(src.PlanID,SF7_LIB,name,s.username) }; });
+  var sourceName = (listPlanSheets_().workout || []).find(function(n) { return normalize_(n) === normalize_(name); });
+  if (!sourceName) throw new Error('این شیت به‌عنوان برنامهٔ تمرین شناسایی نشد.');
+  var sh = getSS_().getSheetByName(sourceName), text = sh.getDataRange().getDisplayValues().map(function(r) { return r.join('\t'); }).join('\n');
+  var check = sfPiParse_(text,{createMissing:false});
+  if (!check.days.length || !check.stats.blocks) throw new Error('قالب این شیت قابل تبدیل نیست؛ دادهٔ اصلی حفظ شد.');
+  var result = sfAdminImportProgram(token,{text:text,username:SF7_LIB,planName:name,createMissing:true});
+  return { ok:true, name:name, planId:result.planId, stats:result.stats };
+}
+
+function adm_legacyBankAudit(token, name) {
+  adm_who_(token,true); sfEnsure_(); name=normalize_(name);
+  var sourceName=(listPlanSheets_().workout || []).find(function(n) { return normalize_(n) === name; });
+  var plans=sfObjects_(sfRead_(SF.PLANS)),library=plans.find(function(p) { return normalize_(p.Username) === SF7_LIB && normalize_(p.PlanName) === name; });
+  if(!sourceName) {
+    var original=plans.find(function(p) { return normalize_(p.Username) !== SF7_LIB && normalize_(p.PlanName) === name; });
+    if(!original || !library) return {ok:true,name:name,source:'structured',countMatch:false,structureMatch:false,message:'نسخهٔ مبدا یا بانک پیدا نشد.'};
+    var builtBoth=sfBuildPlans_([original,library],sfBankMap_()).plans;
+    function fingerprint(p) { return p.days.map(function(d) { return {day:d.dayNo,title:d.title,blocks:d.blocks.map(function(b) { return {technique:b.technique,notes:b.notes,rest:b.restBetweenSec,extra:b.extra,items:b.items.map(function(it) { return [it.exerciseId,it.name,it.group]; }),sets:b.sets.map(function(s) { return {rest:s.rest,extra:s.extra,cells:s.cells.map(function(c) { return [c.reps,c.weight]; })}; })}; })}; }); }
+    var same=JSON.stringify(fingerprint(builtBoth[0])) === JSON.stringify(fingerprint(builtBoth[1]));
+    return {ok:true,name:name,source:'structured',countMatch:same,structureMatch:same,message:same ? 'روزها، حرکت‌ها، روش‌ها، ست، تکرار، وزنه و توضیحات با نسخهٔ مبدا منطبق‌اند.' : 'جزئیات نسخهٔ بانکی با مبدا تفاوت دارد.'};
+  }
+  var sh=getSS_().getSheetByName(sourceName),text=sh.getDataRange().getDisplayValues().map(function(r) { return r.join('\t'); }).join('\n');
+  var parsed=sfPiParse_(text,{createMissing:false}),built=library ? sfBuildPlans_([library],sfBankMap_()).plans[0] : null;
+  var stored={days:built ? built.days.length : 0,blocks:0,exercises:0},differences=[];
+  if(built) built.days.forEach(function(d) { d.blocks.forEach(function(b) { stored.blocks++; stored.exercises+=b.items.length; }); });
+  ['days','blocks','exercises'].forEach(function(key) { if(stored[key] !== parsed.stats[key]) differences.push(key + ': ' + parsed.stats[key] + ' در شیت / ' + stored[key] + ' در بانک'); });
+  var countMatch=!differences.length;
+  if(built) parsed.days.forEach(function(day) { var target=built.days.find(function(d) { return Number(d.dayNo) === Number(day.dayNo); }); if(!target) return;
+    day.blocks.forEach(function(block,bi) { var saved=target.blocks[bi]; if(!saved) return; var at='روز ' + day.dayNo + '، بلوک ' + (bi+1);
+      if(block.technique !== saved.technique) differences.push(at + ': روش ' + block.technique + ' / ' + saved.technique);
+      if(block.setsCount !== saved.sets.length) differences.push(at + ': تعداد ست ' + block.setsCount + ' / ' + saved.sets.length);
+      block.parts.forEach(function(part,pi) { var item=saved.items[pi]; if(!item) return;
+        if(part.exerciseId && part.exerciseId !== item.exerciseId && sfNormName_(part.name) !== sfNormName_(item.name) && sfNormName_(part.fa) !== sfNormName_(item.name)) differences.push(at + ': حرکت ' + part.name + ' / ' + item.name);
+      });
+      saved.sets.forEach(function(set,si) { var expected=block.repsSeq[Math.min(si,block.repsSeq.length-1)]; if(!expected || block.technique === 'cardio') return; if(set.cells.some(function(c) { return sfNormName_(c.reps) !== sfNormName_(expected); })) differences.push(at + '، ست ' + (si+1) + ': تکرار ' + expected + ' / ' + set.cells.map(function(c) { return c.reps; }).join('+')); });
+    });
+  });
+  return {ok:true,name:name,source:'sheet',sheet:parsed.stats,bank:stored,countMatch:countMatch,structureMatch:!differences.length,differences:differences.slice(0,60),unmatched:parsed.unmatched.map(function(x) { return x.name; })};
 }
 
 /* ------------------------------------------------------------ داشبورد --- */
 function adm_dashboard(token) {
   const s = adm_who_(token, false); adm_ensure_();
-  const out = { ok: true, role: String(s.role).toLowerCase(), users: { total: 0, user: 0, coach: 0, admin: 0 }, banks: {}, pending: 0, alerts: 0 };
+  const dashKey = 'adm_dash_v5_' + String(s.role || '').toLowerCase() + '_' + String(s.username || '').toLowerCase().replace(/[^a-z0-9_-]/g, '').slice(0, 48);
+  try { const hit = CacheService.getScriptCache().get(dashKey); if (hit) return JSON.parse(hit); } catch (e) {}
+  const out = { ok: true, role: String(s.role).toLowerCase(), users: { total: 0, user: 0, coach: 0, admin: 0 }, banks: {}, pending: 0, alerts: 0, errors: 0, telegram: { configured: false, adminChat: false } };
   try {
     sfObjects_(sfRead_(CONFIG.USERS_SHEET)).forEach(function (u) {
       const r = (normalize_(u.role) || 'user').toLowerCase(); out.users.total++; out.users[r] = (out.users[r] || 0) + 1;
@@ -367,11 +460,91 @@ function adm_dashboard(token) {
     const b = ADM_BANKS[k]; let rows = [];
     try { rows = sfObjects_(sfRead_(b.sheet)); } catch (e) {}
     const imgs = b.media.img || [];
-    out.banks[k] = { title: b.title, total: rows.length, noImage: rows.filter(function (o) { return imgs.length && !imgs.some(function (c) { return normalize_(o[c]); }); }).length };
+    const mediaCols = imgs.concat(b.media.gif ? [b.media.gif] : [], k === 'exercises' ? ['GifNewURL'] : []);
+    const hasRealImage = function (o) { return mediaCols.some(function (c) { return /^https?:\/\//i.test(normalize_(o[c])); }); };
+    out.banks[k] = { title: b.title, total: rows.length, noImage: rows.filter(function (o) { return !hasRealImage(o); }).length, reviewed: rows.filter(function(o) { return hasRealImage(o) && normalize_(o.ImageSearchStatus) === 'reviewed-approved'; }).length, unified:k === 'exercises' ? rows.filter(sfIsUnifiedExercise_).length : 0 };
   });
-  try { out.pending = sf3AdminOverview(token).stats.pending; } catch (e) {}
+  try { out.pending = sfObjects_(sfRead_('SF_Payments')).filter(function (p) { return String(normalize_(p.Status)).toLowerCase() === 'pending_review'; }).length; } catch (e) {}
   try { out.alerts = (sfCoachAlerts(token) || []).length; } catch (e) {}
+  try {
+    const board = adm_activityBoard(token, todayISO_());
+    out.activity = { date: board.date, total: board.stats.total, completed: board.stats.completed, noLog: board.stats.noLog, rows: board.rows };
+  } catch (e) { out.activity = { total: 0, completed: 0, noLog: 0, rows: [], error: String(e && e.message || e) }; }
+  if (String(s.role).toLowerCase() === 'admin') {
+    try { const err = getSS_().getSheetByName('SF_ErrorLog'); out.errors = err ? Math.max(0, err.getLastRow() - 1) : 0; } catch (e) {}
+    try { const tg = sf3TgInfo_(); out.telegram = { configured: tg.configured, adminChat: tg.adminChat }; } catch (e) {}
+  }
+  try { CacheService.getScriptCache().put(dashKey, JSON.stringify(out), 30); } catch (e) {}
   return out;
+}
+
+/* حضور تمرین امروز بر پایهٔ WorkoutDone، ثبت ست‌ها و تکمیل SF_Progress. */
+function adm_activityBoard(token, dateISO) {
+  const session = adm_who_(token, false);
+  const day = isValidDateStr_(dateISO) ? dateISO : todayISO_();
+  const records = sfUserRecords_().filter(function (u) {
+    if (u.role === 'admin' || u.role === 'coach') return false;
+    if (String(session.role || '').toLowerCase() !== 'admin' && String(u.coachUsername || '').toLowerCase() !== String(session.username || '').toLowerCase()) return false;
+    return true;
+  });
+  const done = {}, lastWork = {};
+  function mark(username) { const k = String(username || '').toLowerCase(); if (k) done[k] = true; }
+  function readSheet(name, predicate) {
+    try {
+      const sh = getSS_().getSheetByName(name); if (!sh || sh.getLastRow() < 2) return;
+      const v = sh.getDataRange().getDisplayValues(), h = v[0].map(function (x) { return normalize_(x).toLowerCase(); });
+      const userI = h.indexOf('username') >= 0 ? h.indexOf('username') : 0;
+      const dateI = h.indexOf('dateiso') >= 0 ? h.indexOf('dateiso') : 1;
+      const doneI = h.indexOf('completed');
+      for (let i = 1; i < v.length; i++) {
+        const username = String(v[i][userI] || '').trim().toLowerCase(), rowDay = dateKey_(v[i][dateI]);
+        if (doneI >= 0 && !/^(true|1|yes|بله)$/i.test(String(v[i][doneI]).trim())) continue;
+        if (predicate && !predicate(v[i], h)) continue;
+        if (username && /^\d{4}-\d{2}-\d{2}$/.test(rowDay) && (!lastWork[username] || rowDay > lastWork[username])) lastWork[username] = rowDay;
+        if (rowDay !== day) continue;
+        mark(v[i][userI]);
+      }
+    } catch (e) {}
+  }
+  readSheet('WorkoutDone');
+  readSheet('ExerciseLogs');
+  readSheet('SF_Progress', function (r, h) {
+    const i = h.indexOf('completed'); return i < 0 || /^(true|1|yes|بله)$/i.test(String(r[i]).trim());
+  });
+  const rows = records.map(function (u) {
+    const username = String(u.username || '');
+    return { username: username, telegram: !!u.telegramChatId, completed: !!done[username.toLowerCase()], lastActive: lastWork[username.toLowerCase()] || '' };
+  }).sort(function (a, b) { return Number(a.completed) - Number(b.completed) || a.username.localeCompare(b.username); });
+  const completed = rows.filter(function (r) { return r.completed; }).length;
+  return { ok: true, date: day, rows: rows, stats: { total: rows.length, completed: completed, noLog: rows.length - completed, linkedTelegram: rows.filter(function (r) { return r.telegram; }).length } };
+}
+
+/* یادآوری تلگرام برای شاگردان انتخاب‌شده‌ای که امروز تمرین را ثبت نکرده‌اند. */
+function adm_sendActivityReminder(token, usernames, message, dateISO) {
+  const session = adm_who_(token, false);
+  const board = adm_activityBoard(token, dateISO);
+  const selected = Array.from(new Set((usernames || []).map(function (x) { return String(x || '').trim().toLowerCase(); }).filter(Boolean))).slice(0, 60);
+  if (!selected.length) throw new Error('حداقل یک شاگرد را انتخاب کن.');
+  const eligible = board.rows.filter(function (r) { return selected.indexOf(r.username.toLowerCase()) >= 0 && !r.completed; });
+  if (!eligible.length) throw new Error('شاگرد انتخاب‌شده‌ای بدون ثبت تمرین امروز پیدا نشد.');
+  const botToken = (typeof botProps_ === 'function' ? botProps_().getProperty('TELEGRAM_BOT_TOKEN') : PropertiesService.getScriptProperties().getProperty('TELEGRAM_BOT_TOKEN')) || '';
+  if (!botToken) throw new Error('توکن ربات تلگرام تنظیم نشده است.');
+  const users = sfUserRecords_(), byName = {};
+  users.forEach(function (u) { byName[String(u.username || '').toLowerCase()] = u; });
+  const body = String(message || 'امروز هنوز ثبت تمرین نداری. اگر تمرینت را انجام دادی، لطفاً آن را در برنامه علامت بزن. اگر امروز روز استراحتت است، این پیام را نادیده بگیر.').trim().slice(0, 1000);
+  const reqs = [], targets = [];
+  eligible.forEach(function (r) {
+    const u = byName[r.username.toLowerCase()] || {};
+    if (String(session.role || '').toLowerCase() !== 'admin' && String(u.coachUsername || '').toLowerCase() !== String(session.username || '').toLowerCase()) return;
+    if (!u.telegramChatId) return;
+    reqs.push({ url: 'https://api.telegram.org/bot' + botToken + '/sendMessage', method: 'post', payload: { chat_id: u.telegramChatId, text: body }, muteHttpExceptions: true });
+    targets.push(r.username);
+  });
+  if (!reqs.length) throw new Error('برای شاگردان انتخاب‌شده شناسهٔ تلگرام ثبت نشده یا دسترسی مربی ندارند.');
+  const res = UrlFetchApp.fetchAll(reqs);
+  let sent = 0, failed = 0;
+  res.forEach(function (r) { try { if (r.getResponseCode() === 200 && JSON.parse(r.getContentText()).ok) sent++; else failed++; } catch (e) { failed++; } });
+  return { ok: true, sent: sent, failed: failed, targets: targets };
 }
 
 /** فهرست خطاهای ثبت‌شده، فقط برای ادمین */

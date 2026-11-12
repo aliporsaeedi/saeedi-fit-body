@@ -133,6 +133,7 @@ function sfPiNameParts_(name) {
 }
 
 function sfPiLooksCardio_(name) {
+  if (/سوئدی|push[ -]?up|پوش\s*آپ|شنا\s*(دست|شیب|الماسی|روی|مچ|دیوار|زانو|آرچر|انفجاری)/i.test(String(name || ''))) return false;
   return /هوازی|دوچرخه|الپتیکال|تردمیل|دویدن|شنا|پله|طناب|روئینگ|کاردیو/i.test(String(name || ''));
 }
 
@@ -149,7 +150,7 @@ function sfPiTechniqueOf_(cell, partsCount, name) {
   if (/مایو|myo/.test(t)) return 'myoreps';
   if (/تمپو|اسلو|tempo/.test(t)) return 'tempo';
   if (/fst/.test(t)) return 'fst7';
-  if (/قدرتی|هوازی|کاردیو|cardio/.test(t)) return 'cardio';
+  if (/هوازی|کاردیو|cardio/.test(t)) return 'cardio';
   if (/معمولی|نرمال|normal/.test(t)) return 'normal';
   if (!t) {
     if (partsCount >= 4) return 'giantset';
@@ -165,8 +166,7 @@ function sfPiAlignTechnique_(tech, partsCount) {
   if (partsCount >= 4) return 'giantset';
   if (partsCount === 3) return (tech === 'mechanical_drop') ? 'mechanical_drop' : 'triset';
   if (partsCount === 2) {
-    if (tech === 'normal' || tech === 'cardio' || tech === 'giantset' || tech === 'triset') return 'superset';
-    return tech;
+    return tech === 'mechanical_drop' ? tech : 'superset';
   }
   if (tech === 'superset' || tech === 'triset' || tech === 'giantset' || tech === 'mechanical_drop') return 'normal';
   return tech;
@@ -226,13 +226,14 @@ function sfPiRestFor_(tech) {
 /* ------------------------------------------------------------------ */
 
 function sfPiGuessGroup_(name, dayTitle) {
-  var s = (name || '') + ' ' + (dayTitle || '');
+  var s = name || '';
+  if (/سوئدی|push[ -]?up|پوش\s*آپ|شنا\s*(دست|شیب|الماسی|روی|مچ|دیوار|زانو|آرچر|انفجاری)/i.test(s)) return /دست\s*جمع|الماسی/.test(s) ? 'پشت بازو' : 'سینه';
   var map = [
     [/هوازی|دوچرخه|الپتیکال|تردمیل|دویدن|شنا/, 'هوازی'],
     [/زیر\s*بغل|لت\b|بارفیکس|قایق|تی\s*بار|پول\s*اور|ددلیفت/, 'زیر بغل'],
     [/سرشانه|نشر|شراگ|فیس\s*پول|فلای\s*معکوس/, 'سرشانه'],
-    [/جلو\s*بازو|جلوبازو|بازو/, 'جلو بازو'],
     [/پشت\s*بازو|پشتبازو|دیپ|پرس\s*سینه\s*دست\s*جمع/, 'پشت بازو'],
+    [/جلو\s*بازو|جلوبازو|بازو/, 'جلو بازو'],
     [/سینه|پرس\s*سینه|فلای|کراس/, 'سینه'],
     [/شکم|کرانچ|پلانک|زیر\s*شکم|چرخ\s*شکم|اب\s*ول/, 'شکم و پهلو'],
     [/پهلو|ساید/, 'شکم و پهلو'],
@@ -358,8 +359,9 @@ function sfPiParse_(text, opts) {
     var parts = sfPiNameParts_(nameCell);
     if (!parts.length) continue;
 
-    var tech = sfPiTechniqueOf_(techCell, parts.length, nameCell);
+    var tech = sfPiTechniqueOf_(techCell, parts.length, nameCell), originalTechnique=tech;
     tech = sfPiAlignTechnique_(tech, parts.length);
+    if (tech !== originalTechnique && originalTechnique !== 'normal') notes='روش ترکیبی سطر اصلی: ' + (techCell || originalTechnique) + (notes ? ' — ' + notes : '');
     var isCardio = tech === 'cardio';
     var setsCount = sfPiSetsCount_(setsCell, repsCell, isCardio);
     if (!/[0-9]/.test(sfPiDigits_(setsCell || ""))) {
@@ -433,6 +435,7 @@ function sfPiParse_(text, opts) {
 
     current.blocks.push({
       technique: tech,
+      extra:tech !== originalTechnique ? {sourceTechnique:originalTechnique,sourceTechniqueText:techCell} : {},
       blockKey: blockKey,
       parts: items,
       setsCount: setsCount,
@@ -481,7 +484,7 @@ function sfPiPayload_(parsed, opts) {
   var blocks = [];
   parsed.days.forEach(function (day) {
     day.blocks.forEach(function (b) {
-      var items = b.parts.map(function (p) { return { exerciseId: p.exerciseId }; });
+      var items = b.parts.map(function (p) { return { exerciseId: p.exerciseId, name:p.name || p.fa || '' }; });
       var sets = [];
       for (var i = 0; i < b.setsCount; i++) {
         var reps = b.repsSeq[Math.min(i, b.repsSeq.length - 1)] || '';
@@ -499,7 +502,7 @@ function sfPiPayload_(parsed, opts) {
         technique: b.technique,
         notes: b.notes || '',
         restBetweenSec: b.rest,
-        extra: {},
+        extra: b.extra || {},
         items: items,
         sets: sets
       });
@@ -534,6 +537,15 @@ function sfAdminParseProgram(token, p) {
   sfAdmin_(token);
   p = p || {};
   try { sfEnsure_(); } catch (e) {}
+
+  // Validate block structure before creating any missing exercises in the database.
+  var preflight = sfPiParse_(p.text, { createMissing: false, overrides: p.overrides || {}, blockOverrides: p.blockOverrides || {} });
+  preflight.days.forEach(function(day) { day.blocks.forEach(function(block) {
+    var technique = sfTechnique_(block.technique);
+    if (!technique || block.parts.length < technique.min || block.parts.length > technique.max) {
+      throw new Error('روز ' + day.dayNo + '، روش «' + (technique ? technique.label : block.technique) + '» با تعداد حرکت‌های این بلوک سازگار نیست؛ ابتدا پیش‌نمایش را اصلاح کن.');
+    }
+  }); });
   var parsed = sfPiParse_(p.text, { createMissing: !!p.createMissing, overrides: p.overrides || {}, blockOverrides: p.blockOverrides || {} });
   var days = parsed.days.map(function (d) {
     return {
@@ -589,7 +601,7 @@ function sfAdminImportProgram(token, p) {
   if (p.saveToBank) {
     try {
       bankName = sfText_(p.bankName, 120) || payload.planName;
-      sf7CopyWorkoutTo_((res && res.planId) || '', SF7_LIB, bankName, '');
+      sfWithLock_(function() { sf7CopyWorkoutTo_((res && res.planId) || '', SF7_LIB, bankName, ''); });
     } catch (eB) { bankName = ''; }
   }
   return {

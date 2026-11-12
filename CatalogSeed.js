@@ -10,8 +10,10 @@
 
 var SF_CATALOG = { FOOD: 'SF_Foods', SUPP: 'SF_SuppBank', MIN: 'SF_MineralBank', MODEL: 'SF_DietModels' };
 
-/* تصویر خودکفا: data-URI کوچک؛ در شیت، اپ، وب و تلگرام همیشه نمایش داده می‌شود. */
+/* تصویر ساختگی/دکوری ممنوع؛ فقط عکس واقعیِ بازبینی‌شده در بانک ثبت می‌شود. */
 function sfCatArt_(label, kind) {
+  return '';
+  /* کد قدیمی حفظ شده تا وابستگی احتمالی نام تابع نشکند؛ دیگر خروجی آن ذخیره نمی‌شود. */
   var tone = kind === 'supp' ? '#7BD88F' : (kind === 'min' ? '#8FC7E8' : '#E9C88A');
   var txt = String(label == null ? '' : label).slice(0, 24);
   var art = kind === 'supp'
@@ -242,21 +244,19 @@ function sfCatSeedModels_() {
   return rows.length;
 }
 
-/** تصویرهای خالی سه بانک را با آرت پر می‌کند (برای ردیف‌های دستی هم کار می‌کند). */
+/** آرت‌های ساختگی قبلی را پاک می‌کند؛ عکس واقعیِ خالی را تا بازبینی دست‌نخورده می‌گذارد. */
 function sfCatFillImages_() {
   var n = 0;
   [[SF_CATALOG.FOOD, 'food'], [SF_CATALOG.SUPP, 'supp'], [SF_CATALOG.MIN, 'min']].forEach(function (cfg) {
     var rd;
     try { rd = sfRead_(cfg[0]); } catch (e) { return; }
-    var iImg = rd.idx.ImageURL, iName = rd.idx.PersianName;
-    if (iImg === undefined || iName === undefined || !rd.rows.length) return;
+    var iImg = rd.idx.ImageURL;
+    if (iImg === undefined || !rd.rows.length) return;
     var col = rd.sh.getRange(2, iImg + 1, rd.rows.length, 1);
     var vals = col.getValues(), changed = false;
     for (var r = 0; r < rd.rows.length; r++) {
-      if (normalize_(vals[r][0])) continue;
-      var name = normalize_(rd.rows[r][iName]);
-      if (!name) continue;
-      vals[r][0] = sfCatArt_(name, cfg[1]);
+      if (!/^data:image\/svg\+xml/i.test(String(vals[r][0] || ''))) continue;
+      vals[r][0] = '';
       changed = true; n++;
     }
     if (changed) { col.setNumberFormat('@'); col.setValues(vals); }
@@ -264,7 +264,7 @@ function sfCatFillImages_() {
   return n;
 }
 
-/** همهٔ بانک‌ها را پر کن و تصویرهای خالی را با آرت خودکفا پر کن. */
+/** بانک‌ها را کامل می‌کند و placeholderهای تصویری قدیمی را پاک می‌کند. */
 function sfAdminCatalogSeed(token) {
   sfAdmin_(token); sfEnsure_();
   return sfWithLock_(function () {
