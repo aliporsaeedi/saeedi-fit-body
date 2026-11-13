@@ -788,8 +788,12 @@ html[data-theme="pink"] .sf4-lock .ic{background:#ffe3ef;color:#b02b66}
       if (root && root.children.length === 0) {
         var box = document.createElement('div');
         box.style.cssText = 'padding:20px;margin:16px;border-radius:14px;background:#2a1f10;color:#ffe6b8;direction:rtl;font-family:Vazirmatn,sans-serif;line-height:1.9';
-        box.innerHTML = '<b>برنامه بالا نیامد</b><br>اتصال یا مجوزهای اسکریپت را بررسی کن و صفحه را دوباره باز کن.';
+        box.id='sfBootSlow';box.setAttribute('role','status');
+        box.innerHTML = '<b>هنوز در حال آماده‌سازی…</b><br>بارگذاری کمی طول کشیده؛ منتظر دریافت اطلاعات هستیم.';
         document.body.appendChild(box);
+        var observer=new MutationObserver(function(){if(root.children.length){box.remove();observer.disconnect();}});
+        observer.observe(root,{childList:true});
+        if(root.children.length){box.remove();observer.disconnect();}
         if (sp) sp.classList.add('hide');
       }
     } catch (e) {}

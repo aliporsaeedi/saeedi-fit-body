@@ -2187,7 +2187,7 @@ function sf2HeroCard(D, w, di, day, done) {
 function workoutView() {
   var D = sfViewData();
   var customHtml = sfStudentHtml();
-  var workouts = customHtml ? [] : (D.workouts || []);
+  var workouts = (D.workouts || []).filter(function(legacy){return !customHtml || !((D.sfTraining || {}).plans || []).some(function(modern){return modern.planName===legacy.name;});});
   var idx = Math.min(state.selected.workout || 0, Math.max(0, workouts.length - 1));
   var w = workouts[idx];
   var done = (D === state.data) ? doneMap() : sf2DoneMap(D);
