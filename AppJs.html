@@ -281,6 +281,7 @@ h1{margin:0;text-align:center;font-size:24px;font-weight:800}
 }
 
 function loginView() {
+  document.body.classList.add('sf-login-mode');
   sf4LoginCss();
   var prev = document.getElementById('boot'); if (prev && prev.parentNode) prev.parentNode.removeChild(prev);
   var prevNp = document.getElementById('nprog'); if (prevNp && prevNp.parentNode) prevNp.parentNode.removeChild(prevNp);
@@ -5205,6 +5206,7 @@ function sf7EnsureAdmUsers() {
   });
 }
 function render() {
+  document.body.classList.remove('sf-login-mode');
   var loginStyle=document.getElementById('sf4-login-css'); if(loginStyle) loginStyle.remove();
   var d = state.data;
   if (!d) { loginView(); return; }
