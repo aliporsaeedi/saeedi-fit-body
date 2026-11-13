@@ -1,4 +1,5 @@
-<script>function sfCatalogPhotoKey_(q,kind){return kind+'|'+String(q || '').toLowerCase().trim();}
+<script>
+function sfCatalogPhotoKey_(q,kind){return kind+'|'+String(q || '').toLowerCase().trim();}
 function sfCatalogPhotoCached_(q,kind){var cache=window.SF_CATALOG_IMAGE_CACHE || {},entry=cache[sfCatalogPhotoKey_(q,kind)];return entry && entry.reviewed && /^https:\/\//i.test(entry.image || '') ? entry.image : imgArt();}
 function sfCatalogPhotoCredits_(){
   var main=document.getElementById('main');if(!main)return;var seen={},rows=[];
@@ -586,44 +587,8 @@ async function startBarcodeScan(onDetected) {
 /* -------------------------------------------------------------------------
  * "Today" card
  * ---------------------------------------------------------------------- */
-function todayCard() {
-  const workouts = state.data.workouts;
-  const w = workouts[Math.min(state.selected.workout, workouts.length - 1)];
-  if (!w || !w.days.length) return '';
-  const savedIdx = Number(localStorage.getItem('fc_today_day_' + w.name) || 0);
-  const dayIdx = Math.min(savedIdx, w.days.length - 1);
-  const day = w.days[dayIdx];
-  const done = doneMap();
-  return `<div class="card">
-    <div class="section-title"><h2>برنامه امروز</h2>
-      <select id="todayDaySel" class="pill" style="border:1px solid var(--line);background:var(--input-bg)">
-        ${w.days.map((d, i) => `<option value="${i}" ${i === dayIdx ? 'selected' : ''}>${esc(d.title)}</option>`).join('')}
-      </select>
-    </div>
-    ${day.isRest ? '<div class="empty">امروز استراحته 😴</div>' : `<div class="today-list">${day.exercises.map((ex, xi) => {
-      const key = w.name + '_' + dayIdx + '_' + xi;
-      return `<div class="today-item"><label style="display:flex;gap:8px;align-items:center">
-        <span class="chk-wrap"><input type="checkbox" data-done-key="${esc(key)}" ${done[key] ? 'checked' : ''}><span class="chk-box">${icon('check')}</span></span>
-        <span style="${done[key] ? 'text-decoration:line-through;opacity:.5' : ''}">${esc(ex.name)}</span></label>
-        <span class="sub">${esc(ex.sets || '')} ${ex.sets ? 'ست' : ''} <span class="ltr">${esc(ex.reps)}</span></span></div>`;
-    }).join('')}</div>`}
-  </div>`;
-}
-function bindTodayCard() {
-  const sel = $('todayDaySel');
-  if (!sel) return;
-  const workouts = state.data.workouts;
-  const w = workouts[Math.min(state.selected.workout, workouts.length - 1)];
-  sel.onchange = () => { localStorage.setItem('fc_today_day_' + w.name, sel.value); homeView(); };
-  document.querySelectorAll('.today-item input[type=checkbox]').forEach(cb => {
-    cb.onchange = () => {
-      const done = doneMap();
-      setDone(cb.dataset.doneKey, cb.checked);
-      if (cb.checked) startRestTimer(90);
-      homeView();
-    };
-  });
-}
+
+
 
 /* -------------------------------------------------------------------------
  * Home / dashboard
@@ -651,17 +616,13 @@ function todayInfo(){
   const total=day.isRest?0:day.exercises.length;let c=0;for(let x=0;x<total;x++)if(done[w.name+'_'+i+'_'+x])c++;
   return {day,total,c,sets:null,dayNo:i+1,planName:w.name};
 }
-function tile(ico,label,val,pct){ return `<div class="card tile"><span class="tico">${ico}</span><small>${label}</small><b>${val}</b><div class="tbar"><span style="width:${Math.max(0,Math.min(100,pct))}%"></span></div></div>`; }
+
 function mealsNow(){ return state.data.meals || {today:[], days:{}}; }
 function mealTotals(){ const t=mealsNow().today||[]; const f=k=>t.reduce((s,x)=>s+(Number(x[k])||0),0); return {kcal:f('kcal'),protein:f('protein'),carbs:f('carbs'),fat:f('fat')}; }
 
 const BARBELL='<svg viewBox="0 0 120 80" aria-hidden="true"><defs><linearGradient id="bb" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9dff7a"/><stop offset="1" stop-color="#1fa550"/></linearGradient></defs><rect x="4" y="37" width="112" height="6" rx="3" fill="#cfd8d4"/><rect x="14" y="14" width="10" height="52" rx="4" fill="url(#bb)"/><rect x="27" y="22" width="8" height="36" rx="3" fill="url(#bb)" opacity=".85"/><rect x="96" y="14" width="10" height="52" rx="4" fill="url(#bb)"/><rect x="85" y="22" width="8" height="36" rx="3" fill="url(#bb)" opacity=".85"/></svg>';
-function homeTop(){ const d=state.data, p=d.profile, wt=d.water||{}, t=todayInfo(), m=mealTotals(); const wg=Number(wt.goal||p.waterGoal||8), wc=Number(wt.glasses||0), kt=Number(p.targetCalories)||0, pt=proteinTarget(p);
-  const bg = HERO_IMG ? `style="background-image:linear-gradient(90deg,rgba(5,9,8,.92) 30%,rgba(5,9,8,.25)),url('${esc(HERO_IMG)}');background-size:cover;background-position:center"` : '';
-  const hero = t ? `<div class="card today-hero" ${bg}><div><small>تمرین امروز</small><h2>${esc(t.day.title)}</h2><p>${t.day.isRest?'روز استراحت':fmt(t.c)+' از '+fmt(t.total)+' حرکت انجام شد'}</p><button class="btn startbtn" onclick="state.tab='workout';render()">شروع</button></div>${HERO_IMG?'':BARBELL}</div>` : '';
-  return hero + `<div class="tiles">${tile('🔥','کالری',fmt(m.kcal)+'<i>/'+fmt(kt)+'</i>',kt?m.kcal/kt*100:0)}${tile('💪','پروتئین',fmt(m.protein)+'<i>/'+fmt(pt)+' g</i>',pt?m.protein/pt*100:0)}${tile('💧','آب',fmt(wc)+'<i>/'+fmt(wg)+'</i>',wg?wc/wg*100:0)}</div>` + challengeCard(); }
-function weeklyCard(){ const set=new Set((state.data.logs||[]).map(x=>String(x.date||'').slice(0,10))); const days=[]; const FA={Sun:'ی',Mon:'د',Tue:'س',Wed:'چ',Thu:'پ',Fri:'ج',Sat:'ش'}; for(let i=6;i>=0;i--){ const d=new Date(); d.setDate(d.getDate()-i); const iso=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); days.push({on:set.has(iso), l:FA[d.toLocaleDateString('en-US',{weekday:'short'})]||'-'}); } const n=days.filter(x=>x.on).length;
-  return `<div class="card" style="margin-top:14px"><div class="section-title"><h2>پیشرفت هفتگی</h2><span class="pill">${Math.round(n/7*100)}%</span></div><div class="sfa-week">${days.map((x,i)=>`<span class="${x.on?'on':''}" style="animation-delay:${0.06*i}s">${x.l}</span>`).join('')}</div><div class="sub">${fmt(n)} از 7 روز ثبت پیشرفت</div></div>`; }
+
+
 function suppPills(s){ const f=state.suppF||''; return `<div class="tabs" id="suppPills"><button data-sf="" class="${f?'':'active'}">همه</button>${s.schedule.map(b=>`<button data-sf="${esc(b.timing)}" class="${f===b.timing?'active':''}">${esc(b.timing)}</button>`).join('')}</div>`; }
 function weightChart(logs, goalWeight){
   if(!logs.length) return `<div class="empty">هنوز ثبت پیشرفتی انجام نشده.</div>`;
@@ -2554,14 +2515,7 @@ document.addEventListener('click', function (e) {
 
 /* ---------- 10) صفحه خانه ---------- */
 /* ===== قطعات آب (اریب) ===== */
-function sfaWaterSeg(water) {
-  var w = water || {};
-  var g = Math.max(1, Number(w.goal) || 8);
-  var n = Math.max(0, Number(w.glasses) || 0);
-  var s = '<div class="sfa-water">';
-  for (var i = 0; i < g; i++) s += '<i class="' + (i < n ? 'on' : '') + '" style="animation-delay:' + (0.5 + i * 0.12) + 's"></i>';
-  return s + '</div>';
-}
+
 
 function sfReferencePeriods(pb,end){
   var out=[],setDays=(pb.sets || {}).days || {},workouts=(pb.workouts || {}).perDay || {};
