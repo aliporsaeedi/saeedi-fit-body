@@ -2,3 +2,4 @@
 .clasprc.json
 node_modules/
 *.log
+design/lovable-ui/dist/

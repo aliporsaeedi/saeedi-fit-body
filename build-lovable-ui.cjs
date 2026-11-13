@@ -1,0 +1,10 @@
+const fs=require('fs'),path=require('path'),{execFileSync}=require('child_process');
+const root=__dirname,ui=path.join(root,'design/lovable-ui'),esbuild=require(path.join(ui,'node_modules/esbuild'));
+(async()=>{
+  execFileSync(process.execPath,[path.join(ui,'node_modules/@tailwindcss/cli/dist/index.mjs'),'-i','src/styles.css','-o','dist/styles.css','--minify'],{cwd:ui,stdio:'inherit'});
+  const result=await esbuild.build({absWorkingDir:ui,entryPoints:['src/entry.tsx'],bundle:true,write:false,minify:true,format:'iife',platform:'browser',target:['es2022'],jsx:'automatic',jsxImportSource:'@/latin',tsconfig:'tsconfig.json',legalComments:'eof'});
+  const css=fs.readFileSync(path.join(ui,'dist/styles.css'),'utf8'),fonts=fs.readFileSync(path.join(root,'design/fonts-embedded.css'),'utf8');
+  const js=result.outputFiles[0].text;
+  fs.writeFileSync(path.join(root,'LovableApp.html'),'<!doctype html><html lang="fa" dir="rtl" class="dark"><head><base target="_top"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Saeedi Fit Body</title><style>'+fonts+'\n'+css+'</style></head><body><div id="lovable-root"></div><script>window.SF_APP_URL=<?!= JSON.stringify(ScriptApp.getService().getUrl()); ?>;</script><script>new Function(new TextDecoder().decode(Uint8Array.from(atob("'+Buffer.from(js).toString('base64')+'"),c=>c.charCodeAt(0))))();</script></body></html>');
+  console.log('Lovable UI built: '+css.length+' CSS bytes; '+js.length+' JS bytes.');
+})().catch(e=>{console.error(e);process.exitCode=1;});

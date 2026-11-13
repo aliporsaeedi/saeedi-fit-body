@@ -240,7 +240,7 @@ function doGet(e) {
   // instead of a blank white screen.
   try {
     ensureAppSheets_();
-    return HtmlService.createTemplateFromFile('Index')
+    return HtmlService.createTemplateFromFile(e && e.parameter && e.parameter.classic === '1' ? 'Index' : 'LovableApp')
       .evaluate()
       .setTitle(CONFIG.APP_NAME)
       .addMetaTag('viewport', 'width=device-width, initial-scale=1')
@@ -2141,7 +2141,9 @@ function getBootstrap(token, clientToday) {
   try { __gate = sfGate_(session); } catch (eGate) { __gate = sfGateFallback_(); }
   if (!__gate || !__gate.features) __gate = sfGateFallback_();
   result.gate = __gate;
-  /* حذف فریم‌ها سمت کلاینت انجام می‌شود (sfGifAllowed)؛ پیمایش سنگین کل پاسخ اینجا لازم نیست */
+  if (!__gate.features.gif && !__gate.staff) {
+    (result.workouts || []).forEach(function(plan) { (plan.days || []).forEach(function(day) { (day.exercises || []).forEach(function(ex) { if (ex.bank) { delete ex.bank.gif; delete ex.bank.frames; } }); }); });
+  }
   return rpcSafe_(result);
 }
 
@@ -3395,8 +3397,9 @@ function sfPayReceipt_(token, p, cid) {
     try { file.setSharing(DriveApp.Access.PRIVATE, DriveApp.Permission.NONE); } catch(e) {}
     fileId = file.getId();
   } catch (e) {
-    if (String(e.message || e).indexOf('رسید') > -1) throw e;
+    throw new Error(String(e && e.message || e).indexOf('رسید') > -1 ? String(e.message || e) : 'آپلود رسید انجام نشد؛ پرداخت ثبت نشده است. دوباره تلاش کنید.');
   }
+  if (!fileId) throw new Error('فایل رسید ذخیره نشد؛ پرداخت ثبت نشده است.');
 
   sfAppend_('SF_Payments', [{
     PayID: payId, Username: username, PackageID: normalize_(p.packageId),
@@ -3742,7 +3745,7 @@ function sfGateInfo(token) {
 function sfRequireFeature_(session, feature) {
   var g = sfGate_(session);
   if (g.staff) return g;
-  var ok = feature === 'pdf' ? true : (feature === 'gif' ? g.features.gif : (feature === 'bot' ? g.features.bot : (feature === 'ai' ? g.features.ai > 0 : g.features[feature])));
+  var ok = feature === 'pdf' ? true : (feature === 'gif' ? g.features.gif : (feature === 'bot' ? g.features.bot : (feature === 'ai' ? (Number(g.features.ai) > 0 || Number(g.features.ai) === -1) : g.features[feature])));
   if (!ok) {
     var err = new Error('این قابلیت برای اشتراک «' + g.tierName + '» فعال نیست. برای فعال‌سازی اشتراک نقره‌ای یا طلایی بگیر.');
     err.code = 'SUBSCRIPTION_REQUIRED';
