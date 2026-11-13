@@ -1,3 +1,4 @@
+import {ExerciseGuide} from "./ExerciseGuide";
 import { useEffect, useRef, useState } from "react";
 import { Check, Minus, Plus, Timer, Trophy } from "lucide-react";
 import { gas } from "@/lib/fit/api";
@@ -14,7 +15,7 @@ import { toast } from "sonner";
 type H = { date: string; weight: number | null; reps: number | null };
 const e1rm = (h: H) => (Number(h.weight) || 0) * (1 + (Number(h.reps) || 0) / 30);
 
-export function ExerciseSheet({ item, workoutName, onClose, done, onToggle }: { item: { ex: Exercise; i: number } | null; workoutName: string; onClose: () => void; done: boolean; onToggle: () => void }) {
+export function ExerciseSheet({ item, workoutName, dayIndex, onClose, done, onToggle }: { item: { ex: Exercise; i: number } | null; workoutName: string; dayIndex:number; onClose: () => void; done: boolean; onToggle: () => void }) {
   const { token } = useFit();
   const ex = item?.ex;
   const [hist, setHist] = useState<H[] | null>(null);
@@ -51,7 +52,7 @@ export function ExerciseSheet({ item, workoutName, onClose, done, onToggle }: { 
       setHist(r.history);
       const pr = best > 0 && weight * (1 + reps / 30) > best;
       toast.success(pr ? "رکورد جدید! 🏆" : `ست ${todaySets.length + 1} ثبت شد`);
-      startRest(restSeconds(ex));
+      if(!ex.training || ex.training.size < 2 || ex.training.position === ex.training.size) startRest(restSeconds(ex));
     } catch (e) { toastError(e); } finally { setBusy(false); }
   };
 
@@ -71,18 +72,18 @@ export function ExerciseSheet({ item, workoutName, onClose, done, onToggle }: { 
       }>
       {ex ? (
         <div className="space-y-5">
-          <div className="relative aspect-[4/3] overflow-hidden rounded-2xl border border-line bg-foreground">
+          {!ex.name.includes("+")?<div className="relative aspect-[4/3] overflow-hidden rounded-2xl border border-line bg-foreground">
             {imgs[0] ? <img src={imgs[0]} alt={ex.name} className="absolute inset-0 size-full object-contain" /> : null}
             {imgs[1] ? <img src={imgs[1]} alt="" className="animate-frames absolute inset-0 size-full object-contain" /> : null}
             <span className="skew-tag absolute top-3 start-3"><span>{imgs.length > 1 ? "حرکت نمایشی" : "راهنما"}</span></span>
-          </div>
+          </div>:null}
 
           <div className="grid grid-cols-3 gap-2">
             {[[ex.sets, "ست"], [ex.reps, "تکرار"], [`${restSeconds(ex)}S`, "استراحت"]].map(([v, l]) => (
               <div key={l} className="card-surface p-3 text-center"><div className="num text-2xl">{v}</div><div className="text-[11px] text-muted-foreground">{l}</div></div>
             ))}
           </div>
-          {ex.notes ? <p className="rounded-xl border border-ember/30 bg-ember/10 px-3 py-2 text-sm text-ember">{ex.notes}</p> : null}
+          <ExerciseGuide ex={ex} planName={workoutName} dayIndex={dayIndex} index={item!.i}/>
 
           <div className="grid grid-cols-2 gap-3">
             <Stepper label="وزنه (کیلو)" value={weight} step={2.5} onChange={v=>{edited.current=true;setWeight(v);}} />

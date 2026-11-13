@@ -1087,18 +1087,22 @@ function sfPlansAsLegacy_(username) {
           if (r && repsList.indexOf(r) < 0) repsList.push(r);
         });
         const repsTxt = repsList.length > 1 ? repsList.join('-') : (repsList[0] || '');
-        (b.items || []).forEach(function (it) {
+        (b.items || []).forEach(function (it, itemIndex) {
+          const ownCells = sets.map(function(s) { const cell = (s.cells || []).find(function(c) { return Number(c.pos) === Number(it.pos); }) || {}; return { setNo: s.setNo, reps: normalize_(cell.reps), weight: normalize_(cell.weight), rest: s.rest }; });
+          const ownReps = ownCells.map(function(c) { return c.reps; }).filter(Boolean);
           const bankInfo = sfBankLegacyInfo_(bank[it.exerciseId]);
           let one = null;
           if (bankInfo) {
             one = { sets: bankInfo.sets, reps: bankInfo.reps, rest: bankInfo.rest, gif: bankInfo.gif, frames: bankInfo.frames };
-            if (Number(b.restBetweenSec) > 0) one.rest = Number(b.restBetweenSec);
+
           }
+          if (b.restBetweenSec !== null && b.restBetweenSec !== undefined && Number.isFinite(Number(b.restBetweenSec))) { one = one || { gif: [], frames: [] }; one.rest = Math.max(0, Number(b.restBetweenSec)); }
           exercises.push({
             name: normalize_(it.name),
             sets: nSets ? String(nSets) : '',
-            reps: repsTxt,
+            reps: ownReps.length && ownReps.every(function(r) { return r === ownReps[0]; }) ? ownReps[0] : ownReps.join('-') || repsTxt,
             notes: normalize_(b.notes),
+            training: { blockId: b.blockId, technique: b.technique, label: b.techniqueLabel, exerciseId: it.exerciseId, position: itemIndex + 1, size: (b.items || []).length, peers: (b.items || []).map(function(x) { return x.name; }), betweenRest: b.restBetweenSec, sets: ownCells, description: (sfTechnique_(b.technique) || {}).desc || '' },
             bank: one
           });
         });

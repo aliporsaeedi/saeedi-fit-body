@@ -166,7 +166,7 @@ function sfGetAppJs() {
 
 /* همان HTML صفحهٔ Index که HtmlService می‌سازد؛ برای میزبانی بیرونی (Cloudflare)
    تا هر تغییری در اسکریپت، بدون بازسازی باندل، روی دامنهٔ دیگر هم دیده شود. */
-function sfGetAppPage() { return HtmlService.createTemplateFromFile('Index').evaluate().getContent(); }
+function sfGetAppPage() { return HtmlService.createTemplateFromFile('LovableApp').evaluate().getContent(); }
 
 function getSS_() {
   /* باز کردن مکرر شیت گران است؛ در هر اجرا یک‌بار باز می‌شود. */
@@ -240,7 +240,7 @@ function doGet(e) {
   // instead of a blank white screen.
   try {
     ensureAppSheets_();
-    return HtmlService.createTemplateFromFile(e && e.parameter && e.parameter.classic === '1' ? 'Index' : 'LovableApp')
+    return HtmlService.createTemplateFromFile('LovableApp')
       .evaluate()
       .setTitle(CONFIG.APP_NAME)
       .addMetaTag('viewport', 'width=device-width, initial-scale=1')
@@ -275,7 +275,7 @@ function onOpen() {
 }
 
 function showSidebar() {
-  const html = HtmlService.createTemplateFromFile('Index').evaluate().setTitle(CONFIG.APP_NAME);
+  const html = HtmlService.createTemplateFromFile('LovableApp').evaluate().setTitle(CONFIG.APP_NAME);
   SpreadsheetApp.getUi().showSidebar(html);
 }
 
@@ -1721,7 +1721,7 @@ function remindersOf_(username) {
 }
 function getRemindersInfo_(username) {
   const p = botProps_(), rec = getUserRecord_(username);
-  return { configured: !!(p.getProperty('TELEGRAM_BOT_TOKEN') && p.getProperty('BOT_USERNAME')), platform: p.getProperty('BOT_PLATFORM') || 'telegram', linked: !!(rec && rec.telegramChatId), items: remindersOf_(username) };
+  return { timeZone: Session.getScriptTimeZone(), configured: !!(p.getProperty('TELEGRAM_BOT_TOKEN') && p.getProperty('BOT_USERNAME')), platform: p.getProperty('BOT_PLATFORM') || 'telegram', linked: !!(rec && rec.telegramChatId), items: remindersOf_(username) };
 }
 function getBotLink(token) {
   const s = requireSession_(token), p = botProps_(), bot = p.getProperty('BOT_USERNAME');
@@ -2081,6 +2081,8 @@ function sendDueReminders_(token) {
       else if (it.type === 'water') { const w = getWater_(username, today) || {}, g = Number(w.glasses || 0), goal = Number(w.goal || 8); if (g >= goal) return; text = '💧 یه لیوان آب بخور! الان ' + g + ' از ' + goal + ' لیوان.'; }
       else if (it.type === 'meal') text = '🍽️ وعدهٔ غذاییت رو توی اپ ثبت کن تا کالری و پروتئین امروزت دقیق بمونه.';
       else if (it.type === 'weight') { if (lastLogDate_(username) === today) return; text = '⚖️ وقت وزن‌کشیه! وزنت رو توی اپ ثبت کن.'; }
+      else if (it.type === 'nutrition') text = '🍽️ یادآوری برنامهٔ تغذیه: ' + normalize_(it.label || 'برنامهٔ ثبت‌شدهٔ مربی را بررسی کنید.');
+      else if (it.type === 'pill' || it.type === 'supplement') text = '🔔 یادآوری ثبت‌شدهٔ شما: ' + normalize_(it.label || 'برنامهٔ مکمل و داروی تجویزشده را بررسی کنید.');
       if (!text) return;
       /* اثرانگشت متن: همان متن در همان روز برای همان چت فقط یک‌بار */
       let tkey = '';
@@ -2364,7 +2366,7 @@ function sfRepsFor_(si, ex, bankEx) {
  * -------------------------------------------------------------------------- */
 function resolveUserPlans_(username) {
   /* کش کوتاه‌مدت: برنامه‌های حل‌شده گران هستند و در یک نشست چند بار لازم می‌شوند. */
-  const ck = 'rsv_' + normalize_(username).toLowerCase() + '_' + (typeof sf7PlanVer_ === 'function' ? sf7PlanVer_() : '1');
+  const ck = 'rsv_ui3_' + normalize_(username).toLowerCase() + '_' + (typeof sf7PlanVer_ === 'function' ? sf7PlanVer_() : '1');
   try { const cc = CacheService.getScriptCache().get(ck); if (cc) return JSON.parse(cc); } catch (e) {}
   const a = getAssignedPlans_(username);
   const out = { workout: [], diet: [], supplement: [] };

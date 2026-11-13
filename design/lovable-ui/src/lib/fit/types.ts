@@ -1,12 +1,13 @@
 export type Exercise = {
   name: string; sets: string; reps: string; notes?: string;
+  training?: {blockId:string;technique:string;label:string;exerciseId:string;position:number;size:number;peers:string[];betweenRest:number;description:string;sets:{setNo:number;reps:string;weight:string;rest:number}[]};
   bank?: { sets?: string; reps?: string; rest?: number; gif?: string[]; frames?: string[][] };
 };
 export type WorkoutDay = { title: string; isRest: boolean; exercises: Exercise[] };
 export type Workout = { name: string; days: WorkoutDay[]; notes?: string[] };
 export type DietItem = { title: string; description: string; kcal: number | null; protein: number | null; carbs: number | null; fat: number | null };
 export type Diet = { name: string; sections: { title: string; items: DietItem[] }[] };
-export type Supplement = { name: string; schedule: { timing: string; items: string[] }[]; groups: { title: string; items: { name: string; timings: string[] }[] }[] };
+export type Supplement = { name: string; schedule: { timing: string; items: string[] }[]; groups: { title: string; items: { name: string; timings: string[] }[] }[];items?:{category:string;name:string;dosage:string;timing:string;instructions:string}[] };
 export type Meal = { id: string; title: string; kcal: number; protein: number; carbs: number; fat: number };
 export type BodyLog = { date: string; jalali: string; weight: number | null; waist: number | null; bodyFat: number | null; calories: number | null; notes: string };
 export type Profile = {
@@ -16,6 +17,7 @@ export type Profile = {
 };
 export type Gate = { active: boolean; staff: boolean; tier: string; tierName: string; status: string; daysLeft: number; endDate: string; renewSoon: boolean };
 export type Boot = {
+  reminders?:{timeZone?:string;items:{type:string;time:string;on:boolean;daily:boolean;label:string}[];configured:boolean;linked:boolean;platform:string};
   user: { username: string; role: string; email: string };
   profile: Profile;
   logs: BodyLog[];

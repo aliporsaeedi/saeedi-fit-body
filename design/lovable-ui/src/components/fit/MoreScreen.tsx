@@ -1,6 +1,6 @@
 import { classicUrl } from "@/lib/fit/api";
 import {Themes} from './Themes';
-import { ArrowLeft, Bot, Crown, LayoutDashboard, LogOut, MessageCircle, Ruler, Sparkles, Target, User } from "lucide-react";
+import { ArrowLeft, Bot, Crown, LayoutDashboard, LogOut, FileText, Pill, MessageCircle, Ruler, Sparkles, Target, User } from "lucide-react";
 import { useFit } from "./store";
 import { Card, Section } from "./primitives";
 import { fmt, jalaliShort } from "@/lib/fit/format";
@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 
 const GOALS: Record<string, string> = { lose: "کاهش وزن", gain: "افزایش حجم", maintain: "تثبیت وزن", cut: "کات", bulk: "حجم" };
 
-export function MoreScreen({ openChat, go }: { openChat: () => void; go: (t: "membership" | "coach") => void }) {
+export function MoreScreen({ openChat, go }: { openChat: () => void; go: (t: "membership" | "coach" | "reminders" | "supplements" | "files") => void }) {
   const { boot, logout } = useFit();
   const p = boot.profile, g = boot.gate;
   const staff = ["admin", "coach"].includes(String(boot.user.role).toLowerCase());
@@ -56,10 +56,12 @@ export function MoreScreen({ openChat, go }: { openChat: () => void; go: (t: "me
       <Section en="TOOLS" title="ابزارها" />
       <div className="grid grid-cols-2 gap-2.5">
         <Themes/>
+        <Tool onClick={()=>go("supplements")} icon={<Pill className="size-5"/>} title="مکمل‌ها و ویتامین‌ها" sub="برنامه و زمان مصرف"/>
+        <Tool onClick={()=>go("files")} icon={<FileText className="size-5"/>} title="دریافت برنامه‌ها" sub="دانلود PDF تمرین، تغذیه و مکمل"/>
         <Tool onClick={openChat} icon={<MessageCircle className="size-5" />} title="پیام به مربی" sub="سؤال، گزارش، هماهنگی" />
         <Tool onClick={() => go("coach")} icon={<Sparkles className="size-5" />} title="مربی هوشمند" sub="راهنمایی شخصی با هوش مصنوعی" accent />
-        <Tool href={classicUrl()} icon={<Bot className="size-5" />} title="یادآورها" sub="ربات تلگرام / بله" />
-        {staff ? <Tool href={classicUrl("/classic?page=admin")} icon={<LayoutDashboard className="size-5" />} title="پنل مربی" sub="مدیریت شاگردها" accent /> : <Tool href={classicUrl()} icon={<User className="size-5" />} title="نسخهٔ کامل" sub="همهٔ امکانات قبلی" />}
+        <Tool onClick={()=>go("reminders")} icon={<Bot className="size-5" />} title="یادآورها" sub="ربات تلگرام / بله" />
+        {staff ? <Tool href={classicUrl("/classic?page=admin")} icon={<LayoutDashboard className="size-5" />} title="پنل مربی" sub="مدیریت شاگردها" accent /> : null}
       </div>
 
       <button onClick={() => void logout()} className="pressable mt-8 flex w-full items-center justify-center gap-2 rounded-xl border border-destructive/30 py-3.5 text-sm font-bold text-destructive">

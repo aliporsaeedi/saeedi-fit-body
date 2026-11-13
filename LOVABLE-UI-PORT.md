@@ -39,3 +39,8 @@ Both the main athlete route and separate `?page=admin` route returned HTTP 200 w
 The browser also showed a working pink/light theme after a user theme change; no theme preference was overwritten during final publication. Sending a live coach/AI message, uploading a receipt, writing exercise sets and every deep classic workflow were not tested against real data during this release. Those functional limits do not change the direct-source UI fidelity checks. No remote Lovable project files or Supabase records were edited by this port.
 
 Install the UI build dependencies with `npm ci --prefix design/lovable-ui --ignore-scripts`. Build with `npm run build:lovable`; run regression checks with `npm test`. The generated HTML embeds the client script as base64 to avoid HtmlService parsing failures. Tests, dependencies, source snapshots and build tools are excluded from clasp uploads; only the 33 runtime files are uploaded.
+
+
+## Subsequent requested experience changes
+
+See ATHLETE-EXPERIENCE-RELEASE.md for the 2026-11-13 follow-up release. Its explicit design overrides, restored new-UI features, tests and verification limits supersede the unchanged-layout claim for those redesigned components. The original import provenance above is retained.

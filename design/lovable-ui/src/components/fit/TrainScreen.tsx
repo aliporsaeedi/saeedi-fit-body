@@ -30,7 +30,7 @@ export function TrainScreen() {
     if(!await toggle(k, now))return;
     if (now) {
       const ex = day!.exercises[i]!;
-      startRest(restSeconds(ex));
+      if(!ex.training || ex.training.size < 2 || ex.training.position === ex.training.size) startRest(restSeconds(ex));
       if (finished + 1 === keys.length) { rememberFinishedDay(w, di); toast.success("جلسه کامل شد! عالی بود 🔥"); }
     }
   };
@@ -79,8 +79,9 @@ export function TrainScreen() {
             {day.exercises.map((ex, i) => {
               const k = keys[i]!, isDone = done.includes(k), isNext = !isDone && keys.findIndex((x) => !done.includes(x)) === i;
               const img = exerciseImages(ex)[0];
+              const combo=!!(ex.training && ex.training.size>1), combined=combo||ex.name.includes("+")||/سوپر\s*ست|superset/i.test(ex.notes||"");
               return (
-                <li key={k} className={cn("relative flex items-center gap-3 border-t border-line px-4 py-3 transition-colors", isNext && "bg-gradient-to-l from-volt/[0.12] to-transparent", isDone && "opacity-55")}>
+                <li key={k} className={cn("relative flex items-center gap-3 border-t border-line px-4 py-3 transition-colors", combined && "sfx-combo-row", isNext && "bg-gradient-to-l from-volt/[0.12] to-transparent", isDone && "opacity-55")}>
                   {isNext ? <span className="animate-breathe absolute inset-y-0 start-0 w-1 bg-volt" /> : null}
                   <button onClick={() => setOpen({ ex, i })} className="pressable flex min-w-0 flex-1 items-center gap-3 text-start">
                     <span className="num w-7 shrink-0 text-2xl text-faint">{String(i + 1).padStart(2, "0")}</span>
@@ -88,6 +89,7 @@ export function TrainScreen() {
                       {img ? <img src={img} alt="" loading="lazy" className="size-full object-cover" /> : <Dumbbell className="m-auto mt-4 size-6 text-ink" />}
                     </span>
                     <span className="min-w-0 flex-1">
+                      {combined?<span className="mb-1 block text-[11px] font-black text-aqua">{ex.training?.label||(/سوپر\s*ست|superset/i.test(ex.notes||"")?"سوپرست":"حرکت ترکیبی")}{combo?` · ${ex.training!.position}/${ex.training!.size}`:""}</span>:null}
                       <b className={cn("block truncate text-[15px]", isNext && "text-volt", isDone && "line-through")}>{ex.name}</b>
                       <span className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-0.5 text-xs text-muted-foreground">
                         <span><span className="num text-sm text-foreground">{ex.sets}</span> ست</span>
@@ -120,9 +122,9 @@ export function TrainScreen() {
         </>
       ) : null}
 
-      <p className="mt-6 flex items-center justify-center gap-1.5 text-xs text-faint"><Timer className="size-3.5" />با تیک زدن هر حرکت، تایمر استراحت خودکار شروع می‌شود</p>
+      <p className="mt-6 flex items-center justify-center gap-1.5 text-xs text-faint"><Timer className="size-3.5" />تایمر استراحت پس از حرکت مستقل یا آخرین حرکت گروه شروع می‌شود</p>
 
-      <ExerciseSheet item={open} workoutName={w.name} onClose={() => setOpen(null)}
+      <ExerciseSheet dayIndex={di} item={open} workoutName={w.name} onClose={() => setOpen(null)}
         done={open ? done.includes(keys[open.i] ?? "") : false} onToggle={() => open && onToggle(open.i)} />
     </div>
   );

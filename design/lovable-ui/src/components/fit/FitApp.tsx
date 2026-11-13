@@ -1,3 +1,8 @@
+import {BrandLoading} from "./BrandLoading";
+import {RemindersScreen} from "./RemindersScreen";
+import {SupplementsScreen} from "./SupplementsScreen";
+import {PlanFiles} from "./PlanFiles";
+import {ReminderRuntime} from "./ReminderRuntime";
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { Apple, ArrowRight, Dumbbell, Flame, Home, LayoutGrid, LineChart, Pause, Plus, RefreshCw } from "lucide-react";
 import { BootProvider, useFit, useSession } from "./store";
@@ -16,7 +21,7 @@ import { addRest, stopRest, useRest } from "./restTimer";
 import { greeting, jalaliLong, latinStamp } from "@/lib/fit/format";
 import { cn } from "@/lib/utils";
 
-type Tab = "home" | "train" | "fuel" | "progress" | "more" | "membership" | "coach";
+type Tab = "home" | "train" | "fuel" | "progress" | "more" | "membership" | "coach" | "reminders" | "supplements" | "files";
 export type Go = (t: Tab) => void;
 const TABS: { id: Tab; label: string; icon: typeof Home }[] = [
   { id: "home", label: "خانه", icon: Home },
@@ -25,15 +30,15 @@ const TABS: { id: Tab; label: string; icon: typeof Home }[] = [
   { id: "progress", label: "پیشرفت", icon: LineChart },
   { id: "more", label: "بیشتر", icon: LayoutGrid },
 ];
-const TITLES: Record<Tab, string> = { home: "خانه", train: "تمرین", fuel: "تغذیه", progress: "پیشرفت", more: "پروفایل", membership: "اشتراک", coach: "مربی هوشمند" };
-const KICKER: Record<Tab, string> = { home: "", train: "TRAINING", fuel: "NUTRITION", progress: "PROGRESS", more: "PROFILE", membership: "MEMBERSHIP", coach: "AI COACH" };
-const SUB: Tab[] = ["membership", "coach"];
+const TITLES: Record<Tab, string> = { home: "خانه", train: "تمرین", fuel: "تغذیه", progress: "پیشرفت", more: "پروفایل", membership: "اشتراک", coach: "مربی هوشمند", reminders:"یادآورها", supplements:"مکمل‌ها", files:"برنامه‌های PDF" };
+const KICKER: Record<Tab, string> = { home: "", train: "TRAINING", fuel: "NUTRITION", progress: "PROGRESS", more: "PROFILE", membership: "MEMBERSHIP", coach: "AI COACH", reminders:"REMINDERS", supplements:"SUPPLEMENTS", files:"MY PROGRAMS" };
+const SUB: Tab[] = ["membership", "coach", "reminders", "supplements", "files"];
 
 export function FitApp() {
   const { token, signIn, signOut } = useSession();
   if (!token) return <LoginScreen onSignedIn={signIn} />;
   return (
-    <BootProvider token={token} onSignedOut={signOut} fallback={<Splash />} errorView={(retry, msg) => <ErrorView retry={retry} message={msg} />}>
+    <BootProvider token={token} onSignedOut={signOut} fallback={<BrandLoading />} errorView={(retry, msg) => <ErrorView retry={retry} message={msg} />}>
       <Shell />
     </BootProvider>
   );
@@ -67,6 +72,9 @@ function Shell() {
   if (tab === "home") screen = <HomeScreen go={setTab} openChat={() => setChat(true)} />;
   else if (tab === "membership") screen = <MembershipScreen />;
   else if (tab === "coach") screen = <CoachAiScreen openMembership={() => setTab("membership")} />;
+  else if (tab === "reminders") screen = <RemindersScreen go={setTab}/>;
+  else if (tab === "supplements") screen = <SupplementsScreen go={setTab}/>;
+  else if (tab === "files") screen = <PlanFiles/>;
   else if (tab === "train") screen = <TrainScreen />;
   else if (tab === "fuel") screen = <FuelScreen />;
   else if (tab === "progress") screen = <ProgressScreen />;
@@ -80,7 +88,7 @@ function Shell() {
         ) : (
           <button type="button" onClick={() => setTab("home")} aria-label="خانه" className="relative shrink-0">
             <span aria-hidden className="absolute inset-0 rounded-full bg-volt/20 blur-xl" />
-            <Logo className="relative h-[60px]" />
+            <Logo className="relative h-[76px] w-[76px]" />
           </button>
         )}
         <div className="min-w-0 flex-1">
@@ -97,7 +105,7 @@ function Shell() {
         </span>
       </header>
       <main key={tab}>{screen}</main>
-      <RestPill />
+      <RestPill /><ReminderRuntime/>
       {isSub ? null : <Dock tab={tab} setTab={setTab} />}
       <ChatSheet open={chat} onOpenChange={setChat} />
     </div>
@@ -135,20 +143,6 @@ function RestPill() {
       <span className="num relative flex-1 text-center text-3xl text-volt">{m}:{s}</span>
       <button onClick={() => addRest(15)} className="pressable relative grid size-9 place-items-center rounded-lg bg-foreground/10" aria-label="۱۵ ثانیه بیشتر"><Plus className="size-4" /></button>
       <button onClick={stopRest} className="pressable relative grid size-9 place-items-center rounded-lg bg-foreground/10" aria-label="توقف"><Pause className="size-4" /></button>
-    </div>
-  );
-}
-
-function Splash() {
-  return (
-    <div className="grid min-h-dvh place-items-center">
-      <div className="text-center">
-        <Logo className="mx-auto h-32 animate-float drop-shadow-[0_0_30px_color-mix(in_oklab,var(--volt)_40%,transparent)]" />
-        <div className="num mt-4 text-5xl tracking-[.04em] text-gold-metal">SAEEDI</div>
-        <div className="num mt-1 text-xs tracking-[.55em] text-volt">FIT BODY</div>
-        <div className="mx-auto mt-4 h-1 w-32 overflow-hidden rounded-full bg-foreground/10"><div className="h-full w-1/3 animate-[marquee_1.2s_ease-in-out_infinite] bg-volt" /></div>
-        <p className="mt-3 text-xs text-muted-foreground">در حال آماده‌سازی برنامه‌ات…</p>
-      </div>
     </div>
   );
 }
