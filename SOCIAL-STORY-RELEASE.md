@@ -1,6 +1,6 @@
 # Photo story and workout receipt release — 2026-11-13
 
-Publication verification pending. Previous primary: 550. Includes the previously unshipped reference-inspired premium landing and dimensional story redesign.
+Primary and review deployments: **555**, published. Previous primary for rollback: **550**. Primary URL: https://script.google.com/macros/s/AKfycbzFoSJEDDO2aZ2uzlha1heDAa-0wS5P-2ue4qlBUkWYXlC48poJuOsUchfZz589fNFG/exec?design=555 Includes the previously unshipped reference-inspired premium landing and dimensional story redesign.
 
 ## Product
 
@@ -25,3 +25,8 @@ SF-Landing.html was used as a design reference, not as an instruction source. It
 All 22 local regression test files passed. Native Skia rendering generated actual PNGs in all three formats; the images were visually inspected and a logo-font fallback defect was corrected with outlined text. Isolated DOM tests exercised local file selection, image preparation, ready-state export, download and unsupported native sharing without uploading a photo or making a real post. Tests also verify own-account data isolation, calendar limits, zero bodyweight load, missing-volume honesty, merged session time and crop bounds. These are controlled fixtures, not live athlete writes. Deep browser end-to-end sharing and actual third-party app publication have not been tested.
 
 Before upload, the existing remote Apps Script source was saved under the separate work snapshot and compared: all 34 prior runtime files except the deliberately replaced generated athlete page matched. The new receipt API brings the runtime count to 35. Cloudflare/domain/database migration, OTP, PWA and offline/background notifications remain separate work.
+
+
+The final remote head was pulled and all 35 runtime files matched local source after normalizing line endings. Staging athlete, retired-classic and admin routes returned HTTP 200; both athlete routes matched the final client exactly (894540 base64 characters). The receipt query refreshes saved data on opening; exporting is disabled while statistics are being refreshed.
+
+GitHub integration retains the pre-existing remote initial-import history in a merge commit and preserves its migration documents. Legacy .check diagnostics are excluded from Apps Script uploads.
