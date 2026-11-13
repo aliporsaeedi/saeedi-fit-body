@@ -1,6 +1,7 @@
 const fs=require('fs'),path=require('path'),{execFileSync}=require('child_process');
 const root=__dirname,ui=path.join(root,'design/lovable-ui'),esbuild=require(path.join(ui,'node_modules/esbuild'));
 (async()=>{
+  execFileSync(process.execPath,[path.join(root,'build-receipt-brand.cjs')],{cwd:root,stdio:'inherit'});
   execFileSync(process.execPath,[path.join(ui,'node_modules/@tailwindcss/cli/dist/index.mjs'),'-i','src/styles.css','-o','dist/styles.css','--minify'],{cwd:ui,stdio:'inherit'});
   const result=await esbuild.build({absWorkingDir:ui,entryPoints:['src/entry.tsx'],bundle:true,write:false,minify:true,format:'iife',platform:'browser',target:['es2022'],jsx:'automatic',jsxImportSource:'@/latin',tsconfig:'tsconfig.json',legalComments:'eof'});
   const css=fs.readFileSync(path.join(ui,'dist/styles.css'),'utf8'),fonts=fs.readFileSync(path.join(root,'design/fonts-embedded.css'),'utf8');

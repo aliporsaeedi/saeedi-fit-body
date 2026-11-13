@@ -9,6 +9,8 @@
 @source "../src";
 @import "tw-animate-css";
 @import "./experience.css";
+@import "./premium.css";
+@import "./receipt.css";
 
 @custom-variant dark (&:is(.dark *));
 

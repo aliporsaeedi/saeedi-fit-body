@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1080" width="1080" height="1080">
+  <defs>
+    <linearGradient id="lime" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#b5e84a"/>
+      <stop offset="0.55" stop-color="#4fb848"/>
+      <stop offset="1" stop-color="#0f7a45"/>
+    </linearGradient>
+    <linearGradient id="navy" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1f2d3d"/>
+      <stop offset="1" stop-color="#0a1624"/>
+    </linearGradient>
+    <linearGradient id="pulse" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#b5e84a"/>
+      <stop offset="1" stop-color="#2fae5a"/>
+    </linearGradient>
+    <mask id="gapMask" maskUnits="userSpaceOnUse" x="0" y="0" width="1080" height="1080">
+      <rect width="1080" height="1080" fill="#fff"/>
+      <polygon points="540,190 722,295 722,505 540,610 358,505 358,295" fill="#000"/>
+    </mask>
+    <clipPath id="innerClip">
+      <polygon points="540,202 711,301 711,499 540,598 369,499 369,301"/>
+    </clipPath>
+  </defs>
+
+
+  <!-- Hexagon badge: outer green ring, white gap, navy core -->
+  <g stroke-linejoin="round">
+    <polygon points="540,170 739,285 739,515 540,630 341,515 341,285" fill="url(#lime)" stroke="url(#lime)" stroke-width="16" mask="url(#gapMask)"/>
+    <polygon points="540,202 711,301 711,499 540,598 369,499 369,301" fill="url(#navy)"/>
+  </g>
+
+  <!-- Subtle six-pack pattern -->
+  <g clip-path="url(#innerClip)" fill="#b5e84a" opacity="0.10">
+    <rect x="445" y="440" width="80" height="46" rx="14"/>
+    <rect x="555" y="440" width="80" height="46" rx="14"/>
+    <rect x="445" y="498" width="80" height="46" rx="14"/>
+    <rect x="555" y="498" width="80" height="46" rx="14"/>
+    <rect x="450" y="556" width="75" height="40" rx="14"/>
+    <rect x="555" y="556" width="75" height="40" rx="14"/>
+  </g>
+
+  <!-- Dynamic S monogram -->
+  <g transform="translate(66 -6) skewX(-10)">
+    <path d="M 618 342 H 492 Q 464 342 464 368 Q 464 394 492 397 L 590 413 Q 618 418 618 444 Q 618 470 590 470 H 458"
+          fill="none" stroke="#ffffff" stroke-width="40" stroke-linejoin="round" stroke-linecap="butt"/>
+    <path d="M 618 470 H 458" fill="none" stroke="#b5e84a" stroke-width="0"/>
+  </g>
+
+  <!-- Heartbeat / pulse line -->
+  <path d="M 420 540 H 488 L 508 508 L 537 568 L 562 520 L 578 540 H 660"
+        fill="none" stroke="url(#pulse)" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- Brand name -->
+  <g fill="#0f1c2b" aria-label="SAEEDI"><path transform="translate(264.96 800) scale(0.128 -0.128)" d="M318 -16Q230 -16 148 4Q66 24 13 56L89 228Q139 199 200.5 181.5Q262 164 320 164Q354 164 373.5 168.5Q393 173 402 181.5Q411 190 411 202Q411 221 390 232Q369 243 334.5 250.5Q300 258 259 266.5Q218 275 176.5 289Q135 303 100.5 326Q66 349 45 386.5Q24 424 24 480Q24 545 60.5 598.5Q97 652 169.5 684Q242 716 350 716Q421 716 490 701Q559 686 614 655L543 484Q491 510 442.5 523Q394 536 348 536Q314 536 294 530Q274 524 265.5 514Q257 504 257 492Q257 474 278 463.5Q299 453 333.5 446Q368 439 409.5 431Q451 423 492 409Q533 395 567.5 372Q602 349 623 312Q644 275 644 220Q644 156 607.5 102.5Q571 49 499 16.5Q427 -16 318 -16Z"/><path transform="translate(357.056 800) scale(0.128 -0.128)" d="M-19 0L287 700L519 700L825 0L581 0L355 588L447 588L221 0ZM163 122L223 292L545 292L605 122Z"/><path transform="translate(468.224 800) scale(0.128 -0.128)" d="M57 0L57 700L626 700L626 522L289 522L289 178L639 178L639 0ZM273 270L273 440L585 440L585 270Z"/><path transform="translate(562.3679999999999 800) scale(0.128 -0.128)" d="M57 0L57 700L626 700L626 522L289 522L289 178L639 178L639 0ZM273 270L273 440L585 440L585 270Z"/><path transform="translate(656.512 800) scale(0.128 -0.128)" d="M57 0L57 700L402 700Q519 700 608 657.5Q697 615 747 537Q797 459 797 350Q797 242 747 163.5Q697 85 608 42.5Q519 0 402 0ZM293 184L392 184Q442 184 479.5 203Q517 222 538 259.5Q559 297 559 350Q559 404 538 441Q517 478 479.5 497Q442 516 392 516L293 516Z"/><path transform="translate(770.24 800) scale(0.128 -0.128)" d="M57 0L57 700L293 700L293 0Z"/></g>
+
+  <g>
+    <rect x="262" y="853" width="120" height="6" rx="3" fill="url(#lime)"/>
+    <rect x="698" y="853" width="120" height="6" rx="3" fill="url(#lime)"/>
+    <g fill="#1c8a4a" aria-label="FIT BODY"><path transform="translate(375.122 870) scale(0.044 -0.044)" d="M83 0L83 700L612 700L612 570L246 570L246 0ZM233 255L233 385L569 385L569 255Z"/><path transform="translate(419.238 870) scale(0.044 -0.044)" d="M83 0L83 700L246 700L246 0Z"/><path transform="translate(449.67 870) scale(0.044 -0.044)" d="M228 0L228 568L4 568L4 700L614 700L614 568L390 568L390 0Z"/><path transform="translate(492.862 870) scale(0.044 -0.044)" d=""/><path transform="translate(521.3140000000001 870) scale(0.044 -0.044)" d="M83 0L83 700L425 700Q557 700 623.5 650Q690 600 690 518Q690 463 663 422.5Q636 382 588.5 360Q541 338 481 338L500 380Q566 380 616.5 358Q667 336 696 294Q725 252 725 191Q725 101 654 50.5Q583 0 445 0ZM244 122L434 122Q496 122 529 143Q562 164 562 208Q562 253 529 274Q496 295 434 295L232 295L232 413L405 413Q464 413 495.5 433.5Q527 454 527 496Q527 538 495.5 558Q464 578 405 578L244 578Z"/><path transform="translate(570.974 870) scale(0.044 -0.044)" d="M423 -12Q340 -12 270 15Q200 42 148 91Q96 140 67.5 206Q39 272 39 350Q39 429 67.5 494Q96 559 148 608.5Q200 658 269.5 685Q339 712 422 712Q505 712 574.5 685Q644 658 696 609Q748 560 776.5 494.5Q805 429 805 350Q805 272 776.5 205.5Q748 139 696 90.5Q644 42 574.5 15Q505 -12 423 -12ZM422 125Q469 125 508.5 141.5Q548 158 578 188.5Q608 219 624.5 259.5Q641 300 641 350Q641 400 624.5 440.5Q608 481 578 511.5Q548 542 508.5 558.5Q469 575 422 575Q375 575 335 558.5Q295 542 265.5 511.5Q236 481 219.5 440.5Q203 400 203 350Q203 300 219.5 259.5Q236 219 265.5 188.5Q295 158 335 141.5Q375 125 422 125Z"/><path transform="translate(624.11 870) scale(0.044 -0.044)" d="M83 0L83 700L401 700Q515 700 602 656.5Q689 613 738 534.5Q787 456 787 350Q787 244 738 165.5Q689 87 602 43.5Q515 0 401 0ZM246 132L393 132Q463 132 514.5 158.5Q566 185 594.5 234.5Q623 284 623 350Q623 417 594.5 466Q566 515 514.5 541.5Q463 568 393 568L246 568Z"/><path transform="translate(675.134 870) scale(0.044 -0.044)" d="M257 0L257 286L294 188L-15 700L158 700L394 308L295 308L532 700L690 700L383 188L420 286L420 0Z"/></g>
+  </g>
+</svg>

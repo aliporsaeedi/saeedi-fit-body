@@ -1,6 +1,7 @@
 import { classicUrl } from "@/lib/fit/api";
+import {Avatar} from './Avatar';
 import {Themes} from './Themes';
-import { ArrowLeft, Bot, Crown, LayoutDashboard, LogOut, FileText, Pill, MessageCircle, Ruler, Sparkles, Target, User } from "lucide-react";
+import { ArrowLeft, Camera, Bot, Crown, LayoutDashboard, LogOut, FileText, Pill, MessageCircle, Ruler, Sparkles, Target, User } from "lucide-react";
 import { useFit } from "./store";
 import { Card, Section } from "./primitives";
 import { fmt, jalaliShort } from "@/lib/fit/format";
@@ -8,7 +9,7 @@ import { cn } from "@/lib/utils";
 
 const GOALS: Record<string, string> = { lose: "کاهش وزن", gain: "افزایش حجم", maintain: "تثبیت وزن", cut: "کات", bulk: "حجم" };
 
-export function MoreScreen({ openChat, go }: { openChat: () => void; go: (t: "membership" | "coach" | "reminders" | "supplements" | "files") => void }) {
+export function MoreScreen({ openChat, go }: { openChat: () => void; go: (t: "membership" | "coach" | "reminders" | "supplements" | "files" | "receipt") => void }) {
   const { boot, logout } = useFit();
   const p = boot.profile, g = boot.gate;
   const staff = ["admin", "coach"].includes(String(boot.user.role).toLowerCase());
@@ -17,9 +18,7 @@ export function MoreScreen({ openChat, go }: { openChat: () => void; go: (t: "me
       <Card className="relative p-5">
         <div aria-hidden className="pointer-events-none absolute -top-10 -end-10 size-40 rounded-full bg-volt/10 blur-2xl" />
         <div className="relative flex items-center gap-4">
-          <div className="grid size-16 place-items-center overflow-hidden rounded-2xl border border-volt/40 bg-volt/10 text-2xl font-black text-volt">
-            {p.avatarUrl ? <img src={p.avatarUrl} alt="" referrerPolicy="no-referrer" className="size-full object-cover" /> : (p.name || boot.user.username).slice(0, 1).toUpperCase()}
-          </div>
+          <Avatar url={p.avatarUrl} name={p.name||boot.user.username} className="sf-profile-portrait"/>
           <div className="min-w-0 flex-1">
             <b className="block truncate text-xl">{p.name || boot.user.username}</b>
             <span className="num text-sm text-muted-foreground">@{boot.user.username}</span>
@@ -56,6 +55,7 @@ export function MoreScreen({ openChat, go }: { openChat: () => void; go: (t: "me
       <Section en="TOOLS" title="ابزارها" />
       <div className="grid grid-cols-2 gap-2.5">
         <Themes/>
+        <Tool onClick={()=>go("receipt")} icon={<Camera className="size-5"/>} title="استودیو استوری و رسید" sub="عکس شخصی، آمار تمرین و خروجی انتشار" accent/>
         <Tool onClick={()=>go("supplements")} icon={<Pill className="size-5"/>} title="مکمل‌ها و ویتامین‌ها" sub="برنامه و زمان مصرف"/>
         <Tool onClick={()=>go("files")} icon={<FileText className="size-5"/>} title="دریافت برنامه‌ها" sub="دانلود PDF تمرین، تغذیه و مکمل"/>
         <Tool onClick={openChat} icon={<MessageCircle className="size-5" />} title="پیام به مربی" sub="سؤال، گزارش، هماهنگی" />

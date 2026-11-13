@@ -1,12 +1,10 @@
-import {LandingExperience} from './LandingExperience';
+import {PremiumLanding} from './PremiumLanding';
 import { useEffect, useRef, useState } from "react";
-import { ArrowLeft, Eye, EyeOff, Lock, ShieldCheck, User, Dumbbell, Utensils, TrendingUp } from "lucide-react";
+import { ArrowLeft, Eye, EyeOff, Lock, User } from "lucide-react";
 import { gas } from "@/lib/fit/api";
 import { FitButton } from "./primitives";
-import { Logo } from "./Logo";
 import { cn } from "@/lib/utils";
 
-const STATS = [["01", "TRAIN"], ["02", "FUEL"], ["03", "PROGRESS"]] as const;
 
 export function LoginScreen({ onSignedIn }: { onSignedIn: (token: string) => void }) {
   const [u, setU] = useState("");
@@ -42,18 +40,7 @@ export function LoginScreen({ onSignedIn }: { onSignedIn: (token: string) => voi
     }
   };
 
-  return (
-    <main className="sfx-landing"><div className="sfx-arena" aria-hidden/>
-      <div className="sfx-landing-grid">
-        <section className="sfx-landing-hero">
-          <div className="sfx-landing-brand"><Logo className="h-[150px] w-[150px]"/><div><span className="kicker text-volt">SAEEDI FIT BODY</span><p className="mt-2 text-sm text-muted-foreground">مربیگری تخصصی · مسیر شخصی پیشرفت</p></div></div>
-          <h1>برنامهٔ دقیق.<br/><span className="text-volt">اجرای پیوسته.</span><br/>پیشرفت قابل مشاهده.</h1>
-          <p>تمرین، تغذیه و پیگیری مربی در یک فضای اختصاصی. برنامهٔ خود را دنبال کنید، عملکردتان را ثبت کنید و مسیر تغییر را آگاهانه پیش ببرید.</p>
-          <button type="button" className="sfx-discover-cta" onClick={()=>{formRef.current?.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'center'});formRef.current?.querySelector('input')?.focus({preventScroll:true});}}>ورود به فضای شخصی <ArrowLeft className="size-5"/></button>
-          <LandingExperience/>
-        </section>
-        <section>
-          <form ref={formRef} onSubmit={submit} className={cn("sfx-signin space-y-3",shake&&"animate-shake")}>
+  return <PremiumLanding onEnter={()=>{document.getElementById('sf-member-access')?.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'center'});formRef.current?.querySelector('input')?.focus({preventScroll:true});}}>          <form ref={formRef} onSubmit={submit} className={cn("sfx-signin space-y-3",shake&&"animate-shake")}>
             <span className="kicker text-volt">YOUR PERSONAL TRAINING SPACE</span>
             <h2>ورود به حساب ورزشکار</h2><p>برای دسترسی به برنامه‌ها و ادامهٔ مسیر شخصی خود وارد شوید.</p>
             <FloatField icon={<User className="size-5"/>} label="نام کاربری" value={u} onChange={setU} autoComplete="username" invalid={!!err&&!u.trim()}/>
@@ -61,12 +48,7 @@ export function LoginScreen({ onSignedIn }: { onSignedIn: (token: string) => voi
             {err?<div role="alert" className="rounded-xl bg-destructive/10 px-3 py-2 text-sm leading-7 text-destructive">{err}</div>:null}
             <FitButton type="submit" className="w-full" loading={busy} success={done} disabled={busy||done}>{busy?'در حال بررسی حساب…':'ورود به فضای اختصاصی'}<ArrowLeft className="size-5"/></FitButton>
             <p className="sfx-landing-note">اگر حساب فعالی ندارید، برای دریافت برنامه و ایجاد حساب با مربی خود هماهنگ کنید.</p>
-          </form>
-          <p className="sfx-landing-note flex items-center justify-center gap-2"><ShieldCheck className="size-4 text-volt"/>برنامه‌ها و سوابق، متصل به حساب شخصی شما هستند.</p>
-        </section>
-      </div>
-    </main>
-  );
+          </form></PremiumLanding>;
 }
 
 function FloatField({ icon, label, value, onChange, trailing, invalid, ...p }: {

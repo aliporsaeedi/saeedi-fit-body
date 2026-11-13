@@ -7,6 +7,8 @@
     "build:lovable": "node build-lovable-ui.cjs"
   },
   "devDependencies": {
+    "@napi-rs/canvas": "1.1.1",
+    "fontkit": "3.0.0",
     "linkedom": "0.18.15",
     "postcss": "8.5.32"
   }

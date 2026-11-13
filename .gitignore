@@ -3,3 +3,13 @@
 node_modules/
 *.log
 design/lovable-ui/dist/
+
+.env
+.env.*
+!.env.example
+.clasprc*
+
+.tools/
+artifacts/
+previews/
+.DS_Store

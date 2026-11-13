@@ -9,7 +9,7 @@ import { addDays, fmt, jalaliShort, todayISO } from "@/lib/fit/format";
 import { cn } from "@/lib/utils";
 import { useWater } from "./useActions";
 
-export function HomeScreen({ go, openChat }: { go: (t: "train" | "fuel" | "progress" | "more" | "membership" | "coach") => void; openChat: () => void }) {
+export function HomeScreen({ go, openChat }: { go: (t: "train" | "fuel" | "progress" | "more" | "membership" | "coach" | "receipt") => void; openChat: () => void }) {
   const { boot } = useFit();
   const p = boot.profile;
   const w = boot.workouts[activeWorkoutIndex(boot)];

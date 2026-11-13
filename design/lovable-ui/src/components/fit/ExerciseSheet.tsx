@@ -51,7 +51,7 @@ export function ExerciseSheet({ item, workoutName, dayIndex, onClose, done, onTo
       const r = await gas<{ history: H[] }>("logExerciseSet", token, { exerciseName: ex.name, workoutName, weight, reps });
       setHist(r.history);
       const pr = best > 0 && weight * (1 + reps / 30) > best;
-      toast.success(pr ? "رکورد جدید! 🏆" : `ست ${todaySets.length + 1} ثبت شد`);
+      toast.success(pr ? "رکورد جدید! " : `ست ${todaySets.length + 1} ثبت شد`);
       if(!ex.training || ex.training.size < 2 || ex.training.position === ex.training.size) startRest(restSeconds(ex));
     } catch (e) { toastError(e); } finally { setBusy(false); }
   };

@@ -31,7 +31,7 @@ export function TrainScreen() {
     if (now) {
       const ex = day!.exercises[i]!;
       if(!ex.training || ex.training.size < 2 || ex.training.position === ex.training.size) startRest(restSeconds(ex));
-      if (finished + 1 === keys.length) { rememberFinishedDay(w, di); toast.success("جلسه کامل شد! عالی بود 🔥"); }
+      if (finished + 1 === keys.length) { rememberFinishedDay(w, di); toast.success("جلسه کامل شد! عالی بود "); }
     }
   };
 
