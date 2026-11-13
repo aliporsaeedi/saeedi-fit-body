@@ -4,7 +4,8 @@
   "scripts": {
     "build:reference": "node build-reference.cjs",
     "test": "node tests/run.cjs",
-    "build:lovable": "node build-lovable-ui.cjs"
+    "build:lovable": "node build-lovable-ui.cjs",
+    "build:cloudflare": "npm run build:lovable && node build-cloudflare.cjs"
   },
   "devDependencies": {
     "@napi-rs/canvas": "1.1.1",

@@ -1,5 +1,7 @@
 # Migration Plan: Saeedi Fit Body (Apps Script → Cloudflare)
 
+> Historical planning document. Its frontend inventory and dates are superseded by `CLOUDFLARE-MIGRATION-STATUS.md`; do not use it as a statement of current deployment or data migration status.
+
 ## 1. Current Architecture
 
 - **Backend:** Google Apps Script (`Code.js`, ~3,800 lines). Functions exposed via `doGet`/`doPost` and called from the frontend through `google.script.run` (wrapped as `server()`).

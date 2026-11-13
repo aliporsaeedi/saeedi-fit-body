@@ -1,5 +1,7 @@
 # Migration Dependencies: Saeedi Fit Body
 
+> Historical inventory, not a complete current schema. The verified source snapshot now contains 64 sheets. See `CLOUDFLARE-MIGRATION-STATUS.md` for the current runtime boundary and remaining dependencies.
+
 ## 1. Google Services Used
 
 | Service | Usage | Migration replacement |

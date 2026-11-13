@@ -1,0 +1,19 @@
+{
+  "$schema": "../node_modules/wrangler/config-schema.json",
+  "name": "saeedi-fit-body",
+  "main": "worker.mjs",
+  "compatibility_date": "2026-11-13",
+  "account_id": "7eda224d6c9b5361506b0572f10ca8b3",
+  "workers_dev": true,
+  "routes": [
+    {"pattern":"saeedifitbody.ir","custom_domain":true},
+    {"pattern":"www.saeedifitbody.ir","custom_domain":true},
+    {"pattern":"admin.saeedifitbody.ir","custom_domain":true}
+  ],
+  "d1_databases": [{"binding":"MIGRATION_DB","database_name":"saeedi-fit-body-staging","database_id":"2d63400a-dff4-4b3e-8eec-ef5fb7273658"}],
+  "assets": {"directory": "./dist", "binding": "ASSETS", "html_handling":"none", "run_worker_first": ["/", "/api/*", "/admin", "/admin/*"]},
+  "vars": {
+    "RELEASE": "cloudflare-bridge-1",
+    "GAS_URL": "https://script.google.com/macros/s/AKfycbzFoSJEDDO2aZ2uzlha1heDAa-0wS5P-2ue4qlBUkWYXlC48poJuOsUchfZz589fNFG/exec"
+  }
+}

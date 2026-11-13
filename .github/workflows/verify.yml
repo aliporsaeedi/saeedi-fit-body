@@ -19,5 +19,5 @@ jobs:
             design/lovable-ui/package-lock.json
       - run: npm ci --ignore-scripts --no-audit --no-fund
       - run: npm ci --prefix design/lovable-ui --ignore-scripts --no-audit --no-fund
-      - run: npm run build:lovable
+      - run: npm run build:cloudflare
       - run: npm test

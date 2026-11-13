@@ -13,3 +13,7 @@ design/lovable-ui/dist/
 artifacts/
 previews/
 .DS_Store
+cloudflare/dist/
+cloudflare/.wrangler/
+cloudflare/private/
+.dev.vars
