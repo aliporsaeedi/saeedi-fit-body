@@ -1,0 +1,10 @@
+const fs=require('fs'),vm=require('vm'),assert=require('node:assert/strict');
+const source=fs.readFileSync('AdminApi.js','utf8'),events=[];
+const c=vm.createContext({normalize_:x=>String(x||'').trim(),adm_who_:()=>{},adm_ensure_:()=>{},adm_bank_:()=>({sheet:'Foods',id:'FoodID',name:'PersianName',sub:'EnglishName'}),sfInvalidate_:()=>events.push('fresh'),adm_mediaQueue:()=>{assert.equal(events[0],'fresh');return {totalMissing:1,items:[{id:'same',name:'First',english:'First'}]};},sfRead_:()=>[{FoodID:'same',ImageURL:'first-image'},{FoodID:'same',ImageURL:'different-row-image'}],sfObjects_:x=>x,Utilities:{base64EncodeWebSafe:x=>x},CacheService:{getScriptCache:()=>({get:()=>null,put:()=>{}})},UrlFetchApp:{fetchAll:()=>[]}});
+vm.runInContext(fs.readFileSync('MediaReview.js','utf8'),c);c.adm_mediaCandidates_=()=>[];
+assert.equal(c.adm_mediaReviewBatch('t','supps',[]).items[0].current,'first-image');
+vm.runInContext(source.slice(source.indexOf('function adm_foodImageReq_('),source.indexOf('/** جستجو فقط پیش‌نمایش')),c);
+assert(!c.adm_foodImageReq_('Boiled egg').url.includes('|'));
+const response={getContentText:()=>JSON.stringify({query:{pages:{one:{pageid:1,title:'Sirloin steak',thumbnail:{source:'https://example.org/US_Beef_cuts.svg.png'}},two:{pageid:2,title:'Sirloin steak',thumbnail:{source:'https://example.org/steak.jpg'}}}}})};
+const result=c.adm_mediaCandidates_('steak','Sirloin steak','foods',response);assert.equal(result.length,1);assert.equal(result[0].code,'2');
+console.log('PASS: food requests encode special characters, diagrams are excluded, batch preview reads fresh data and targets the same first matching record as commit.');

@@ -1,8 +1,9 @@
 /** Read-only batch search; writes still go through the reviewed, locked commit. */
 function adm_mediaReviewBatch(token,bank,excludeIds) {
   adm_who_(token,true); adm_ensure_();
-  var queue=adm_mediaQueue(token,bank,excludeIds,bank === 'foods' ? 12 : 6),b=adm_bank_(bank),rows=sfObjects_(sfRead_(b.sheet)),byId={};
-  rows.forEach(function(row) { byId[normalize_(row[b.id])]=row; });
+  var b=adm_bank_(bank);sfInvalidate_(b.sheet);
+  var queue=adm_mediaQueue(token,bank,excludeIds,bank === 'foods' ? 12 : 6),rows=sfObjects_(sfRead_(b.sheet)),byId={};
+  rows.forEach(function(row) { var id=normalize_(row[b.id]);if(!byId[id])byId[id]=row; });
   var responses=null;
   if(bank === 'foods' && queue.items.length) responses=UrlFetchApp.fetchAll(queue.items.map(function(item) { return adm_foodImageReq_(item.english || item.name); }));
   return {ok:true,missing:queue.totalMissing,items:queue.items.map(function(item,index) {

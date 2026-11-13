@@ -346,7 +346,7 @@ function sfYoutubeOf_(ex) {
 }
 function sfExInfo_(ex) {
   return {
-    region:sfExerciseRegion_(ex), id: ex.ExerciseID, fa: ex.PersianName, en: ex.EnglishName, cat: ex.Category, group: ex.MuscleGroup, sub: ex.SubGroup,
+    secondary:String(ex.SecondaryMuscle || "").split(/[,،;|/]+/).map(sfAnatomyKey_).filter(function(k,i,a){return k && k!==sfExerciseRegion_(ex) && a.indexOf(k)===i;}), region:sfExerciseRegion_(ex), id: ex.ExerciseID, fa: ex.PersianName, en: ex.EnglishName, cat: ex.Category, group: ex.MuscleGroup, sub: ex.SubGroup,
     sec: ex.SecondaryMuscle, equip: ex.Equipment, level: ex.Level, mech: ex.MovementType, ins: ex.Instructions, tips: ex.Tips,
     sets: ex.SuggestedSets, reps: ex.SuggestedReps, rest: ex.RestSec, intensity: ex.Intensity, aliases: ex.Aliases,
     media: sfMediaOf_(ex), yt: sfYoutubeOf_(ex), gifUrl: ex.GifURL || '', gifSrc: ex.GifSourceURL || '', cardio: ex.Category === 'هوازی'
@@ -383,7 +383,7 @@ function sfAdminSaveExercise(token, input) {
   return sfWithLock_(() => {
     const rd = sfRead_(SF.BANK);
     const sh = rd.sh;
-    const id = sfText_(input.ExerciseID, 40);
+    const id = sfText_(input.ExerciseID, 128);
     const editable = ['PersianName', 'EnglishName', 'Category', 'MuscleGroup', 'SubGroup', 'SecondaryMuscle', 'Equipment', 'Level', 'MovementType',
       'Instructions', 'Tips', 'SuggestedSets', 'SuggestedReps', 'RestSec', 'Intensity', 'Aliases', 'GifURL', 'GifSourceURL', 'YouTubeURL', 'Active'];
     const clean = {};
@@ -2021,36 +2021,19 @@ function sfFoodGet(token, foodId) {
   return sfFoodObj_(r);
 }
 
-/** دریافت دسته‌ای تصویر دقیق بانک برای غذا/مکمل/ویتامین؛ فقط URL لازم به کلاینت برمی‌گردد. */
-function sfCatalogImageLookup(token, requests) {
-  requireSession_(token);
-  requests = (requests || []).slice(0, 60);
-  var configs = [
-    { kind: 'food', sheet: SF.FOODS, name: 'PersianName', en: 'EnglishName', image: 'ImageURL' },
-    { kind: 'supp', sheet: 'SF_SuppBank', name: 'PersianName', en: 'EnglishName', image: 'ImageURL' },
-    { kind: 'min', sheet: 'SF_MineralBank', name: 'PersianName', en: 'EnglishName', image: 'ImageURL' }
-  ];
-  var key = function (s) { return normalize_(s).toLowerCase().replace(/[\u0640\u200c\s\-_/]+/g, ' ').replace(/[^\u0600-\u06ff a-z0-9]/g, '').trim(); };
-  var banks = {};
-  configs.forEach(function (c) {
-    try { banks[c.kind] = sfObjects_(sfRead_(c.sheet)).filter(function (r) { return sfIsTrue_(r.Active); }).map(function (r) { return { name: normalize_(r[c.name]), en: normalize_(r[c.en]), image: normalize_(r[c.image]) }; }).filter(function (r) { return /^https?:\/\//i.test(r.image); }); }
-    catch (e) { banks[c.kind] = []; }
-  });
-  return requests.map(function (req) {
-    req = req || {}; var q = key(req.query), kind = String(req.kind || 'food'), rows = banks[kind] || [], best = null, score = 0;
-    if (!q) return { query: req.query || '', kind: kind, image: '' };
-    rows.forEach(function (r) {
-      var n = key(r.name), en = key(r.en), s = 0;
-      if (q === n || q === en) s = 1;
-      else if (n && (n.indexOf(q) >= 0 || q.indexOf(n) >= 0) || en && (en.indexOf(q) >= 0 || q.indexOf(en) >= 0)) s = 0.86;
-      else {
-        var a = q.split(' ').filter(function (x) { return x.length > 2; }), b = (n + ' ' + en).split(' ');
-        var hits = a.filter(function (x) { return b.indexOf(x) >= 0; }).length;
-        s = a.length ? hits / a.length : 0;
-      }
-      if (s > score) { score = s; best = r; }
-    });
-    return { query: req.query || '', kind: kind, image: best && score >= 0.6 ? best.image : '' };
+/** Batch catalog photos use reviewed, exact identities; a generic ingredient cannot stand in for a product. */
+function sfCatalogImageKey_(value){
+  return normalize_(value).toLowerCase().replace(/[۰-۹]/g,function(d){return String('۰۱۲۳۴۵۶۷۸۹'.indexOf(d));}).replace(/[٠-٩]/g,function(d){return String('٠١٢٣٤٥٦٧٨٩'.indexOf(d));})
+    .replace(/(?:^|\s)\d+(?:[.,]\d+)?(?:\s*(?:-|تا|to)\s*\d+(?:[.,]\d+)?)?\s*(?:mcg|mg|µg|ml|iu|g|میلی\s*گرم|میکرو\s*گرم|میلی\s*لیتر|گرم|واحد)(?=\s|$)/gi,' ')
+    .replace(/ي/g,'ی').replace(/ك/g,'ک').replace(/[\u0640\u200c\s\-_/]+/g,' ').replace(/[^\u0600-\u06ff a-z0-9]/g,'').replace(/\s+/g,' ').trim();
+}
+function sfCatalogImageLookup(token,requests){
+  requireSession_(token);requests=(requests || []).slice(0,60);
+  var configs=[{kind:'food',sheet:SF.FOODS},{kind:'supp',sheet:'SF_SuppBank'},{kind:'min',sheet:'SF_MineralBank'}],banks={};
+  configs.forEach(function(c){try{banks[c.kind]=sfObjects_(sfRead_(c.sheet)).filter(function(r){return sfIsTrue_(r.Active) && normalize_(r.ImageSearchStatus)==='reviewed-approved' && /^https:\/\//i.test(normalize_(r.ImageURL));}).map(function(r){return {name:sfCatalogImageKey_(r.PersianName),en:sfCatalogImageKey_(r.EnglishName),image:normalize_(r.ImageURL),credit:normalize_(r.ImageCredit),source:normalize_(r.ImageSourceURL)};});}catch(e){banks[c.kind]=[];}});
+  return requests.map(function(req){req=req || {};var q=sfCatalogImageKey_(req.query),kind=String(req.kind || 'food'),rows=banks[kind] || [];if(kind==='supp' || kind==='min')rows=rows.concat(banks[kind==='supp'?'min':'supp'] || []);
+    var found=q ? rows.filter(function(r){return q===r.name || q===r.en;})[0] : null;
+    return {query:req.query || '',kind:kind,image:found?found.image:'',credit:found?found.credit:'',source:found?found.source:'',reviewed:!!found};
   });
 }
 

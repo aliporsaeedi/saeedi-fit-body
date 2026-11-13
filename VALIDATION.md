@@ -19,3 +19,6 @@ Verified changes include library template snapshots/repair, real-set anatomy wit
 Live data: all 32 vitamin/mineral photos are reviewed; 21/64 supplement photos are reviewed. Food photo review is incomplete. Local original 1323 GIFs decode successfully; older additional bank media still needs standardization.
 
 Known remaining work: full legacy admin code extraction, comprehensive student account acceptance, food and remaining supplement photos, final report download validation, full visual redesign, and later Cloudflare/domain/database migration. Anatomy is a rotatable schematic, not a medical model. Missing goal/level/audience must be entered rather than fabricated.
+
+## 2026-11-13 — priority correction
+Food-photo work paused at user request. Draft builder now uses precise region/category metadata from bank responses and saved-plan exercise info, excludes cardio from resistance sets, keeps secondary volume separate, and explicitly reports missing mapping and cardio-method conflicts. Removed arbitrary set-count-based intensity recommendations. All 11 test files pass, including a new independent fixture covering compound blocks, cardio, secondary deduplication, missing mapping and conflicts. Production UI verification for this increment is pending; no student plan was changed by these tests.

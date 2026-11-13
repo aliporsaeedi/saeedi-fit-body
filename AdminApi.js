@@ -215,6 +215,8 @@ function adm_light_(b, o) {
   const out = {};
   b.fields.forEach(function (f) { if (f.type !== 'area') out[f.k] = normalize_(o[f.k]); });
   out[b.id] = normalize_(o[b.id]); out.Active = sfIsTrue_(o.Active);
+  out.ImageSearchStatus=normalize_(o.ImageSearchStatus);
+  if (b.id === "ExerciseID") { out.region=sfExerciseRegion_(o); out.category=o.Category || ""; out.secondary=String(o.SecondaryMuscle || "").split(/[,،;|/]+/).map(sfAnatomyKey_).filter(function(k,i,a){return k && k!==out.region && a.indexOf(k)===i;}); }
   return out;
 }
 function adm_bankGet(token, bank, id) {
@@ -313,8 +315,9 @@ function adm_mediaCandidates_(name, english, bank, foodResponse) {
   var query = String(english || name || '').trim();
   if (!query) return [];
   if (bank !== 'foods' && typeof sfReviewedProductImage_ === 'function') { var selected = sfReviewedProductImage_(english); if (selected) return [selected]; }
+  if (bank === 'foods' && typeof sfReviewedFoodImage_==='function'){var reviewedFood=sfReviewedFoodImage_(english);if(reviewedFood)return [reviewedFood];}
   if (bank === 'foods') {
-    var cacheKey='adm_food_img_' + Utilities.base64EncodeWebSafe(query).slice(0,180),cache=CacheService.getScriptCache();
+    var cacheKey='adm_food_photo_v2_' + Utilities.base64EncodeWebSafe(query).slice(0,180),cache=CacheService.getScriptCache();
     try { var saved=cache.get(cacheKey); if(saved && !foodResponse) return JSON.parse(saved); } catch(e) {}
     var request=adm_foodImageReq_(query), response=foodResponse || UrlFetchApp.fetch(request.url,{muteHttpExceptions:true,headers:request.headers});
     var pages = {}; try { pages = (JSON.parse(response.getContentText()).query || {}).pages || {}; } catch (e) {}
@@ -323,7 +326,7 @@ function adm_mediaCandidates_(name, english, bank, foodResponse) {
       var p = pages[k], title = String(p.title || ''), hay = title.toLowerCase().replace(/[^a-z0-9\u0600-\u06ff]+/g, ' ');
       var hits = terms.filter(function (t) { return hay.indexOf(t) >= 0; }).length, score = terms.length ? hits / terms.length : 0;
       return { code: String(p.pageid || ''), image: String(p.thumbnail && p.thumbnail.source || ''), title: title, brand: '', score: Math.round(score * 100), source: p.fullurl || ('https://en.wikipedia.org/?curid=' + k), credit: 'Wikipedia · مجوز تصویر در صفحهٔ منبع بررسی شود' };
-    }).filter(function (p) { return /^https:\/\//i.test(p.image) && p.score >= 60; }).sort(function (a, b) { return b.score - a.score; }).slice(0, 4);
+    }).filter(function (p) { return /^https:\/\//i.test(p.image) && !/\.svg(?:[./?]|$)|(?:diagram|beef_cuts|color_chart)/i.test(p.image) && !/\((?:color|colour|band|film)\)/i.test(p.title) && p.score >= 60; }).sort(function (a, b) { return b.score - a.score; }).slice(0, 4);
     try { if(candidates.length) cache.put(cacheKey,JSON.stringify(candidates),3600); } catch(e) {}
     return candidates;
   }
@@ -354,8 +357,9 @@ function adm_mediaQueue(token, bank, excludeIds, limit) {
   var b = adm_bank_(bank), rd = sfRead_(b.sheet), seen = {};
   (excludeIds || []).slice(0, 500).forEach(function (x) { seen[normalize_(x)] = true; });
   var rows = sfObjects_(rd).filter(function (o) {
+    var id=normalize_(o[b.id]);if(!id || seen[id])return false;seen[id]=true;
     var img = normalize_(o.ImageURL), placeholder = /^data:image\/svg\+xml/i.test(img);
-    return normalize_(o[b.id]) && (!img || placeholder || normalize_(o.ImageSearchStatus) !== 'reviewed-approved') && !seen[normalize_(o[b.id])];
+    return normalize_(o[b.id]) && (!img || placeholder || normalize_(o.ImageSearchStatus) !== 'reviewed-approved');
   }).slice(0, Math.max(5, Math.min(30, Number(limit) || 20))).map(function (o) { return { id: normalize_(o[b.id]), name: normalize_(o[b.name]), english: normalize_(o[b.sub]) }; });
   return { ok: true, totalMissing: rd.rows.filter(function (r) { var x = normalize_(r[rd.idx.ImageURL]); return normalize_(r[rd.idx[b.id]]) && (!x || /^data:image\/svg\+xml/i.test(x)); }).length, items: rows };
 }
@@ -369,6 +373,7 @@ function adm_mediaCommit(token, bank, id, candidateCode, expectedImage) {
   var row = sfObj_(rd, rd.rows[i]), list = adm_mediaCandidates_(normalize_(row[b.name]), normalize_(row[b.sub]), bank);
   var chosen = list.filter(function (x) { return String(x.code) === String(candidateCode); })[0];
   if (!chosen || chosen.score < 60) throw new Error('تطبیق تصویر با نام محصول کافی نیست؛ چیزی ثبت نشد.');
+  if(bank==='foods')chosen=sfReviewFoodCredit_(chosen);
   sfWithLock_(function () {
     sfInvalidate_(b.sheet); var fresh = sfRead_(b.sheet), at = fresh.rows.findIndex(function (r) { return normalize_(r[fresh.idx[b.id]]) === normalize_(id); });
     if (at < 0) throw new Error('مورد در این فاصله حذف شده است.');
@@ -445,7 +450,7 @@ function adm_legacyBankAudit(token, name) {
 /* ------------------------------------------------------------ داشبورد --- */
 function adm_dashboard(token) {
   const s = adm_who_(token, false); adm_ensure_();
-  const dashKey = 'adm_dash_v5_' + String(s.role || '').toLowerCase() + '_' + String(s.username || '').toLowerCase().replace(/[^a-z0-9_-]/g, '').slice(0, 48);
+  const dashKey = 'adm_dash_v6_' + String(s.role || '').toLowerCase() + '_' + String(s.username || '').toLowerCase().replace(/[^a-z0-9_-]/g, '').slice(0, 48);
   try { const hit = CacheService.getScriptCache().get(dashKey); if (hit) return JSON.parse(hit); } catch (e) {}
   const out = { ok: true, role: String(s.role).toLowerCase(), users: { total: 0, user: 0, coach: 0, admin: 0 }, banks: {}, pending: 0, alerts: 0, errors: 0, telegram: { configured: false, adminChat: false } };
   try {
@@ -459,10 +464,11 @@ function adm_dashboard(token) {
   Object.keys(ADM_BANKS).forEach(function (k) {
     const b = ADM_BANKS[k]; let rows = [];
     try { rows = sfObjects_(sfRead_(b.sheet)); } catch (e) {}
+    const identityRows={};rows.forEach(function(row){var id=normalize_(row[b.id]);if(id)(identityRows[id] || (identityRows[id]=[])).push(normalize_(row[b.name]));});
     const imgs = b.media.img || [];
     const mediaCols = imgs.concat(b.media.gif ? [b.media.gif] : [], k === 'exercises' ? ['GifNewURL'] : []);
     const hasRealImage = function (o) { return mediaCols.some(function (c) { return /^https?:\/\//i.test(normalize_(o[c])); }); };
-    out.banks[k] = { title: b.title, total: rows.length, noImage: rows.filter(function (o) { return !hasRealImage(o); }).length, reviewed: rows.filter(function(o) { return hasRealImage(o) && normalize_(o.ImageSearchStatus) === 'reviewed-approved'; }).length, unified:k === 'exercises' ? rows.filter(sfIsUnifiedExercise_).length : 0 };
+    out.banks[k] = { title: b.title, total: rows.length, noImage: rows.filter(function (o) { return !hasRealImage(o); }).length, reviewed: rows.filter(function(o) { return hasRealImage(o) && normalize_(o.ImageSearchStatus) === 'reviewed-approved'; }).length, unified:k === 'exercises' ? rows.filter(sfIsUnifiedExercise_).length : 0, duplicateIDs:Object.keys(identityRows).filter(function(id){return identityRows[id].length>1;}).map(function(id){return {id:id,names:identityRows[id]};}) };
   });
   try { out.pending = sfObjects_(sfRead_('SF_Payments')).filter(function (p) { return String(normalize_(p.Status)).toLowerCase() === 'pending_review'; }).length; } catch (e) {}
   try { out.alerts = (sfCoachAlerts(token) || []).length; } catch (e) {}

@@ -1,4 +1,13 @@
-<script>
+<script>function sfCatalogPhotoKey_(q,kind){return kind+'|'+String(q || '').toLowerCase().trim();}
+function sfCatalogPhotoCached_(q,kind){var cache=window.SF_CATALOG_IMAGE_CACHE || {},entry=cache[sfCatalogPhotoKey_(q,kind)];return entry && entry.reviewed && /^https:\/\//i.test(entry.image || '') ? entry.image : imgArt();}
+function sfCatalogPhotoCredits_(){
+  var main=document.getElementById('main');if(!main)return;var seen={},rows=[];
+  main.querySelectorAll('img[data-catalog-source]').forEach(function(el){var source=el.dataset.catalogSource,credit=el.dataset.catalogCredit;if(!el.hidden && source && credit && !seen[source]){seen[source]=true;rows.push({source:source,credit:credit});}});
+  var host=document.getElementById('catalogImageCredits');if(!rows.length){if(host)host.remove();return;}
+  if(!host){host=document.createElement('details');host.id='catalogImageCredits';host.className='card';main.appendChild(host);}
+  host.innerHTML='<summary style="cursor:pointer;padding:8px">منابع تصاویر</summary><ul>'+rows.map(function(r){return '<li><a target="_blank" rel="noopener" href="'+esc(r.source)+'">'+esc(r.credit)+'</a></li>';}).join('')+'</ul>';
+}
+
 /* -------------------------------------------------------------------------
  * Client-side state
  * ---------------------------------------------------------------------- */
@@ -504,23 +513,7 @@ function bindPlanTabs(rerender) { document.querySelectorAll('.tabs button').forE
  * a working fallback URL; loadMedia() only upgrades it in place if a better
  * direct link comes back, it never has to appear for the link to work.
  * ---------------------------------------------------------------------- */
-const FOOD_PHOTOS = [
-  [/تخم.?مرغ|املت|سفیده|نیمرو|egg/i,'https://images.unsplash.com/photo-1525351484163-7529414344d8?auto=format&fit=crop&w=480&q=75'],
-  [/جو دوسر|اوتمیل|گرانولا|oat/i,'https://images.unsplash.com/photo-1517673132405-a56a62b18caf?auto=format&fit=crop&w=480&q=75'],
-  [/پنکیک|pancake/i,'https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?auto=format&fit=crop&w=480&q=75'],
-  [/مرغ|جوجه|chicken/i,'https://images.unsplash.com/photo-1532550907401-a500c9a57435?auto=format&fit=crop&w=480&q=75'],
-  [/ماهی|سالمون|تن ماهی|fish/i,'https://images.unsplash.com/photo-1467003909585-2f8a72700288?auto=format&fit=crop&w=480&q=75'],
-  [/گوشت|استیک|کباب|beef/i,'https://images.unsplash.com/photo-1558030006-450675393462?auto=format&fit=crop&w=480&q=75'],
-  [/برنج|پلو|کته|rice/i,'https://images.unsplash.com/photo-1516684732162-798a0062be99?auto=format&fit=crop&w=480&q=75'],
-  [/سیب.?زمینی|potato/i,'https://images.unsplash.com/photo-1518977676601-b53f82aba655?auto=format&fit=crop&w=480&q=75'],
-  [/سالاد|سبزی|کاهو|بروکلی|salad/i,'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=480&q=75'],
-  [/ماست|شیر|پنیر|yogurt/i,'https://images.unsplash.com/photo-1488477181946-6428a0291777?auto=format&fit=crop&w=480&q=75'],
-  [/موز|سیب|میوه|fruit/i,'https://images.unsplash.com/photo-1619566636858-adf3ef46400b?auto=format&fit=crop&w=480&q=75'],
-  [/پاستا|ماکارونی|اسپاگتی/i,'https://images.unsplash.com/photo-1551183053-bf91a1d81141?auto=format&fit=crop&w=480&q=75'],
-  [/مغز|بادام|گردو|کره بادام/i,'https://images.unsplash.com/photo-1508746829417-e6f548d8d6ed?auto=format&fit=crop&w=480&q=75'],
-  [/قهوه|خرما|coffee/i,'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=480&q=75'],
-  [/شیک|پروتئین|وی|اسموتی/i,'https://images.unsplash.com/photo-1579722821273-0f6c7d44362f?auto=format&fit=crop&w=480&q=75']
-];
+
 const SUPP_PHOTOS = [
   [/وی|whey|پروتئین/i,'https://images.unsplash.com/photo-1593095948071-474c5cc2989d?auto=format&fit=crop&w=320&q=75'],
   [/کراتین|creatine/i,'https://images.unsplash.com/photo-1579722821273-0f6c7d44362f?auto=format&fit=crop&w=320&q=75'],
@@ -530,21 +523,37 @@ const SUPP_PHOTOS = [
 ];
 
 
-function imgArt(label,kind){var tone=kind==='supp'?'#7BD88F':(kind==='min'?'#8FC7E8':'#E9C88A');var txt=String(label==null?'':label).replace(/^تصویر\s*/,'').slice(0,22);var art=kind==='supp'?'<g transform="rotate(-30 120 82)"><rect x="98" y="58" width="44" height="48" rx="22" fill="'+tone+'" opacity=".85"/><rect x="98" y="58" width="22" height="48" rx="22" fill="#101820" opacity=".45"/></g>':(kind==='min'?'<g><rect x="99" y="55" width="42" height="61" rx="8" fill="'+tone+'" opacity=".82"/><rect x="106" y="43" width="28" height="14" rx="3" fill="'+tone+'"/><rect x="104" y="76" width="32" height="21" rx="4" fill="#101820" opacity=".56"/><path d="M110 85h20M110 91h14" stroke="#EDF2F7" stroke-width="2" stroke-linecap="round" opacity=".85"/></g>':'<circle cx="120" cy="84" r="27" fill="none" stroke="'+tone+'" stroke-width="3"/><path d="M93 84h54" stroke="'+tone+'" stroke-width="3"/>');var svg='<svg xmlns="http://www.w3.org/2000/svg" width="240" height="180" viewBox="0 0 240 180"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#161b23"/><stop offset="1" stop-color="#090c11"/></linearGradient></defs><rect width="240" height="180" rx="18" fill="url(#g)"/><circle cx="196" cy="34" r="52" fill="'+tone+'" opacity=".13"/><circle cx="40" cy="152" r="42" fill="'+tone+'" opacity=".09"/>'+art+'<text x="120" y="152" text-anchor="middle" font-family="Tahoma,Arial,sans-serif" font-size="15" fill="#EDF2F7">'+txt.replace(/[&<>]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;'}[c];})+'</text></svg>';return 'data:image/svg+xml;charset=UTF-8,'+encodeURIComponent(svg);}
-function imgFallback(el){el.onerror=null;var a=String(el.alt||''),k=a.indexOf('مکمل')>=0?'supp':(a.indexOf('ویتامین')>=0?'min':'food');el.src=imgArt(a.replace(/^تصویر\s*/,''),k);}
-function loadMedia() {
-  document.querySelectorAll('[data-yt-query]').forEach(el=>{const q=el.dataset.ytQuery;if(q)el.href='https://www.youtube.com/results?search_query='+encodeURIComponent(q);});
-  document.querySelectorAll('[data-img-query]').forEach(el=>{if(el.dataset.loadedImage)return;el.dataset.loadedImage='1';const q=el.dataset.imgQuery,img=document.createElement('img');img.className='meal-image';img.alt='تصویر '+q;img.loading='eager';img.decoding='async';img.src=imgArt(q,'food');const probe=new Image();probe.onload=()=>{if(probe.naturalWidth>2)img.src=probe.src;};probe.src=foodPhoto(q);el.replaceWith(img);});
+function imgArt(){return 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';}
+function imgFallback(el){
+  el.onerror=null;el.hidden=true;el.style.display='none';
+  if(el.parentNode && (!el._catalogPlaceholder || !el._catalogPlaceholder.isConnected)){var label=document.createElement('span');label.className='catalog-image-placeholder';label.textContent='تصویر در حال تکمیل';label.style.cssText='font-size:11px;line-height:1.8;color:var(--muted);padding:8px;max-width:110px';el.insertAdjacentElement('afterend',label);el._catalogPlaceholder=label;}
+}
+function loadMedia(){
+  document.querySelectorAll('[data-yt-query]').forEach(function(el){var q=el.dataset.ytQuery;if(q)el.href='https://www.youtube.com/results?search_query='+encodeURIComponent(q);});
+  document.querySelectorAll('[data-img-query]').forEach(function(el){var q=el.dataset.imgQuery,img=document.createElement('img');img.className='meal-image';img.alt='تصویر '+q;img.loading='lazy';img.decoding='async';img.dataset.catalogQuery=q;img.dataset.catalogKind='food';el.replaceWith(img);imgFallback(img);});
   resolveCatalogImages();
 }
 var SF_CATALOG_IMAGE_CACHE=window.SF_CATALOG_IMAGE_CACHE||{};
 function resolveCatalogImages(){
-  const nodes=[...document.querySelectorAll('.supp-photo-row img,.supp-group-item img,.supp img,.meal-image')], requests=[], seen={};
-  nodes.forEach(el=>{let kind='food',q=el.dataset.catalogQuery||el.alt||'';if(el.closest('.supp-photo-row,.supp-group-item,.supp')){const row=el.closest('.supp-photo-row');if(row)q=row.querySelector('span')?.textContent||q;kind=/ویتامین|مینرال|vitamin|mineral/i.test(q)?'min':'supp';}else q=String(q).replace(/^تصویر\s*/,'');el.dataset.catalogQuery=q;el.dataset.catalogKind=kind;const k=kind+'|'+String(q).toLowerCase().trim();if(!SF_CATALOG_IMAGE_CACHE[k]&&!seen[k]){seen[k]=1;requests.push({query:q,kind:kind});}});
-  const apply=()=>[...document.querySelectorAll('.supp-photo-row img,.supp-group-item img,.supp img,.meal-image')].forEach(el=>{const k=el.dataset.catalogKind+'|'+String(el.dataset.catalogQuery||'').toLowerCase().trim(),u=SF_CATALOG_IMAGE_CACHE[k];if(u&&el.src!==u){el.src=u;el.dataset.catalogResolved='1';}});
-  apply();if(!requests.length||window.SF_CATALOG_IMAGE_PENDING)return;
-  window.SF_CATALOG_IMAGE_PENDING=true;
-  server('sfCatalogImageLookup',[state.token,requests]).then(rows=>{(rows||[]).forEach(x=>{const k=x.kind+'|'+String(x.query||'').toLowerCase().trim();SF_CATALOG_IMAGE_CACHE[k]=x.image||'';});window.SF_CATALOG_IMAGE_CACHE=SF_CATALOG_IMAGE_CACHE;apply();}).catch(()=>{}).then(()=>{window.SF_CATALOG_IMAGE_PENDING=false;});
+  var selector='.supp-photo-row img,.supp-group-item img,.supp img,.meal-image',cache=window.SF_CATALOG_IMAGE_CACHE || (window.SF_CATALOG_IMAGE_CACHE={}),pending=window.SF_CATALOG_IMAGE_INFLIGHT || (window.SF_CATALOG_IMAGE_INFLIGHT={}),nodes=Array.from(document.querySelectorAll(selector)),requests=[],seen={};
+  function apply(el){
+    var entry=cache[sfCatalogPhotoKey_(el.dataset.catalogQuery,el.dataset.catalogKind)];
+    if(entry && entry.reviewed && /^https:\/\//i.test(entry.image || '')){el.onerror=function(){imgFallback(this);};if(el.getAttribute('src')!==entry.image)el.src=entry.image;el.hidden=false;el.style.removeProperty('display');if(el._catalogPlaceholder)el._catalogPlaceholder.remove();el.dataset.catalogSource=/^https:\/\//i.test(entry.source || '')?entry.source:'';el.dataset.catalogCredit=entry.credit || '';el.alt='تصویر '+el.dataset.catalogQuery;el.onclick=function(){sf6Lightbox(el.src,{title:el.dataset.catalogQuery,credit:entry.credit,source:entry.source});};}
+    else imgFallback(el);
+  }
+  nodes.forEach(function(el){
+    var kind=el.dataset.catalogKind || 'food',q=el.dataset.catalogQuery || el.alt || '';
+    if(!el.dataset.catalogQuery && el.closest('.supp-photo-row,.supp-group-item,.supp')){var row=el.closest('.supp-photo-row');if(row){var name=row.querySelector('span:not(.catalog-image-placeholder)');if(name)q=name.textContent;}kind=/ویتامین|مینرال|vitamin|mineral/i.test(q)?'min':'supp';}else q=String(q).replace(/^تصویر\s*/,'');
+    el.dataset.catalogQuery=q;el.dataset.catalogKind=kind;var key=sfCatalogPhotoKey_(q,kind),entry=cache[key];
+    if(q && !pending[key] && !seen[key] && (!entry || entry.retryAt && entry.retryAt<Date.now())){seen[key]=true;requests.push({query:q,kind:kind});}apply(el);
+  });
+  sfCatalogPhotoCredits_();requests=requests.slice(0,60);if(!requests.length)return;requests.forEach(function(r){pending[sfCatalogPhotoKey_(r.query,r.kind)]=true;});
+  server('sfCatalogImageLookup',[state.token,requests]).then(function(rows){
+    requests.forEach(function(r){cache[sfCatalogPhotoKey_(r.query,r.kind)]={image:'',reviewed:false};});
+    (rows || []).forEach(function(row){cache[sfCatalogPhotoKey_(row.query,row.kind)]=row;});
+    requests.forEach(function(r){delete pending[sfCatalogPhotoKey_(r.query,r.kind)];});
+    resolveCatalogImages();
+  }).catch(function(){requests.forEach(function(r){var key=sfCatalogPhotoKey_(r.query,r.kind);delete pending[key];cache[key]={image:'',reviewed:false,retryAt:Date.now()+30000};});});
 }
 
 /* -------------------------------------------------------------------------
@@ -1853,45 +1862,9 @@ function proteinTarget(p) {
 
 /* ---------- 1-2) تصویر غذا: تطبیق دقیق‌تر با نامِ وعده ---------- */
 /* هر الگو به نزدیک‌ترین عکس «واقعی» وصل می‌شود؛ اگر هیچ‌کدام نخورد، عکس خنثیِ سالم نشان داده می‌شود */
-var SF2_FOOD_FALLBACK = 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=480&q=75';
-var SF2_FOOD_PHOTOS = [
-  [/تخم ?مرغ|سفیده|زرده|املت|نیمرو|egg/i, 'https://images.unsplash.com/photo-1525351484163-7529414344d8?auto=format&fit=crop&w=480&q=75'],
-  [/جو ?دوسر|اوتمیل|گرانولا|بلغور|کینوا|oat|granola|quinoa/i, 'https://images.unsplash.com/photo-1517673132405-a56a62b18caf?auto=format&fit=crop&w=480&q=75'],
-  [/پنکیک|وافل|فرنی|حلوا|pancake|waffle/i, 'https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?auto=format&fit=crop&w=480&q=75'],
-  [/مرغ|جوجه|بوقلمون|chicken|turkey/i, 'https://images.unsplash.com/photo-1532550907401-a500c9a57435?auto=format&fit=crop&w=480&q=75'],
-  [/ماهی|سالمون|تن ?ماهی|میگو|fish|salmon|shrimp|tuna/i, 'https://images.unsplash.com/photo-1467003909585-2f8a72700288?auto=format&fit=crop&w=480&q=75'],
-  [/گوشت|استیک|کباب|راسته|چرخ ?کرده|همبرگر|کوفته|beef|steak|kebab/i, 'https://images.unsplash.com/photo-1558030006-450675393462?auto=format&fit=crop&w=480&q=75'],
-  [/برنج|پلو|کته|rice/i, 'https://images.unsplash.com/photo-1516684732162-798a0062be99?auto=format&fit=crop&w=480&q=75'],
-  [/سیب ?زمینی|potato/i, 'https://images.unsplash.com/photo-1518977676601-b53f82aba655?auto=format&fit=crop&w=480&q=75'],
-  [/نان|تست|بربری|سنگک|لواش|bread|toast/i, 'https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=480&q=75'],
-  [/سالاد|سبزی|کاهو|بروکل|خیار|گوجه|فلفل|کلم|قارچ|بادمجان|کدو|هویج|ذرت|لوبیا ?سبز|salad|vegetable|broccoli/i, 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=480&q=75'],
-  [/ماست|شیر|پنیر|دوغ|کفیر|کشک|خامه|سرشیر|yogurt|milk|cheese/i, 'https://images.unsplash.com/photo-1488477181946-6428a0291777?auto=format&fit=crop&w=480&q=75'],
-  [/موز|سیب(?! ?زمینی)|پرتقال|میوه|توت|انگور|هلو|طالبی|هندوانه|کیوی|آناناس|fruit|banana|apple|berry/i, 'https://images.unsplash.com/photo-1619566636858-adf3ef46400b?auto=format&fit=crop&w=480&q=75'],
-  [/پاستا|ماکارونی|اسپاگتی|نودل|رشته|pasta|noodle/i, 'https://images.unsplash.com/photo-1551183053-bf91a1d81141?auto=format&fit=crop&w=480&q=75'],
-  [/بادام|گردو|فندق|پسته|تخمه|کره ?بادام|مغز|nut|almond|walnut|peanut/i, 'https://images.unsplash.com/photo-1508746829417-e6f548d8d6ed?auto=format&fit=crop&w=480&q=75'],
-  [/قهوه|خرما|شکلات|cacao|coffee|date/i, 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=480&q=75'],
-  [/چای|دمنوش|ماچا|tea|matcha/i, 'https://images.unsplash.com/photo-1544787219-7f47ccb76574?auto=format&fit=crop&w=480&q=75'],
-  [/سوپ|آش|عدس|نخود|لوبیا|حبوبات|lentil|bean|chickpea|soup/i, 'https://images.unsplash.com/photo-1547592166-23ac45744acd?auto=format&fit=crop&w=480&q=75'],
-  [/شیک|پروتئین|وی|اسموتی|shake|protein|smoothie/i, 'https://images.unsplash.com/photo-1579722821273-0f6c7d44362f?auto=format&fit=crop&w=480&q=75'],
-  [/آب|water/i, 'https://images.unsplash.com/photo-1523362628745-0c100150b504?auto=format&fit=crop&w=480&q=75']
-];
-function foodPhoto(q) {
-  var s = String(q == null ? '' : q);
-  if (!s) return SF2_FOOD_FALLBACK;
-  var best = '', bestScore = 0;
-  SF2_FOOD_PHOTOS.forEach(function (row) {
-    var re = new RegExp(row[0].source, 'gi'), m, n = 0, first = 1e9;
-    while ((m = re.exec(s)) !== null) {
-      n++;
-      if (m.index < first) first = m.index;
-      if (n > 8) break;
-    }
-    if (!n) return;
-    var score = n * 10 + (first < 12 ? 6 : (first < 28 ? 3 : 0));
-    if (score > bestScore) { bestScore = score; best = row[1]; }
-  });
-  return best || SF2_FOOD_FALLBACK;
-}
+
+
+function foodPhoto(q){return sfCatalogPhotoCached_(q,'food');}
 
 /* ---------- 2) نمایش گیف داخل برنامه با بزرگ‌نمایی/کوچک‌نمایی ---------- */
 var SF2_LB_T = null;
@@ -2575,7 +2548,6 @@ function sfaWaterSeg(water) {
 function homeView() {
   var d = state.data;
   if (!d) return;
-  if (d.isAdmin || d.isCoach) { try { sfAdminHome(); return; } catch (eAdm) { try { console.error('sfAdminHome', eAdm); } catch (e0) {} } }
   var p = d.profile, logs = d.logs || [], water = d.water || {};
   $('main').innerHTML =
     '<div class="hero"><div class="mini-profile">' + (p.avatarUrl ? '<img class="mini-avatar" src="' + esc(p.avatarUrl) + '" alt="تصویر پروفایل">' : '<div class="mini-avatar" style="display:grid;place-items:center;font-size:18px">👤</div>') + '<div><p>' + greet() + '</p><h1>' + esc((p.name || d.user.username).split(' ')[0]) + '</h1></div></div><span class="pill">' + esc(goalFa(p.goal)) + '</span></div>' +
@@ -2863,6 +2835,7 @@ function suppView() {
   document.querySelectorAll('#suppPills [data-sf]').forEach(function (b) {
     b.onclick = function () { state.suppF = b.getAttribute('data-sf'); suppView(); };
   });
+  loadMedia();
 }
 
 /* =====================================================================
@@ -3125,39 +3098,10 @@ var chatView = (function (orig) {
 })(chatView);
 
 /* ---------- 6) تصاویر مکمل (قرص/پودر/کپسول) دقیق‌تر ---------- */
-var SF5_P = function (id) { return 'https://images.unsplash.com/' + id + '?auto=format&fit=crop&w=320&q=75'; };
-var SF5_SUPP_IMG = {
-  whey: SF5_P('photo-1593095948071-474c5cc2989d'), shake: SF5_P('photo-1579722821273-0f6c7d44362f'),
-  omega: SF5_P('photo-1607619056574-7b8d3ee536b2'), pills: SF5_P('photo-1471864190281-a93a3070b6de'),
-  amino: SF5_P('photo-1583454110551-21f2fa2afe61'), nuts: SF5_P('photo-1508746829417-e6f548d8d6ed'),
-  coffee: SF5_P('photo-1495474472287-4d71bcdd2085'), tea: SF5_P('photo-1544787219-7f47ccb76574'),
-  fruit: SF5_P('photo-1619566636858-adf3ef46400b'), dairy: SF5_P('photo-1488477181946-6428a0291777'),
-  greens: SF5_P('photo-1512621776951-a57141f2eefd'), fish: SF5_P('photo-1467003909585-2f8a72700288'),
-  water: SF5_P('photo-1523362628745-0c100150b504')
-};
-var SF5_SUPP_PHOTOS = [
-  [/امگا|روغن ?ماهی|فیش|fish|omega/i, SF5_SUPP_IMG.omega],
-  [/ویتامین ?c|ویتامین ?ث|vitamin ?c|اسکوربیک/i, SF5_SUPP_IMG.fruit],
-  [/ویتامین|مولتی|multi|vitamin|d3|دی ?3|ب ?کمپلکس|b ?کمپلکس|ب12|b12|فولیک|اسید ?فولیک/i, SF5_SUPP_IMG.pills],
-  [/زینک|zinc|منیزیم|magnesium|کلسیم|calcium|zma|معدنی|الکترولایت|electrolyte|آهن|iron|فروس/i, SF5_SUPP_IMG.dairy],
-  [/کافئین|caffeine|پری ?ورکاوت|pre ?workout|چربی ?سوز|کارنیتین|carnitine|کلنبوترول|انرژی/i, SF5_SUPP_IMG.coffee],
-  [/bcaa|آمینو|amino|گلوتامین|glutamine|آرژنین|arginine|سیترولین|citrulline|eaa/i, SF5_SUPP_IMG.amino],
-  [/کراتین|creatine/i, SF5_SUPP_IMG.shake],
-  [/ملاتونین|melatonin|خواب|آرام/i, SF5_SUPP_IMG.tea],
-  [/پروبیوتیک|probiotic|فلور|همزیست|گوارش/i, SF5_SUPP_IMG.greens],
-  [/مفصل|joint|گلوکوزامین|glucosamine|کلاژن|collagen|غضروف|سیاتیک/i, SF5_SUPP_IMG.shake],
-  [/اشواگاندا|ashwagandha|تست|test|tribulus|هورمون/i, SF5_SUPP_IMG.nuts],
-  [/گینر|gainer|ماس|حجم|بزرگ/i, SF5_SUPP_IMG.shake],
-  [/بار|bar|اسنک|snack/i, SF5_SUPP_IMG.nuts],
-  [/وی|whey|پروتئین|ایزوله|isolate|کازئین|casein|protein/i, SF5_SUPP_IMG.whey],
-  [/آب|water|نوشیدنی|شربت/i, SF5_SUPP_IMG.water]
-];
-function suppPhoto(q) {
-  var s = String(q == null ? '' : q);
-  if (!s) return SF5_SUPP_IMG.pills;
-  for (var i = 0; i < SF5_SUPP_PHOTOS.length; i++) { if (SF5_SUPP_PHOTOS[i][0].test(s)) return SF5_SUPP_PHOTOS[i][1]; }
-  return SF5_SUPP_IMG.pills;
-}
+
+
+
+function suppPhoto(q){return sfCatalogPhotoCached_(q,/ویتامین|مینرال|vitamin|mineral/i.test(q)?'min':'supp');}
 var SF5_SUPP_PRESETS = ['پودر پروتئین وی', 'پروتئین ایزوله', 'کراتین مونوهیدرات', 'امگا 3 (روغن ماهی)', 'مولتی ویتامین', 'ویتامین D3', 'ویتامین C', 'زینک', 'منیزیم', 'کلسیم', 'آهن', 'B کمپلکس', 'BCAA', 'گلوتامین', 'آرژنین', 'کافئین / پری‌ورکاوت', 'الکارنیتین', 'پروبیوتیک', 'کلاژن', 'گلوکوزامین', 'ملاتونین', 'اشواگاندا', 'پروتئین بار', 'گینر', 'کربوهیدرات / الکترولایت'];
 var SF5_TIMINGS = ['ناشتا', 'صبح', 'قبل از تمرین', 'بعد از تمرین', 'عصر', 'شب', 'قبل از خواب'];
 
@@ -4127,7 +4071,8 @@ function sf6BindCompare(pb) {
   setPct(50);
 }
 
-function sf6Lightbox(url) {
+function sf6Lightbox(url,meta) {
+  meta=meta || {};
   sf6Style();
   var old = document.getElementById('sf6Lb');
   if (old) old.parentNode.removeChild(old);
@@ -4135,7 +4080,7 @@ function sf6Lightbox(url) {
   d.id = 'sf6Lb';
   d.className = 'sf6-lb';
   d.innerHTML = '<div class="sf6-lb-bar"><button type="button" id="sf6LbIn">بزرگ‌نمایی +</button><button type="button" id="sf6LbOut">− کوچک‌نمایی</button><button type="button" id="sf6LbX">بستن ✕</button></div>' +
-    '<img id="sf6LbImg" src="' + esc(url) + '" alt="عکس پیشرفت">';
+    '<img id="sf6LbImg" src="' + esc(url) + '" alt="'+esc(meta.title || 'عکس پیشرفت')+'">'+(meta.credit ? '<p style="padding:12px;color:#fff">'+esc(meta.credit)+(/^https:\/\//i.test(meta.source || '') ? ' · <a style="color:inherit" href="'+esc(meta.source)+'" target="_blank" rel="noopener">منبع عکس</a>' : '')+'</p>' : '');
   document.body.appendChild(d);
   var z = 1;
   var apply = function () { document.getElementById('sf6LbImg').style.transform = 'scale(' + z + ')'; };
@@ -8009,266 +7954,6 @@ window.__sfLockUi = 1; /* بنر و تعرفهٔ اشتراک در Index.html ر
 
 
 (function(){try{var s=document.createElement('style');s.textContent='.card,.panel,.topbar,.modal-box,.sf-modal,.coach-card,.day-card,.meal-card,.tile,.box,.adm-stat{background:linear-gradient(135deg,rgba(255,255,255,.12),rgba(255,255,255,.04))!important;backdrop-filter:blur(16px) saturate(1.4);-webkit-backdrop-filter:blur(16px) saturate(1.4);border:1px solid rgba(255,255,255,.18)!important;box-shadow:0 8px 32px rgba(0,0,0,.12)!important}.btn,button.primary,.tab.active,.nav button.active{background:linear-gradient(135deg,rgba(91,226,91,.30),rgba(91,226,91,.10))!important;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid rgba(91,226,91,.28)!important}input,select,textarea{background:rgba(255,255,255,.06)!important;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.16)!important}#printBtn,[data-sf17-pdf],.sf17-pdfbar{pointer-events:auto!important;z-index:60;position:relative}';document.head.appendChild(s);}catch(e){}})();
-
-
-/* ---- ورود برنامه از فایل ---- */
-/* import-ui.js — ورود برنامهٔ تمرین از فایل داخل اپ (مربی/ادمین)
-   این فایل به انتهای باندل کلاینت اضافه می‌شود. */
-(function () {
-  var W = window, D = document;
-  if (W.__sfImportUi) return;
-  W.__sfImportUi = 1;
-
-  function tok() { try { return localStorage.getItem('fc_session') || ''; } catch (e) { return ''; } }
-  function E(s) {
-    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
-      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
-    });
-  }
-  function fa(n) { try { return Number(n).toLocaleString('en-US'); } catch (e) { return n; } }
-  function tip(t, bad) {
-    try { if (typeof toast === 'function') { toast(t, !!bad); return; } } catch (e) {}
-    alert(t);
-  }
-  /* فراخوانی‌های صریح تا allowlist سرور آن‌ها را بشناسد */
-  var CALLS = {
-    sfAdminMeta: function (a) { return server('sfAdminMeta', a); },
-    sfAdminParseProgram: function (a) { return server('sfAdminParseProgram', a); },
-    sfAdminImportProgram: function (a) { return server('sfAdminImportProgram', a); }
-  };
-  function api(name, args) {
-    if (typeof server !== 'function') return Promise.reject(new Error('ارتباط با سرور برقرار نشد.'));
-    var f = CALLS[name];
-    if (!f) return Promise.reject(new Error('تابع ناشناخته: ' + name));
-    return f(args);
-  }
-
-  var state = { text: '', username: '', planName: '', parsed: null, users: null, busy: false };
-
-  /* ---------- استایل ---------- */
-  if (!D.getElementById('sfImpCss')) {
-    var st = D.createElement('style'); st.id = 'sfImpCss';
-    st.textContent = [
-      '#sfImpModal{position:fixed;inset:0;z-index:9997;display:none;overflow:auto;padding:14px;background:rgba(3,7,6,.86)}',
-      '#sfImpModal.on{display:block}',
-      '#sfImpCard{width:min(780px,100%);margin:16px auto 48px;background:#0b1412;border:1px solid rgba(168,255,0,.18);border-radius:22px;padding:18px;color:#eef5f1;font-family:Vazirmatn,system-ui,Tahoma,sans-serif;direction:rtl}',
-      '#sfImpCard h2{margin:0 0 6px;font-size:18px;padding-left:40px}#sfImpCard h3{margin:14px 0 6px;font-size:14.5px}',
-      '#sfImpClose{float:left;border:0;background:rgba(255,255,255,.08);color:#eef5f1;width:32px;height:32px;border-radius:10px;cursor:pointer;font-size:16px}',
-      '#sfImpCard label{display:block;font-size:12px;color:#9fb3ab;margin:10px 0 4px}',
-      '#sfImpCard select,#sfImpCard input[type=text],#sfImpCard textarea{width:100%;background:#08120f;border:1px solid rgba(255,255,255,.14);border-radius:11px;color:#eef5f1;padding:9px 11px;font-family:inherit;font-size:13px}',
-      '#sfImpCard textarea{min-height:120px;direction:ltr;text-align:left;font-family:ui-monospace,Menlo,monospace;font-size:11.5px;line-height:1.6}',
-      '#sfImpCard .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:10px}',
-      '#sfImpCard button.b{border:0;border-radius:11px;padding:9px 14px;font-weight:800;font-size:13px;cursor:pointer;background:linear-gradient(135deg,#6af05c,#3fd36b);color:#06210f}',
-      '#sfImpCard button.b.sec{background:rgba(255,255,255,.07);color:#eef5f1;border:1px solid rgba(255,255,255,.14)}',
-      '#sfImpCard button.b[disabled]{opacity:.55;cursor:default}',
-      '#sfImpPrev{font-size:12.5px;color:#c9d8d2}',
-      '#sfImpPrev .day{border:1px solid rgba(255,255,255,.10);border-radius:14px;padding:10px;margin-top:8px;background:rgba(255,255,255,.02)}',
-      '#sfImpPrev .day>b{display:block;margin-bottom:6px;color:#b7ff6b}',
-      '#sfImpPrev .blk{border-top:1px dashed rgba(255,255,255,.10);padding-top:6px;margin-top:6px}',
-      '#sfImpPrev .blk:first-of-type{border-top:0;padding-top:0;margin-top:0}',
-      '#sfImpPrev .blk .t{font-weight:700;font-size:12px;color:#9dffc4}',
-      '#sfImpPrev .blk .ex{font-size:12px;color:#dbe9e3;margin:2px 0}',
-      '#sfImpPrev .miss{color:#ff9aa5}',
-      '#sfImpPrev .ok{color:#8ce8a6}',
-      '#sfImpMsg{font-size:12px;margin-top:10px;min-height:16px;color:#9dffc4}',
-      '#sfImpNote{font-size:11.5px;color:#93a3bd;line-height:1.9;margin-top:6px}'
-    ].join('');
-    D.head.appendChild(st);
-  }
-
-  /* ---------- مودال ---------- */
-  var modal = D.createElement('div'); modal.id = 'sfImpModal';
-  var card = D.createElement('div'); card.id = 'sfImpCard';
-  modal.appendChild(card); D.body.appendChild(modal);
-  modal.addEventListener('click', function (e) { if (e.target === modal) modal.classList.remove('on'); });
-
-  function shell() {
-    return '<button id="sfImpClose" type="button">×</button>' +
-      '<h2>ورود برنامه از فایل اکسل / CSV</h2>' +
-      '<div id="sfImpNote">همان قالب برنامه‌ات را بده: سرِ هر جلسه «جلسه اول: …» و ستون‌ها «ردیف | نام حرکت | نحوه اجرا | تعداد ست | تکرارها | توضیحات». ' +
-      'سوپرست‌ها را با «+» بین دو حرکت بنویس. حرکات خودکار به بانک (و گیف) وصل می‌شوند و حرکت ناشناخته ساخته می‌شود.</div>' +
-      '<label>شاگرد</label><select id="sfImpUser"><option value="">در حال بارگذاری…</option></select>' +
-      '<label>نام برنامه (اختیاری)</label><input id="sfImpName" type="text" placeholder="مثلاً برنامه ۴ روزه آذر">' +
-      '<label>فایل (CSV / TSV / TXT) یا متن کپی‌شده از اکسل</label>' +
-      '<input id="sfImpFile" type="file" accept=".csv,.tsv,.txt,.xlsx,.xls,text/csv,text/plain">' +
-      '<textarea id="sfImpText" placeholder="اینجا می‌توانی جدول را از اکسل کپی کنی (Ctrl+V)…"></textarea>' +
-      '<div class="row"><label style="margin:0;display:flex;gap:6px;align-items:center;color:#c9d8d2"><input type="checkbox" id="sfImpCreate" checked disabled> حرکات ناشناخته خودکار به بانک حرکات (SF_ExerciseBank) اضافه می‌شوند</label></div>' +
-      '<div class="row"><button class="b" id="sfImpAnalyze" type="button">تحلیل فایل</button>' +
-      '<button class="b sec" id="sfImpSave" type="button" disabled>ثبت برنامه برای شاگرد</button></div>' +
-      '<div id="sfImpMsg"></div><div id="sfImpPrev"></div>';
-  }
-
-  function msg(t, bad) {
-    var el = D.getElementById('sfImpMsg');
-    if (!el) return;
-    el.textContent = t;
-    el.style.color = bad ? '#ff9aa5' : '#9dffc4';
-  }
-
-  function open() {
-    modal.classList.add('on');
-    card.innerHTML = shell();
-    state.parsed = null;
-    D.getElementById('sfImpClose').onclick = function () { modal.classList.remove('on'); };
-    D.getElementById('sfImpAnalyze').onclick = analyze;
-    D.getElementById('sfImpSave').onclick = save;
-    D.getElementById('sfImpFile').onchange = onFile;
-    var ta = D.getElementById('sfImpText');
-    if (ta) ta.oninput = function () { state.text = ta.value; };
-    loadUsers();
-  }
-
-  function loadUsers() {
-    var sel = D.getElementById('sfImpUser');
-    if (!sel) return;
-    if (state.users) { fillUsers(sel, state.users); return; }
-    api('sfAdminMeta', [tok()]).then(function (m) {
-      state.users = (m && m.users) || [];
-      fillUsers(sel, state.users);
-    }).catch(function (e) {
-      sel.innerHTML = '<option value="">خطا: ' + E(e.message) + '</option>';
-    });
-  }
-
-  function fillUsers(sel, users) {
-    if (!users.length) { sel.innerHTML = '<option value="">شاگردی ثبت نشده</option>'; return; }
-    sel.innerHTML = '<option value="">— انتخاب شاگرد —</option>' +
-      users.map(function (u) {
-        var n = u.username || u.user || '';
-        return '<option value="' + E(n) + '">' + E(n) + '</option>';
-      }).join('');
-  }
-
-  function onFile() {
-    var inp = D.getElementById('sfImpFile');
-    var f = inp && inp.files && inp.files[0];
-    if (!f) return;
-    var name = String(f.name || '').toLowerCase();
-    if (/\.(xlsx|xls|ods)$/.test(name)) {
-      msg('فایل اکسل باینری است. در اکسل «ذخیره به‌عنوان → CSV» بزن (یا جدول را کپی و در کادر پایین پیست کن).', true);
-      return;
-    }
-    var fr = new FileReader();
-    fr.onload = function () {
-      var t = String(fr.result || '');
-      state.text = t;
-      var ta = D.getElementById('sfImpText');
-      if (ta) ta.value = t.slice(0, 200000);
-      if (!D.getElementById('sfImpName').value) {
-        D.getElementById('sfImpName').value = name.replace(/\.[a-z0-9]+$/, '').replace(/[-_]+/g, ' ').trim();
-      }
-      msg('فایل خوانده شد (' + fa(t.length) + ' کاراکتر). «تحلیل فایل» را بزن.');
-    };
-    fr.onerror = function () { msg('خواندن فایل ممکن نشد.', true); };
-    fr.readAsText(f, 'utf-8');
-  }
-
-  function collect() {
-    var u = (D.getElementById('sfImpUser') || {}).value || '';
-    var ta = D.getElementById('sfImpText') || {};
-    var text = state.text || ta.value || '';
-    var planName = (D.getElementById('sfImpName') || {}).value || '';
-    var createMissing = true; /* همیشه: حرکت ناشناخته به بانک اضافه می‌شود */
-    if (!text.trim()) { msg('اول فایل را انتخاب کن یا متن را پیست کن.', true); return null; }
-    if (!u) { msg('شاگرد را انتخاب کن.', true); return null; }
-    return { text: text, username: u, planName: planName, createMissing: createMissing };
-  }
-
-  function analyze() {
-    var p = collect(); if (!p) return;
-    var btn = D.getElementById('sfImpAnalyze');
-    btn.disabled = true; msg('در حال تحلیل…');
-    api('sfAdminParseProgram', [tok(), Object.assign({}, p, { createMissing: false })]).then(function (r) {
-      btn.disabled = false;
-      state.parsed = r;
-      renderPreview(r);
-      var s = (r && r.stats) || {};
-      msg('تحلیل شد: ' + fa(s.days || 0) + ' روز · ' + fa(s.blocks || 0) + ' بلوک · ' +
-        fa(s.matched || 0) + ' حرکت وصل شد' + (s.withMedia ? ' (' + fa(s.withMedia) + ' با گیف)' : '') +
-        (s.unmatched ? ' · ' + fa(s.unmatched) + ' ناشناخته' : ''));
-      var saveBtn = D.getElementById('sfImpSave');
-      if (saveBtn) saveBtn.disabled = !(s.matched > 0);
-    }).catch(function (e) {
-      btn.disabled = false;
-      msg((e && e.message) || 'تحلیل ناموفق بود.', true);
-    });
-  }
-
-  function renderPreview(r) {
-    var box = D.getElementById('sfImpPrev');
-    if (!box) return;
-    var h = '';
-    (r.days || []).forEach(function (d) {
-      h += '<div class="day"><b>' + E(d.title || ('روز ' + d.dayNo)) + '</b>';
-      (d.blocks || []).forEach(function (b) {
-        h += '<div class="blk"><div class="t">' + E(b.techniqueLabel || b.technique) +
-          ' · ' + fa(b.sets) + ' ست' + (b.reps ? ' · تکرار ' + E(b.reps) : '') + '</div>';
-        (b.items || []).forEach(function (it) {
-          h += '<div class="ex ' + (it.matched ? 'ok' : 'miss') + '">' +
-            (it.matched ? '✓' : '✗') + ' ' + E(it.fa || it.name) +
-            (it.matched && it.gif ? ' <span class="ok">(گیف دارد)</span>' : '') +
-            (it.matched ? '' : ' <span class="miss">— در بانک پیدا نشد</span>') + '</div>';
-        });
-        if (b.notes) h += '<div class="ex" style="color:#93a3bd">' + E(b.notes) + '</div>';
-      });
-      h += '</div>';
-    });
-    box.innerHTML = h;
-  }
-
-  function save() {
-    var p = collect(); if (!p) return;
-    if (!state.parsed) { msg('اول «تحلیل فایل» را بزن تا ببینی چه چیزی ثبت می‌شود.', true); return; }
-    var btn = D.getElementById('sfImpSave');
-    btn.disabled = true; msg('در حال ثبت برنامه…');
-    api('sfAdminImportProgram', [tok(), p]).then(function (r) {
-      btn.disabled = false;
-      var s = (r && r.stats) || {};
-      msg('برنامه «' + ((r && r.planName) || p.planName || '') + '» ثبت شد ✅ · ' +
-        fa(s.exercises || 0) + ' حرکت' +
-        (s.created ? ' · ' + fa(s.created) + ' حرکت تازه به بانک اضافه شد' : '') +
-        (s.unmatched ? ' · ' + fa(s.unmatched) + ' وصل نشد' : ''));
-      tip('برنامه برای ' + p.username + ' ثبت و فعال شد.');
-      try { if (W.SF && typeof W.SF === 'object') { W.SF.plans = null; } } catch (e) {}
-      setTimeout(function () { modal.classList.remove('on'); }, 1200);
-    }).catch(function (e) {
-      btn.disabled = false;
-      msg((e && e.message) || 'ثبت برنامه ناموفق بود.', true);
-    });
-  }
-
-  W.sfImportProgram = open;
-
-  /* اگر از پنل مدیریت با #sf-import آمده باشد، مودال خودش باز شود */
-  function autoOpen() {
-    if (String(location.hash || '') !== '#sf-import') return;
-    try { if (window.sf4IsAdmin && !window.sf4IsAdmin()) return; } catch (e) {}
-    if (!tok()) return;
-    open();
-  }
-  setTimeout(autoOpen, 1800);
-  setTimeout(autoOpen, 5000);
-  D.addEventListener('click', function (e) {
-    var t = e.target;
-    if (t && t.closest && t.closest('[data-sf-import]')) { e.preventDefault(); open(); }
-  }, true);
-
-  /* فایل اکسل باینری (xlsx/xls) قابل خواندن مستقیم نیست */
-  D.addEventListener("change", function (ev) {
-    var t = ev.target;
-    if (!t || t.id !== "sfImpFile") return;
-    var f = t.files && t.files[0];
-    if (!f) return;
-    if (/.(xlsx|xls)$/i.test(f.name || "")) {
-      ev.preventDefault();
-      ev.stopPropagation();
-      if (ev.stopImmediatePropagation) ev.stopImmediatePropagation();
-      msg("فایل اکسل (xlsx/xls) مستقیم خوانده نمی‌شود: در اکسل «Save as → CSV» کن و همان فایل را بده، یا جدول را کپی و در کادر متن بچسبان.", true);
-      try { t.value = ""; } catch (e) {}
-    }
-  }, true);
-})();
-
 
 
 /* =========================================================================

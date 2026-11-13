@@ -45,8 +45,11 @@ function sfCatExistingIds_(sheet, idCol) {
 }
 
 function sfCatNextId_(sheet, idCol, prefix, existing, used) {
+  existing=existing || {};used=used || {};
+  var loadedKey='__loaded_'+sheet+'_'+idCol;
+  if(!used[loadedKey]){var rd=sfRead_(sheet);rd.rows.forEach(function(row){var key=normalize_(row[rd.idx[idCol]]);if(key)used[key]=1;});used[loadedKey]=1;}
   var n = 1, id = '';
-  do { id = prefix + ('0000' + n).slice(-4); n++; } while (existing[id] || used[id]);
+  do { id = prefix + String(n).padStart(4,'0'); n++; } while (existing[id] || used[id]);
   used[id] = 1;
   return id;
 }

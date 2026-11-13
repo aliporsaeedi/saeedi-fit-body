@@ -50,10 +50,10 @@ function sfReviewedProductImage_(english) {
 
 function adm_mediaCurated(token, bank) {
   adm_who_(token,true); adm_ensure_();
-  if (bank !== 'supps' && bank !== 'minerals') throw new Error('این فهرست برای مکمل و ویتامین است.');
+  if (bank !== 'supps' && bank !== 'minerals' && bank !== 'foods') throw new Error('این فهرست برای مکمل و ویتامین است.');
   var b=adm_bank_(bank);
   return {ok:true,items:sfObjects_(sfRead_(b.sheet)).map(function(row) {
-    var candidate=sfReviewedProductImage_(normalize_(row[b.sub]));
+    var candidate=bank==='foods' ? sfReviewedFoodImage_(normalize_(row[b.sub])) : sfReviewedProductImage_(normalize_(row[b.sub]));
     if (!candidate || (normalize_(row.ImageURL) === candidate.image && normalize_(row.ImageSearchStatus) === 'reviewed-approved')) return null;
     return {id:normalize_(row[b.id]),name:normalize_(row[b.name]),english:normalize_(row[b.sub]),current:normalize_(row.ImageURL),candidate:candidate};
   }).filter(Boolean)};

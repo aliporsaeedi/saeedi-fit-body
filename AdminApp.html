@@ -323,11 +323,21 @@ function render() {
   try { f(r.slice(5)); } catch (e) { fail(e); }
 }
 
+function bankIdentityDialog(){
+  modal('<h3>بررسی شناسه‌های بانک و ارجاع برنامه‌ها</h3><div id="identity_result" class="note">در حال بررسی…</div>');
+  call('adm_bankIdentityPreview').then(function(r){var host=$('identity_result');if(!host)return;
+    host.innerHTML='<p>نام، مقادیر غذایی و سوابق حذف یا بازنویسی نمی‌شوند. فقط شناسه‌های برخوردکرده و ارجاع‌های قابل‌تطبیق اصلاح می‌شوند؛ نسخهٔ پشتیبان پیش از تغییر در شیت ثبت می‌شود.</p><p>'+fa(r.changes.length)+' ردیف بانک · '+fa(r.references)+' ارجاع برنامه و سابقه</p>'+r.changes.map(function(x){return '<p><b>'+esc(x.name)+'</b><br><code>'+esc(x.before)+'</code> ← <code>'+esc(x.after)+'</code></p>';}).join('')+(r.unresolved.length?'<p class="note">'+fa(r.unresolved.length)+' ارجاع نیازمند بررسی دستی است و حدس زده نمی‌شود.</p>':'')+(r.changes.length?'<button class="btn" id="identity_apply">ثبت نسخهٔ پشتیبان و اصلاح شناسه‌ها</button>':'<p class="note ok">برخوردی برای اصلاح باقی نمانده است.</p>')+'<pre id="identity_log"></pre>';
+    if(!$('identity_apply'))return;$('identity_apply').onclick=function(){this.disabled=true;$('identity_log').textContent='در حال تهیهٔ نسخهٔ پشتیبان و اصلاح…';call('adm_bankIdentityRepair',r.fingerprint).then(function(done){if(!$('identity_log'))return;$('identity_log').textContent='اصلاح کامل شد: '+done.changed+' شناسه و '+done.references+' ارجاع. نسخهٔ پشتیبان: '+(done.snapshotId || '—');if(done.snapshotId){var restore=document.createElement('button');restore.className='btn sec sm';restore.textContent='بازگردانی همین اصلاح';restore.onclick=function(){restore.disabled=true;call('adm_bankIdentityRestore',done.snapshotId).then(function(){restore.textContent='شناسه‌ها بازگردانده شدند؛ پنل را تازه کن.';}).catch(function(e){restore.disabled=false;fail(e);});};host.appendChild(restore);}toast('شناسه‌ها اصلاح شدند؛ پنل را تازه کن.');}).catch(function(e){if($('identity_apply'))$('identity_apply').disabled=false;if($('identity_log'))$('identity_log').textContent=e.message;});};
+  }).catch(function(e){if($('identity_result'))$('identity_result').textContent=e.message;});
+}
+
 /* ---------- داشبورد ---------- */
 R.dashboard = function () {
   call('adm_dashboard').then(function (d) {
     var banks = Object.keys(d.banks).map(function (k) { var b = d.banks[k]; return '<div class="card kpi"><small>' + esc(b.title) + '</small><b>' + fa(b.total) + '</b><small>بدون پیوند تصویر: ' + fa(b.noImage) + '</small><small>' + (k === 'exercises' ? 'حرکت با رسانهٔ یکپارچه: ' + fa(b.unified) : 'تصویر بازبینی‌شده: ' + fa(b.reviewed)) + '</small></div>'; }).join('');
     var u = d.users, isAdmin = d.role === 'admin';
+    if(isAdmin)setActs('<button class="btn sec sm" id="bankIdentityCheck">بررسی و اصلاح شناسه‌ها</button>');
+    if($('bankIdentityCheck'))$('bankIdentityCheck').onclick=bankIdentityDialog;
     view('<div class="hero-band"><p class="hb-sec">SAEEDI FIT · مرکز مدیریت</p><h2>سلام ' + esc(S.user.username) + '، وضعیت مجموعه اینجاست</h2><p>کارهای روزمره، شاگردها، اشتراک‌ها و سلامت محتوا را از یک نمای یکپارچه مدیریت کن.</p><div class="bar">' + (isAdmin ? '<button class="btn" data-go="plans.create">＋ ساخت برنامهٔ تمرینی</button><button class="btn sec" data-go="plans.diet">برنامهٔ تغذیه</button><button class="btn sec" data-go="users.list">مدیریت شاگردها</button>' : '<button class="btn sec" data-go="users.activity">پیگیری تمرین شاگردها</button><button class="btn sec" data-go="comms.chat">گفت‌وگو با شاگردها</button>') + '</div></div>' +
       '<div class="dash-grid"><div class="card dash-card" data-widget-title="شاگردها" data-widget-body="' + fa(u.user) + ' شاگرد از ' + fa(u.total) + ' حساب ثبت شده‌اند."><div class="dk">شاگردها</div><div class="dv">' + fa(u.user) + '</div><div class="ds">از ' + fa(u.total) + ' حساب ثبت‌شده در پنل</div></div>' +
       '<div class="card dash-card" data-widget-title="در انتظار بررسی مالی" data-widget-body="' + fa(d.pending) + ' درخواست پرداخت یا اشتراک در صف بررسی است."><div class="dk">در انتظار بررسی مالی</div><div class="dv">' + fa(d.pending) + '</div><div class="ds"><a data-go="finance.membership">رفتن به اعتبار و اشتراک ←</a></div></div>' +
@@ -335,6 +345,7 @@ R.dashboard = function () {
       '<div class="card dash-card"><div class="dk">سلامت ربات تلگرام</div><div class="dv" style="font-size:20px">' + (d.telegram && d.telegram.configured ? '<span class="pill ok">توکن متصل</span>' : '<span class="pill bad">نیازمند تنظیم</span>') + '</div><div class="ds">چت ادمین: ' + (d.telegram && d.telegram.adminChat ? '<span class="pill ok">آماده</span>' : '<span class="pill warn">بررسی شود</span>') + '</div></div></div>' +
       '<div class="card"><div class="bar" style="justify-content:space-between"><div><h3 style="margin:0">تمرین امروز</h3><small class="sub">بر اساس ثبت پایان تمرین و ثبت ست‌ها در ' + esc(d.activity && d.activity.date || '') + '</small></div><button class="btn sec sm" data-go="users.activity">فهرست کامل و پیگیری</button></div><div class="grid g4"><div class="card kpi"><small>شاگردها</small><b>' + fa(d.activity && d.activity.total || 0) + '</b></div><div class="card kpi"><small>تمرین ثبت‌شده</small><b>' + fa(d.activity && d.activity.completed || 0) + '</b></div><div class="card kpi"><small>بدون ثبت امروز</small><b>' + fa(d.activity && d.activity.noLog || 0) + '</b></div><div class="card kpi"><small>گفت‌وگوهای شاگردها</small><b><a data-go="comms.chat">بازکردن صندوق پیام ←</a></b></div></div>' + activityDoneHtml((d.activity && d.activity.rows) || []) + activityReminderHtml((d.activity && d.activity.rows) || [], true) + (d.activity && d.activity.error ? '<div class="note">آمار حضور خوانده نشد: ' + esc(d.activity.error) + '</div>' : '') + '</div>' +
       '<div class="dash-split"><div><h3>کتابخانهٔ محتوا</h3><div class="grid g2">' + banks + '</div></div><div><div class="card"><h3>دسترسی سریع</h3><div class="dash-quick">' + (isAdmin ? '<button class="btn sec" data-go="plans.create">برنامه‌ساز دستی</button><button class="btn sec" data-go="plans.generate">ساخت هوشمند تمرین</button><button class="btn sec" data-go="plans.diet">ساخت هوشمند تغذیه</button>' : '') + '<button class="btn sec" data-go="smart.coach">مربی هوشمند</button><button class="btn sec" data-go="comms.chat">گفت‌وگو با شاگردها</button>' + (isAdmin ? '<button class="btn sec" data-go="plans.anatomy">آناتومی شاگرد</button>' : '') + '</div></div><div class="card"><h3>سلامت و کیفیت داده</h3>' +
+      Object.keys(d.banks).map(function(k){var b=d.banks[k];return (b.duplicateIDs || []).length ? '<details class="note"><summary>'+esc(b.title)+' · '+fa(b.duplicateIDs.length)+' شناسهٔ تکراری نیازمند بررسی</summary>'+b.duplicateIDs.map(function(x){return '<p><code>'+esc(x.id)+'</code> · '+x.names.map(esc).join(' / ')+'</p>';}).join('')+'</details>' : '';}).join('') +
       Object.keys(d.banks).map(function(k){var b=d.banks[k],verified=k === 'exercises' ? b.unified : b.reviewed,pct=b.total?Math.round(verified*100/b.total):0;return '<div class="health-row"><span>'+esc(b.title)+'</span><span class="pill '+(verified < b.total?'warn':'ok')+'">'+fa(pct)+(k === 'exercises' ? '% رسانهٔ یکپارچه' : '% تصویر بازبینی‌شده')+'</span></div>';}).join('') +
       (isAdmin ? '<div class="health-row"><span>خطاهای ثبت‌شده</span><span class="pill '+(d.errors?'warn':'ok')+'">'+fa(d.errors||0)+' مورد</span></div><div class="bar" style="margin:12px 0 0"><button class="btn sec sm" data-go="system.errors">مرکز خطاها</button><button class="btn sec sm" data-go="comms.telegram">سلامت تلگرام</button></div>' : '') + '</div></div></div>');
     var eb = $('errTest');
@@ -551,7 +562,7 @@ R['plans.workout'] = function () {
       }) + '</div>');
     if (admin) wireImport();
     document.querySelectorAll('[data-t]').forEach(function (b) { b.onclick = function () { call('sfAdminSetPlanActive', b.getAttribute('data-t'), b.getAttribute('data-on') === '1').then(function () { render(); }).catch(fail); }; });
-    document.querySelectorAll('[data-c]').forEach(function (b) { b.onclick = function () { var u = prompt('نام کاربری شاگرد مقصد:'); if (!u) return; call('sfAdminDuplicatePlan', b.getAttribute('data-c'), u.trim(), '').then(function () { toast('کپی شد ✅'); render(); }).catch(fail); }; });
+    document.querySelectorAll('[data-c]').forEach(function (b) { b.onclick = function () { var id=b.getAttribute('data-c'),p=rows.filter(function(x){return x.planId===id;})[0] || {};assignProgramTemplate('workout',p.planName || 'برنامهٔ تمرینی',id); }; });
     document.querySelectorAll('[data-d]').forEach(function (b) { b.onclick = function () { if (!confirm('برنامه و همهٔ ست‌هایش حذف شود؟ برگشت‌پذیر نیست.')) return; call('sfAdminDeletePlan', b.getAttribute('data-d')).then(function () { render(); }).catch(fail); }; });
     document.querySelectorAll('[data-ed]').forEach(function (b) { b.onclick = function () { S.editPlan = b.getAttribute('data-ed'); go('plans.edit'); }; });
     document.querySelectorAll('[data-rn]').forEach(function (b) {
@@ -684,13 +695,13 @@ function programBankTabs(kind) {
   return '<div class="bar">' + [['workout','قالب تمرین'],['diet','قالب تغذیه'],['supp','قالب مکمل']].map(function(pair) { return '<button class="btn ' + (pair[0] === kind ? '' : 'sec') + '" data-bank-kind="' + pair[0] + '">' + pair[1] + '</button>'; }).join('') + '</div>';
 }
 function wireProgramBankTabs() { document.querySelectorAll('[data-bank-kind]').forEach(function(b) { b.onclick=function() { S.libraryKind=b.getAttribute('data-bank-kind'); go('plans.bank'); }; }); }
-function assignProgramTemplate(kind,name) {
-  modal('<h3>اختصاص قالب به شاگرد</h3><p>' + esc(name) + '</p><div id="assign_template">در حال دریافت شاگردها…</div>');
+function assignProgramTemplate(kind,name,copyFromId) {
+  modal('<h3>'+ (copyFromId ? 'کپی برنامه برای شاگرد' : 'اختصاص قالب به شاگرد') +'</h3><p>' + esc(name) + '</p><div id="assign_template">در حال دریافت شاگردها…</div>');
   call(S.user.role === 'admin' ? 'adm_usersList' : 'sfCoachBoard').then(function(r) {
     if(!$('assign_template')) return; var users=(r.users || r.athletes || []).filter(function(u) { return !u.role || u.role === 'user'; });
     if(!users.length) { $('assign_template').textContent='شاگرد قابل انتخابی وجود ندارد.'; return; }
     $('assign_template').innerHTML='<label>شاگرد مقصد</label><select id="assign_student">' + users.map(function(u) { return '<option value="' + esc(u.username) + '">' + esc(u.name || u.username) + '</option>'; }).join('') + '</select><label>نام برنامه برای شاگرد</label><input id="assign_name" value="' + esc(name) + '"><button class="btn" id="assign_submit">ثبت برای شاگرد</button><div id="assign_result"></div>';
-    $('assign_submit').onclick=function() { var b=this;b.disabled=true;call('sf7LibAssign',kind,name,$('assign_student').value,$('assign_name').value.trim() || name).then(function() { if($('assign_result')) $('assign_result').innerHTML='<div class="note ok">برنامه برای شاگرد ثبت شد.</div>'; toast('برنامه اختصاص داده شد.'); }).catch(function(e) { if(b.isConnected) b.disabled=false; toast(e.message,true); }); };
+    $('assign_submit').onclick=function() { var b=this;b.disabled=true;(copyFromId ? call('sfAdminDuplicatePlan',copyFromId,$('assign_student').value,$('assign_name').value.trim() || name) : call('sf7LibAssign',kind,name,$('assign_student').value,$('assign_name').value.trim() || name)).then(function() { if($('assign_result')) $('assign_result').innerHTML='<div class="note ok">برنامه برای شاگرد ثبت شد.</div>'; toast('برنامه اختصاص داده شد.'); }).catch(function(e) { if(b.isConnected) b.disabled=false; toast(e.message,true); }); };
   }).catch(fail);
 }
 function simpleProgramBank(kind) {
@@ -815,7 +826,7 @@ function editDraftItems(box) {
   items.forEach(function(it,i) {
     var field = document.querySelector('[data-draft-search="' + i + '"]'), host = document.querySelector('[data-draft-results="' + i + '"]'), timer, generation = 0;
     field.oninput = function() { clearTimeout(timer); var q = field.value.trim(), version = ++generation; if(q.length < 2) { host.innerHTML=''; return; }
-      timer=setTimeout(function() { host.textContent='در حال جستجو…'; call('adm_bankList','exercises',{q:q,page:1,size:8,standardMedia:true}).then(function(r) { if(version !== generation || !host.isConnected) return; host.innerHTML=(r.items || []).map(function(ex,n) { return '<button class="btn sec sm" data-draft-pick="' + n + '">' + esc(ex.PersianName) + ' · ' + esc(ex.MuscleGroup) + '</button>'; }).join('') || 'حرکتی پیدا نشد.'; host.querySelectorAll('[data-draft-pick]').forEach(function(button) { button.onclick=function() { var ex=r.items[Number(button.getAttribute('data-draft-pick'))]; items[i]={exerciseId:ex.ExerciseID,name:ex.PersianName,group:ex.MuscleGroup}; document.querySelector('[data-draft-name="' + i + '"]').value=ex.PersianName; host.textContent='انتخاب شد: ' + ex.PersianName; }; }); }).catch(function(e) { if(host.isConnected) host.textContent=e.message; }); },400);
+      timer=setTimeout(function() { host.textContent='در حال جستجو…'; call('adm_bankList','exercises',{q:q,page:1,size:8,standardMedia:true}).then(function(r) { if(version !== generation || !host.isConnected) return; host.innerHTML=(r.items || []).map(function(ex,n) { return '<button class="btn sec sm" data-draft-pick="' + n + '">' + esc(ex.PersianName) + ' · ' + esc(ex.MuscleGroup) + '</button>'; }).join('') || 'حرکتی پیدا نشد.'; host.querySelectorAll('[data-draft-pick]').forEach(function(button) { button.onclick=function() { var ex=r.items[Number(button.getAttribute('data-draft-pick'))]; items[i]={exerciseId:ex.ExerciseID,name:ex.PersianName,group:ex.MuscleGroup,region:ex.region,category:ex.category,secondary:ex.secondary || []}; document.querySelector('[data-draft-name="' + i + '"]').value=ex.PersianName; host.textContent='انتخاب شد: ' + ex.PersianName; }; }); }).catch(function(e) { if(host.isConnected) host.textContent=e.message; }); },400);
     };
   });
   $('draft_item_apply').onclick=function() {
@@ -860,20 +871,36 @@ function applyTechniqueRecipe(box, key) {
   var t = techniqueRecipe(key), sets = box.querySelector('[data-f="sets"]'), reps = box.querySelector('[data-f="reps"]'), rest = box.querySelector('[data-f="rest"]'), notes = box.querySelector('[data-f="notes"]');
   if (sets) sets.value = t.sets; if (reps) reps.value = t.reps; if (rest) rest.value = t.rest; if (notes) notes.value = t.note;
 }
-function livePlanReadout(root) {
-  var el = $('cb_live') || $('edit_live'); if (!el || !root) return;
-  var groups = {}, daySets = {}, total = 0, blocks = 0, methodCounts = {};
-  root.querySelectorAll('.editblk').forEach(function (box) {
-    var n = Math.max(1, Number((box.querySelector('[data-f="sets"]') || {}).value) || 1), key = (box.querySelector('[data-f="technique"]') || {}).value || 'normal';
-    var workSets=n*Math.max(1,String(box.getAttribute('data-ex') || '').split(',').filter(Boolean).length);
-    blocks++; total += workSets; methodCounts[key] = (methodCounts[key] || 0) + 1;
-    var d = box.closest('[data-day]'), dayNo = d && d.getAttribute('data-day') || '?'; daySets[dayNo] = (daySets[dayNo] || 0) + workSets;
-    String(box.getAttribute('data-groups') || '').split('|').filter(Boolean).forEach(function (g) { g = g.replace(/\s+/g, ' ').trim(); groups[g] = (groups[g] || 0) + n; });
+function draftVolume(blocks) {
+  var out={direct:{},secondary:{},total:0,cardio:0,unknown:[],conflicts:[],days:{},blocks:blocks.length};
+  blocks.forEach(function(b){
+    var n=Math.max(1,Math.min(20,Number(b.sets)||1)); out.days[b.day]=true;
+    (b.items || []).forEach(function(it){
+      var cardio=it.category ? it.category==='هوازی' : b.technique==='cardio';
+      if(cardio){out.cardio++;return;}
+      if(b.technique==='cardio') out.conflicts.push(it.name || it.exerciseId);
+      out.total+=n;
+      if(it.region) out.direct[it.region]=(out.direct[it.region] || 0)+n;
+      else out.unknown.push(it.name || it.exerciseId);
+      (it.secondary || []).filter(function(k,i,a){return k && k!==it.region && a.indexOf(k)===i;}).forEach(function(k){out.secondary[k]=(out.secondary[k] || 0)+n;});
+    });
   });
-  var sorted = Object.keys(groups).sort(function (a, b) { return groups[b] - groups[a]; });
-  var recommend = sorted.length ? (groups[sorted[0]] < 8 ? 'برای ' + sorted[0] + ' هنوز حجم کمی داری؛ از ست‌های معمولی یا هرمی استفاده کن و حجم را تدریجی بالا ببر.' : groups[sorted[0]] > 20 ? 'حجم ' + sorted[0] + ' بالاست؛ ست اضافه نکن و برای جلسه بعد گروهی کم‌کار را انتخاب کن.' : 'برای عضلهٔ پرحجم از ست معمولی استفاده کن؛ فقط در حرکت پایانی یک روش ویژه مثل دراپ‌ست یا رست‌پاز بگذار.') : 'حرکت‌ها را اضافه کن تا حجم عضلات و پیشنهاد روش تمرینی لحظه‌ای دیده شود.';
-  var tech = (S.techniques || []).filter(function (x) { return methodCounts[x.key]; }).map(function (x) { return x.label + ': ' + fa(methodCounts[x.key]); }).join(' · ');
-  el.innerHTML = '<div class="bar"><b>تحلیل زندهٔ برنامه</b><span class="pill">' + fa(blocks) + ' بلوک</span><span class="pill">' + fa(total) + ' ست</span><span class="pill">' + fa(Object.keys(daySets).length) + ' روز</span></div><div class="muscle-tags">' + (sorted.map(function (g) { var n = groups[g], tone = n > 20 ? ' bad' : n < 8 ? ' warn' : ' ok'; return '<span class="pill' + tone + '">' + esc(g) + ' · ' + fa(n) + ' ست</span>'; }).join('') || '<span class="sub">هنوز حرکتی اضافه نشده</span>') + '</div><div class="note">' + esc(recommend) + '</div>' + (tech ? '<small class="sub">روش‌ها در این برنامه: ' + esc(tech) + '</small>' : '');
+  return out;
+}
+function livePlanReadout(root) {
+  var el=$('cb_live') || $('edit_live'); if(!el || !root)return;
+  var blocks=[];
+  root.querySelectorAll('.editblk').forEach(function(box){
+    var items=[];try{items=JSON.parse(decodeURIComponent(box.querySelector('[data-items]').value));}catch(e){}
+    blocks.push({day:box.getAttribute('data-day'),sets:(box.querySelector('[data-f="sets"]') || {}).value,technique:(box.querySelector('[data-f="technique"]') || {}).value,items:items});
+  });
+  var v=draftVolume(blocks), labels={}; AN_REGIONS.forEach(function(r){labels[r[0]]=r[1];});
+  function tags(counts){return Object.keys(counts).sort(function(a,b){return counts[b]-counts[a];}).map(function(k){return '<span class="pill">'+esc(labels[k] || k)+' · '+fa(counts[k])+' ست</span>';}).join('');}
+  var advice=[];
+  if(v.unknown.length)advice.push('علت نقص تحلیل: عضلهٔ اصلی '+v.unknown.length+' حرکت ثبت نشده ('+v.unknown.join('، ')+'). راه‌حل: گروه دقیق را در بانک حرکات اصلاح کن.');
+  if(v.conflicts.length)advice.push('ناسازگاری روش هوازی با حرکت مقاومتی: '+v.conflicts.join('، ')+'. روش بلوک را اصلاح کن؛ این حرکت‌ها ست مقاومتی محسوب شده‌اند.');
+  advice.push('گام بعد: پوشش عضلات را با هدف، سابقه و ریکاوری همین شاگرد مقایسه کن. تعداد ست به‌تنهایی دلیل انتخاب دراپ‌ست یا افزایش حجم نیست. تنظیم روش، یک الگوی اولیهٔ قابل ویرایش است.');
+  el.innerHTML='<div class="bar"><b>تحلیل زندهٔ پیش‌نویس</b><span class="pill">'+fa(v.blocks)+' بلوک</span><span class="pill">'+fa(v.total)+' ست مقاومتی</span><span class="pill">'+fa(v.cardio)+' حرکت هوازی</span><span class="pill">'+fa(Object.keys(v.days).length)+' روز</span></div><b>ست مستقیم عضلهٔ اصلی</b><div class="muscle-tags">'+(tags(v.direct) || '<span class="sub">هنوز ست با عضلهٔ مشخص ثبت نشده</span>')+'</div>'+(Object.keys(v.secondary).length ? '<details><summary>ست‌های عضلات کمکی · جدا از مستقیم</summary><div class="muscle-tags">'+tags(v.secondary)+'</div></details>' : '')+'<div class="note">'+advice.map(esc).join('<br>')+'</div><small class="sub">در بلوک چندحرکتی، هر حرکت به تعداد دورهای بلوک ست دارد. شدت، وزنه و میزان خستگی در این شمارش اندازه‌گیری نمی‌شوند.</small>';
 }
 function wireLivePlan(root) {
   if (!root) return;
@@ -899,6 +926,7 @@ R['plans.edit'] = function () {
   }
   call('sfPsPlanGet', id).then(function (r) {
     var p = r.plan || {}, tech = r.techniques || S.techniques || [];
+    (p.days || []).forEach(function(d){(d.blocks || []).forEach(function(b){(b.items || []).forEach(function(it){var ex=(r.exercises || {})[it.exerciseId] || {}; it.region=ex.region || it.region || ''; it.category=ex.cat || it.category || ''; it.secondary=ex.secondary || it.secondary || [];});});});
     var techOpt = function (cur) { return tech.map(function (t) { return '<option value="' + esc(t.key) + '"' + (t.key === cur ? ' selected' : '') + '>' + esc(t.label) + '</option>'; }).join(''); };
     var h = '<div class="card"><h3>ویرایش برنامه</h3><div class="fg">' +
       '<div class="full"><label>نام برنامه</label><input id="e_name" value="' + esc(p.planName || '') + '"></div>' +
@@ -1005,7 +1033,7 @@ function addMoveModal(dayNo, card, techOptionsHtml) {
       }).join('');
       $('pk_list').querySelectorAll('[data-pick]').forEach(function (b) {
         b.onclick = function () {
-          var item = { id: b.getAttribute('data-pick'), name: b.getAttribute('data-nm'), group: b.getAttribute('data-group') || '' }, at = chosen.map(function (x) { return x.id; }).indexOf(item.id);
+          var source=r.items.filter(function(x){return x.ExerciseID===b.getAttribute('data-pick');})[0] || {}; var item = { id:source.ExerciseID, name:source.PersianName, group:source.MuscleGroup, region:source.region, category:source.category, secondary:source.secondary || [] }, at = chosen.map(function (x) { return x.id; }).indexOf(item.id);
           if (at >= 0) chosen.splice(at, 1); else chosen.push(item);
           b.textContent = at >= 0 ? 'انتخاب' : '✔ انتخاب شد'; b.className = at >= 0 ? 'btn sec sm' : 'btn sm'; refreshSelected();
         };
@@ -1025,7 +1053,7 @@ function addMoveModal(dayNo, card, techOptionsHtml) {
     var groups = recipeType.max === 1 ? chosen.map(function(x) { return [x]; }) : [chosen];
     groups.forEach(function(selection, bi) {
     var b = { blockId: 'new-' + Date.now() + '-' + bi, notes: techniqueRecipe($('pk_tech').value).note || '', restBetweenSec: Number($('pk_rest').value),
-      technique: $('pk_tech').value, items: selection.map(function (x) { return { exerciseId: x.id, name: x.name, group: x.group }; }), sets: [] };
+      technique: $('pk_tech').value, items: selection.map(function (x) { return { exerciseId:x.id,name:x.name,group:x.group,region:x.region,category:x.category,secondary:x.secondary || [] }; }), sets: [] };
     var n = Math.max(1, Math.min(20, Number($('pk_sets').value) || 4));
     for (var i = 1; i <= n; i++) b.sets.push({ setNo: i, cells: [{}] });
     var html = editBlockHtml(b, techOptionsHtml, card.getAttribute('data-day'), card.getAttribute('data-dt'));
@@ -1425,7 +1453,7 @@ function mediaHtml(bk, o, big) {
   var mediaClass = (bk === 'foods' ? 'food' : (bk === 'supps' || bk === 'minerals' ? 'product' : ''));
   if (gif) return '<img loading="lazy" src="' + esc(gif) + '" data-fallback="' + esc(JSON.stringify((o._gifCandidates || []).slice(1))) + '" onerror="adminMediaError(this)" alt="نمایش حرکت">';
   if (imgs.length > 1) return '<div class="anim" style="position:absolute;inset:0">' + imgs.map(function (u) { return '<img loading="lazy" src="' + esc(u) + '" onerror="' + onerr + '" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:' + (big ? 'contain' : 'cover') + '">'; }).join('') + '</div>';
-  if (imgs.length) return '<img class="' + mediaClass + '" loading="lazy" src="' + esc(imgs[0]) + '" onerror="' + onerr + '" alt="">';
+  if (imgs.length) return '<img class="' + mediaClass + '" loading="lazy" src="' + esc(imgs[0]) + '" onerror="adminMediaError(this)" alt="">';
   return '<span>بدون تصویر</span>';
 }
 function adminMediaError(img) {
@@ -1462,7 +1490,7 @@ R.bank = function (bk) {
 };
 function openMediaReview(bank) {
   var queue = [], seen = [], cursor = 0, approved = 0, batchSize = 20, totalMissing = 0;
-  modal('<h3>جستجو و بازبینی تصویر</h3><p class="note">' + esc(S.banks[bank].title) + ' · عکس غذا از صفحهٔ همان خوراک، عکس مکمل از نمای بسته‌بندی محصول جستجو می‌شود. تا وقتی دکمهٔ «ثبت این تصویر» را نزنی، شیت تغییر نمی‌کند.</p>' + (bank !== 'foods' ? '<button class="btn sec" id="mr_curated">بسته‌بندی‌های تطبیق‌داده‌شده از سازنده</button>' : '') + '<div id="media-review" class="note">در حال جستجوی مورد بعدی…</div>');
+  modal('<h3>جستجو و بازبینی تصویر</h3><p class="note">' + esc(S.banks[bank].title) + ' · عکس غذا از صفحهٔ همان خوراک، عکس مکمل از نمای بسته‌بندی محصول جستجو می‌شود. تا وقتی دکمهٔ «ثبت این تصویر» را نزنی، شیت تغییر نمی‌کند.</p>' + '<button class="btn sec" id="mr_curated">'+(bank==='foods' ? 'عکس‌های دقیق و بازبینی‌شدهٔ غذا' : 'بسته‌بندی‌های تطبیق‌داده‌شده از سازنده')+'</button>' + '<div id="media-review" class="note">در حال جستجوی مورد بعدی…</div>');
   if ($('mr_curated')) $('mr_curated').onclick=function() { curatedMediaDialog(bank); };
   $('media-review').insertAdjacentHTML('beforebegin','<button class="btn sec" id="mr_batch">بازبینی سریع گروهی</button>');
   $('mr_batch').onclick=function() { batchMediaDialog(bank); };
@@ -1516,10 +1544,10 @@ function batchMediaDialog(bank) {
   } load();
 }
 function curatedMediaDialog(bank) {
-  modal('<h3>بازبینی عکس بسته‌بندی محصول</h3><p class="note">تصویر نمونهٔ بسته‌بندی است؛ مقدار روی بطری، دوز تجویزشده برای شاگرد نیست.</p><div id="curated_media">در حال تطبیق با بانک…</div>');
+  modal('<h3>'+ (bank==='foods' ? 'بازبینی عکس غذای مطابق' : 'بازبینی عکس بسته‌بندی محصول') +'</h3><p class="note">'+(bank==='foods' ? 'نام و نوع آماده‌سازی خوراک را با عکس و منبع تطبیق بده.' : 'تصویر نمونهٔ بسته‌بندی است؛ مقدار روی بطری، دوز تجویزشده برای شاگرد نیست.')+'</p><div id="curated_media">در حال تطبیق با بانک…</div>');
   call('adm_mediaCurated',bank).then(function(r) {
-    var rows=r.items || [];
-    $('curated_media').innerHTML=rows.length ? '<div class="cards">' + rows.map(function(x,i) { var c=x.candidate; return '<div class="card media-candidate"><div class="media"><img src="' + esc(c.image) + '" alt="' + esc(c.title) + '" data-curated-image="' + i + '"></div><b>' + esc(x.name) + '</b><p class="ltr">' + esc(c.title) + '</p><a href="' + esc(c.source) + '" target="_blank" rel="noopener">منبع سازنده</a><label><input type="checkbox" data-curated-select="' + i + '" style="width:auto"> تصویر و نام بررسی شد</label></div>'; }).join('') + '</div><button class="btn" id="curated_apply">ثبت تصاویر انتخاب‌شده در شیت</button><pre id="curated_log"></pre>' : '<div class="note">تصویر آمادهٔ جدیدی در این گروه وجود ندارد.</div>';
+    if(!$('curated_media'))return;var rows=r.items || [];
+    $('curated_media').innerHTML=rows.length ? '<div class="cards">' + rows.map(function(x,i) { var c=x.candidate; return '<div class="card media-candidate"><div class="media"><img src="' + esc(c.image) + '" alt="' + esc(c.title) + '" data-curated-image="' + i + '"></div><b>' + esc(x.name) + '</b><p class="ltr">' + esc(c.title) + '</p><a href="' + esc(c.source) + '" target="_blank" rel="noopener">منبع عکس</a><label><input type="checkbox" data-curated-select="' + i + '" style="width:auto"> تصویر و نام بررسی شد</label></div>'; }).join('') + '</div><button class="btn" id="curated_apply">ثبت تصاویر انتخاب‌شده در شیت</button><pre id="curated_log"></pre>' : '<div class="note">تصویر آمادهٔ جدیدی در این گروه وجود ندارد.</div>';
     if (!$('curated_apply')) return;
     $('curated_apply').onclick=function() {
       var selected=Array.from(document.querySelectorAll('[data-curated-select]:checked')).map(function(x) { return Number(x.getAttribute('data-curated-select')); });
@@ -1527,8 +1555,8 @@ function curatedMediaDialog(bank) {
       var invalid=selected.some(function(i) { var image=document.querySelector('[data-curated-image="' + i + '"]'); return !image.complete || !image.naturalWidth; });
       if(invalid) { toast('یکی از تصاویر هنوز بارگذاری نشده؛ ابتدا پیش‌نمایش را بررسی کن.',true); return; }
       this.disabled=true; var at=0,ok=0;
-      function next() { if(at>=selected.length) { $('curated_log').textContent+='\nپایان: ' + ok + ' تصویر ثبت شد.'; return; } var row=rows[selected[at++]];
-        call('adm_mediaCommit',bank,row.id,row.candidate.code,row.current).then(function() { ok++; $('curated_log').textContent+='\n✓ ' + row.name; next(); }).catch(function(e) { $('curated_log').textContent+='\n✕ ' + row.name + ': ' + e.message; next(); });
+      function next() { if(at>=selected.length) { if($('curated_log'))$('curated_log').textContent+='\nپایان: ' + ok + ' تصویر ثبت شد.'; return; } var row=rows[selected[at++]];
+        call('adm_mediaCommit',bank,row.id,row.candidate.code,row.current).then(function() { ok++; if($('curated_log'))$('curated_log').textContent+='\n✓ ' + row.name; next(); }).catch(function(e) { if($('curated_log'))$('curated_log').textContent+='\n✕ ' + row.name + ': ' + e.message; next(); });
       } next();
     };
   }).catch(fail);
@@ -1576,6 +1604,7 @@ function card(bk, o) {
   if (bk === 'foods') meta = '<div class="mac"><span>' + fa(o.Kcal100) + ' kcal</span><span>پ ' + fa(o.Protein100) + '</span><span>ک ' + fa(o.Carb100) + '</span><span>چ ' + fa(o.Fat100) + '</span><span>ف ' + fa(o.Fiber100) + '</span></div><small>در 100 گرم · ' + esc(o.Category) + '</small>';
   if (bk === 'supps') meta = '<small>' + esc(o.Category) + ' · ' + esc(o.Dose) + '</small>';
   if (bk === 'minerals') meta = '<small>' + esc(o.Type) + ' · نیاز: ' + esc(o.RdaMale) + '</small>';
+  if(bk!=='exercises')meta+='<small class="pill '+(o.ImageSearchStatus==='reviewed-approved'?'ok':'warn')+'">'+(o.ImageSearchStatus==='reviewed-approved'?'عکس بازبینی‌شده':'عکس نیازمند بازبینی')+'</small>';
   return '<div class="it' + (o.Active ? '' : ' off') + '" data-id="' + esc(o[sc.id]) + '"><div class="im ' + photoClass + '">' + mediaHtml(bk, o, false) + '</div><div class="bd"><b>' + esc(o[sc.name]) + '</b><small class="ltr" style="display:block">' + esc(o[sc.sub]) + '</small>' + meta + '</div></div>';
 }
 function openItem(bk, id) {
@@ -2234,12 +2263,13 @@ R['plans.anatomy'] = function () {
       '<table class="wrap"><tbody><tr><td>بالاتنه</td><td>' + fa(bal.upper || 0) + '</td></tr><tr><td>پایین‌تنه</td><td>' + fa(bal.lower || 0) + '</td></tr></tbody></table>' +
       ((bal.warnings || []).length ? '<div class="note">' + bal.warnings.map(function (w) { return '• ' + esc(w); }).join('<br>') + '</div>' : '<div class="note ok">گروه عضلانی اصلی حرکت‌ها مشخص است؛ مناسب‌بودن برنامه به هدف و وضعیت شاگرد وابسته است.</div>') +
       '</div>' +
-      ((d.unmapped || []).length ? '<div class="card"><h3>موارد نیازمند تکمیل</h3>' + d.unmapped.map(function(it){return '<p>'+esc(it.name)+(it.techniqueConflict ? ' · روش بلوک به بررسی نیاز دارد' : '')+' <button class="btn sec sm" data-an-fix="'+esc(it.exerciseId)+'">تکمیل عضله در بانک</button></p>';}).join('')+'</div>' : '') + (rows ? '<div class="card"><h3>حجم هر ناحیه</h3><table class="wrap"><thead><tr><th>ناحیه</th><th>ست مستقیم</th><th>سهم از ست‌های مستقیم</th></tr></thead><tbody>' + rows + '</tbody></table></div>' : '') +
+      ((d.unmapped || []).length ? '<div class="card"><h3>موارد نیازمند تکمیل</h3>' + d.unmapped.map(function(it){return '<p>'+esc(it.name)+(it.techniqueConflict ? ' · روش بلوک به بررسی نیاز دارد' : '')+(it.techniqueConflict || !it.sets ? ' <button class="btn sec sm" data-an-plan-fix="'+esc(d.planId)+'">ویرایش روش و ست‌های برنامه</button>' : ' <button class="btn sec sm" data-an-fix="'+esc(it.exerciseId)+'">تکمیل عضله در بانک</button>')+'</p>';}).join('')+'</div>' : '') + (rows ? '<div class="card"><h3>حجم هر ناحیه</h3><table class="wrap"><thead><tr><th>ناحیه</th><th>ست مستقیم</th><th>سهم از ست‌های مستقیم</th></tr></thead><tbody>' + rows + '</tbody></table></div>' : '') +
       (secondaryRows ? '<div class="card"><h3>عضلات کمکی</h3><p class="note">تعداد ست‌هایی که این ناحیه در نقش کمکی ثبت شده؛ با ست مستقیم جمع نمی‌شود.</p><table class="wrap"><tbody>'+secondaryRows+'</tbody></table></div>' : '<p class="note">عضلات کمکی در بانک این برنامه ثبت نشده‌اند.</p>') +
       '</div></div>';
 
     anBody3D($('anOut').querySelector('.an-body'), regions);
     $('an_download').onclick=function(){anDownloadReport($('anOut'),d,regions);};
+    $('anOut').querySelectorAll('[data-an-plan-fix]').forEach(function(b){b.onclick=function(){S.editPlan=b.getAttribute('data-an-plan-fix');go('plans.edit');};});
     $('anOut').querySelectorAll('[data-an-fix]').forEach(function(b){b.onclick=function(){openItem('exercises',b.getAttribute('data-an-fix'));};});
     $('anOut').querySelectorAll('[data-day]').forEach(function (b) {
       b.onclick = function () { st.day = Number(b.getAttribute('data-day')) || 0; render(); };

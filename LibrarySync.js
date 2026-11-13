@@ -44,7 +44,7 @@ function sfLibBankIndex_() {
     var id = normalize_(r[I.ExerciseID]);
     if (!id) return;
     rows.push({ rowNo: i + 2, id: id, r: r });
-    byId[id] = i + 2;
+    if(!byId[id]) byId[id] = i + 2;
     var en = sfLibKey_(r[I.EnglishName]);
     if (en && !byName[en]) byName[en] = i + 2;
     var et = sfLibTokenKey_(r[I.EnglishName]);
@@ -60,11 +60,11 @@ function sfLibBankIndex_() {
 }
 
 function sfLibFindRow_(idx, it) {
-  if (idx.byId[it.id]) return idx.byId[it.id];
   var k = sfLibKey_(it.n);
   if (k && idx.byName[k]) return idx.byName[k];
   var fk = sfLibKey_(it.fa);
   if (fk && idx.byName[fk]) return idx.byName[fk];
+  if (idx.byId[it.id]) return idx.byId[it.id];
   var tk = sfLibTokenKey_(it.n);
   if (tk && idx.byTokens[tk]) return idx.byTokens[tk];
   return 0;

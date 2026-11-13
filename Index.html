@@ -692,26 +692,7 @@ body, .card, .sf-admin, .container { color: var(--text); }
     html[data-theme="dark"] .login .logo{ width:120px; height:120px; display:grid; place-items:center; margin:0 auto 10px; background:none; box-shadow:none; border-radius:0; animation:logoFloat 4.2s ease-in-out infinite; filter:drop-shadow(0 0 22px rgba(183,255,0,.45)) }
     html[data-theme="dark"] .login .brand-logo{ width:96px; height:96px; max-width:none; max-height:none; display:block!important; object-fit:contain }
     html[data-theme="dark"] #splash .sfa-core{ width:158px; height:158px; max-width:none; max-height:none; object-fit:contain }
-    /* sfa-admin-shell: پوستهٔ دسکتاپ پنل ادمین — مستقل از تم (قبلاً فقط dark) */
-    .sfa-adm-shell{display:grid;grid-template-columns:1fr 250px;gap:16px;align-items:start}
-    .sfa-adm-side{position:sticky;top:12px;background:linear-gradient(165deg,var(--s1),var(--s2));border:1px solid var(--line);border-radius:6px 22px 6px 22px;padding:14px}
-    .sfa-adm-brand{display:flex;gap:10px;align-items:center;margin-bottom:12px}
-    .sfa-adm-brand img{width:34px;height:34px;object-fit:contain}
-    .sfa-adm-brand b{display:block;font-family:'Barlow Condensed',Vazirmatn,sans-serif;font-style:italic;font-size:20px;line-height:1;letter-spacing:.5px}
-    .sfa-adm-brand span{display:block;font-size:10px;letter-spacing:3px;color:var(--accent)}
-    .sfa-adm-brand small{display:block;font-size:10px;color:var(--muted)}
-    .sfa-adm-nav{display:grid;gap:4px}
-    .sfa-adm-nav a{display:block;padding:9px 10px;border-radius:8px;color:var(--muted);font-size:13px;cursor:pointer;border-right:3px solid transparent}
-    .sfa-adm-nav a:hover{background:rgba(255,255,255,.04);color:var(--text)}
-    .sfa-adm-nav a.on{color:var(--accent);border-right:3px solid var(--accent);background:rgba(183,255,0,.09)}
-    .sfa-adm-main{min-width:0}
-    .sfa-adm-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:0 0 14px}
-    .sfa-adm-stat{background:linear-gradient(165deg,var(--s1),var(--s2));border:1px solid var(--line);border-top:2px solid rgba(183,255,0,.55);border-radius:6px 18px 6px 18px;padding:12px 14px}
-    .sfa-adm-stat b{display:block;font-family:'Barlow Condensed',Vazirmatn,sans-serif;font-style:italic;font-weight:800;font-size:40px;line-height:1.1;color:var(--accent)}
-    .sfa-adm-stat small{font-size:11px;color:var(--muted);letter-spacing:.5px}
-    .sfa-adm-stat i{font-style:normal;font-size:11px;color:var(--muted)}
-    @media (max-width:1100px){.sfa-adm-shell{grid-template-columns:1fr}.sfa-adm-side{position:static}}
-    @media (max-width:640px){.sfa-adm-stats{grid-template-columns:1fr 1fr}}
+    
     /* sfa-meal-timeline: وضعیت وعده‌های غذایی */
     html[data-theme="dark"] .sfa-meal-done{border-top-color:rgba(63,185,80,.85)}
     html[data-theme="dark"] .sfa-meal-part{border-top-color:rgba(183,255,0,.85)}
@@ -959,7 +940,6 @@ html[data-theme="day"]{--s1:#fff;--s2:#f1f5fb;--line2:#b8c4d4;--stripe:rgba(20,4
 
 html[data-theme="dark"] body,html[data-theme="navy"] body,html[data-theme="day"] body{
   background:var(--bg)}
-body.sfa-adm-mode{padding-bottom:0!important}
 
 /* ---------- primitives ---------- */
 .num{font-family:'Barlow Condensed',Vazirmatn,sans-serif;font-weight:800;font-style:italic;letter-spacing:.5px}
@@ -976,7 +956,6 @@ body.sfa-adm-mode{padding-bottom:0!important}
 .sf2-dock .nav button.active{color:var(--a)}
 .sf2-dock .nav button.active::before{content:"";position:absolute;top:-6px;width:22px;height:3px;border-radius:2px;background:var(--a)}
 .sf2-dock .nav .ndot{position:absolute;top:6px;inset-inline-end:22%}
-body.sfa-adm-mode .sf2-dock{display:none}
 html[data-theme="dark"] .topbar .nav{display:none}
 
 /* ---------- athlete header ---------- */
@@ -1078,43 +1057,6 @@ html[data-theme="dark"] .topbar .nav{display:none}
 .sf2-empty .sf2-cta{width:auto;min-height:44px;padding:0 20px;font-size:14px}
 
 /* ---------- admin shell: right sidebar ---------- */
-html[data-mode="coach"] #main{max-width:none!important;margin:0!important;padding:0!important}
-html[data-mode="coach"] body{padding-bottom:0!important}
-html[data-mode="coach"] .sfa-adm-main{background:var(--page-bg)}
-body.sfa-adm-mode .topbar{display:none}
-body.sfa-adm-mode .container{max-width:none;padding:0}
-.sfa-adm-shell{display:grid;grid-template-columns:250px 1fr;gap:0;align-items:stretch;min-height:100vh}
-.sfa-adm-side{position:sticky;top:0;align-self:start;height:100vh;overflow:auto;border-radius:0;
-  background:linear-gradient(180deg,#006d77,#00d5a5);border:0;border-inline-start:1px solid var(--line);
-  padding:18px 14px;display:flex;flex-direction:column;gap:4px}
-.sfa-adm-brand{display:flex;gap:10px;align-items:center;margin:0 0 14px;padding:0 6px 14px;border-bottom:1px solid var(--line)}
-.sfa-adm-brand svg,.sfa-adm-brand img{width:34px;height:34px;flex:none;object-fit:contain}
-.sfa-adm-brand b{display:block;font-family:'Barlow Condensed',Vazirmatn,sans-serif;font-style:italic;font-size:21px;line-height:1}
-.sfa-adm-brand span{display:block;font-size:10px;letter-spacing:3px;color:var(--accent)}
-.sfa-adm-brand small{display:block;font-size:10px;color:var(--muted)}
-.sfa-adm-nav{display:grid;gap:2px;margin:0 0 12px}
-.sfa-adm-nav a{display:flex;align-items:center;gap:10px;padding:11px 12px;min-height:44px;border-radius:10px 4px 10px 4px;
-  color:var(--muted);font-size:13px;font-weight:600;cursor:pointer;text-decoration:none;border:0}
-.sfa-adm-nav a svg{width:16px;height:16px;flex:none}
-.sfa-adm-nav a:hover{background:rgba(255,255,255,.05);color:var(--text)}
-.sfa-adm-nav a.on{background:color-mix(in srgb,var(--a) 16%,transparent);color:var(--a)}
-.sfa-adm-nav a .cnt{margin-inline-start:auto;font:700 11px Vazirmatn,sans-serif;background:color-mix(in srgb,var(--a) 20%,transparent);color:var(--a);padding:1px 7px;border-radius:99px}
-.sfa-adm-foot{margin-top:auto;display:grid;gap:6px;border-top:1px solid var(--line);padding-top:12px}
-.sfa-adm-foot a{font-size:12px;color:var(--muted);cursor:pointer;padding:9px 10px;border-radius:8px;min-height:38px}
-.sfa-adm-foot a:hover{background:rgba(255,255,255,.05);color:var(--text)}
-.sfa-adm-main{min-width:0;padding:18px 22px 40px}
-.sfa-adm-hrow{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin:0 0 16px}
-.sfa-adm-title{font-size:28px;font-weight:800;line-height:1.2}
-.sfa-adm-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:0 0 16px}
-.sfa-adm-stat{background:linear-gradient(165deg,var(--s1),var(--s2));border:1px solid var(--line);
-  border-top:2px solid color-mix(in srgb,var(--a) 60%,transparent);border-radius:6px 18px 6px 18px;padding:12px 14px}
-.sfa-adm-stat small{display:block;font:600 12px 'Barlow Condensed',Vazirmatn,sans-serif;letter-spacing:2px;
-  text-transform:uppercase;color:var(--muted);margin-bottom:6px}
-.sfa-adm-stat b{display:block;font-family:'Barlow Condensed',Vazirmatn,sans-serif;font-style:italic;
-  font-weight:800;font-size:42px;line-height:1;color:var(--accent)}
-.sfa-adm-stat.cyan b{color:#38d0ff}
-.sfa-adm-stat.orange b{color:#ff8a3d}
-.sfa-adm-stat i{font-style:normal;font-size:11px;color:var(--muted)}
 .sfa-attn{display:grid;gap:8px}
 .sfa-attn .row{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--line);
   border-radius:6px 14px 6px 14px;background:rgba(255,255,255,.03)}
@@ -1123,14 +1065,6 @@ body.sfa-adm-mode .container{max-width:none;padding:0}
 .sfa-attn .nm{flex:1;min-width:0;font-size:13px;font-weight:700}
 .sfa-attn .nm span{display:block;font-size:11px;font-weight:500;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .sfa-attn .why{font-size:11px;color:#ff8a3d;background:color-mix(in srgb,#ff8a3d 14%,transparent);padding:2px 8px;border-radius:99px;white-space:nowrap}
-@media (max-width:1100px){
-  .sfa-adm-shell{grid-template-columns:1fr}
-  .sfa-adm-side{position:static;height:auto;border-inline-start:0;border-bottom:1px solid var(--line)}
-  .sfa-adm-nav{display:flex;overflow:auto;gap:6px}
-  .sfa-adm-nav a{white-space:nowrap}
-  .sfa-adm-stats{grid-template-columns:repeat(2,1fr)}
-  .sfa-adm-main{padding:14px}
-}
 @media (prefers-reduced-motion:reduce){
   .sf2-cta.sheen::after{animation:none!important}
   .sf2-sheet,.sf2-sheet-bg{animation:none!important;transition:none!important}
@@ -1147,7 +1081,6 @@ body.sfa-adm-mode .container{max-width:none;padding:0}
 .sf3-plan-row select { min-width: 0; max-width: 100%; width: 100%; }
 .sf2-dock .nav button span, .sf2-dock .nav button { overflow: hidden; text-overflow: ellipsis; }
 .sf2-dock { box-sizing: border-box; max-width: 100vw; }
-body.sfa-adm-mode .sf-ex2 .ex-thumb { display: none; }
 
 /* ---------- login + loading polish ---------- */
 .login-wrap { animation: sf3FadeIn .45s ease both; }
@@ -1487,9 +1420,9 @@ body.sfa-adm-mode .sf-ex2 .ex-thumb { display: none; }
     W.homeView = homeView2;
     W.dietView = dietView2;
     W.sfaMacroRings = function (Dd, p) { return macroRings2(Dd, p); };
-    W.sfAdminHome = function () { return; };
+
     W.sfItemName = itemName2;
-    if (typeof W.sf7CoachShell === 'function') W.sf7CoachShell = function () { return; };
+
     chrome();
     return true;
   }
@@ -1870,7 +1803,6 @@ body.sfa-adm-mode .sf-ex2 .ex-thumb { display: none; }
     /* expose for subscription lock gate */
     W.sf4OpenPay = openPay;
     W.sf4Sub = function () { return (S.meta && S.meta.sub) ? S.meta.sub : null; };
-    W.sf4IsAdmin = function () { var st = appState(); return !!(st && st.data && st.data.isAdmin); };
     W.sf4Role = function () { var st = appState(); return String((st && st.data && st.data.user && st.data.user.role) || '').toLowerCase(); };
 
     if ($('sf3DayBtn')) $('sf3DayBtn').onclick = function (ev) { ev.preventDefault(); openDayPicker(); };
@@ -2116,8 +2048,7 @@ body.sfa-adm-mode .sf-ex2 .ex-thumb { display: none; }
     tries++;
     if (W.__sf2) {
       clearInterval(timer);
-      /* ادمین: sfAdminHome خودِ پنل مدیریت را رندر می‌کند (همان URL).
-         بازنویسیِ قبلی ادمین را به کنسول مربی می‌فرستاد و صفحه خالی می‌شد. */
+      
       boot();
     } else if (tries > 400) {
       clearInterval(timer);
@@ -2514,7 +2445,6 @@ body.sfa-adm-mode .sf-ex2 .ex-thumb { display: none; }
     return String((d.user && d.user.role) || '').toLowerCase();
   }
   W.sf4Role = function () { return roleOf(); };
-  W.sf4IsAdmin = function () { var r = roleOf(); return r === 'admin' || r === 'coach'; };
   W.sf4Sub = function () {
     var me = saved || (cache && cache.me) || null;
     if (!me) { var fb = fallbackState(); me = fb && fb.me; }
@@ -2572,56 +2502,12 @@ html, body { overflow-x: clip !important; }
 @supports not (overflow: clip) { html, body { overflow-x: hidden !important; } }
 
 /* 2) حالت ادمین/مربی: تمام‌عرض، بدون قاب 520px */
-html[data-mode="coach"] #root,
-body.sfa-adm-mode #root {
-  max-width: none !important; width: 100% !important; margin: 0 !important;
-  box-shadow: none !important; background: transparent !important;
-}
-html[data-mode="coach"] .container,
-body.sfa-adm-mode .container {
-  width: 100% !important; max-width: none !important;
-  margin: 0 !important; padding: 0 !important;
-}
-body.sfa-adm-mode .topbar, body.sfa-adm-mode .sf2-dock, body.sfa-adm-mode #sf2dock { display: none !important; }
-html[data-mode="coach"] #sf2dock { display: none !important; }
 
 /* 3) شِل ادمین: ستون‌ها و حداقل‌های امن */
-.sfa-adm-shell { grid-template-columns: 264px minmax(0, 1fr) !important; min-height: 100vh; width: 100%; }
-.sfa-adm-side  { width: 264px; min-width: 0; z-index: 25; }
-.sfa-adm-main  { min-width: 0 !important; width: 100%; }
-.sfa-adm-main .table-wrap, .sfa-adm-main .sf3-tbl-wrap { max-width: 100%; overflow-x: auto; }
-.sfa-adm-main img, .sfa-adm-main svg { max-width: 100%; }
-.sfa-adm-main .grid-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-.sfa-adm-main .grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-.sfa-adm-main .grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-.sfa-adm-main .exercise { grid-template-columns: auto 1.8fr .5fr 1fr 1.2fr auto; }
-
-@media (max-width: 1100px) {
-  .sfa-adm-shell { grid-template-columns: minmax(0, 1fr) !important; }
-  .sfa-adm-side  { position: sticky !important; top: 0; width: 100%; height: auto !important;
-                   flex-direction: row !important; align-items: center; gap: 10px;
-                   padding: 8px 12px !important; overflow-x: auto; overflow-y: hidden;
-                   border-inline-start: 0 !important; border-bottom: 1px solid var(--line) !important; }
-  .sfa-adm-brand { margin: 0 !important; padding: 0 !important; border: 0 !important; flex: none; }
-  .sfa-adm-nav   { display: flex !important; gap: 6px !important; margin: 0 !important; flex: 1 1 auto; overflow-x: auto; scrollbar-width: none; }
-  .sfa-adm-nav::-webkit-scrollbar { display: none; }
-  .sfa-adm-nav a { white-space: nowrap; flex: none; }
-  .sfa-adm-foot  { margin: 0 !important; padding: 0 !important; border: 0 !important; display: flex !important; flex: none; }
-  .sfa-adm-main  { padding: 14px 12px 90px !important; }
-}
-@media (max-width: 900px) {
-  .sfa-adm-main .grid-4, .sfa-adm-main .grid-3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .sfa-adm-main .exercise { grid-template-columns: auto 1fr auto; }
-}
-@media (max-width: 620px) {
-  .sfa-adm-main .grid-4, .sfa-adm-main .grid-3, .sfa-adm-main .grid-2 { grid-template-columns: minmax(0, 1fr); }
-  .sfa-adm-stats { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
-  .sfa-adm-brand div { display: none; }
-}
 
 /* 4) پنل شاگرد روی دسکتاپ: ستون وسط، با نوار پایین هم‌عرض */
 @media (min-width: 720px) {
-  html:not([data-mode="coach"]) body:not(.sfa-adm-mode) #root { box-shadow: 0 0 0 1px var(--line), 0 30px 90px rgba(0,0,0,.55); }
+  html body #root { box-shadow: 0 0 0 1px var(--line), 0 30px 90px rgba(0,0,0,.55); }
 }
 .sf2-dock { backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); }
 .container { padding-bottom: max(150px, calc(110px + env(safe-area-inset-bottom))); }
@@ -2632,37 +2518,11 @@ html[data-mode="coach"] #sf2dock { display: none !important; }
  * ===================================================================== */
 :root { --r-sm: 10px; --r-md: 14px; --r-lg: 20px; --ease: cubic-bezier(.2,.7,.2,1); }
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 8px; }
-.num, .sfa-adm-stat b, .kpi .value, .sf3-tbl td, .table td { font-variant-numeric: tabular-nums; }
+.num, .kpi .value, .sf3-tbl td, .table td { font-variant-numeric: tabular-nums; }
 
 /* ---- سایدبار ادمین ---- */
-.sfa-adm-side { background: linear-gradient(180deg, color-mix(in srgb, var(--s1) 94%, #000), var(--s2)) !important;
-                box-shadow: inset -1px 0 0 var(--line); padding: 20px 14px !important; }
-.sfa-adm-brand { align-items: center; padding-bottom: 16px !important; margin-bottom: 14px !important; }
-.sfa-adm-brand b { font-size: 22px !important; letter-spacing: 1px; }
-.sfa-adm-brand span { color: var(--accent); }
-.sfa-adm-nav { gap: 4px !important; }
-.sfa-adm-nav a { position: relative; border-radius: var(--r-sm) !important; padding: 10px 14px !important;
-                 transition: background .18s var(--ease), color .18s var(--ease), transform .18s var(--ease); }
-.sfa-adm-nav a:hover { transform: translateX(-2px); }
-.sfa-adm-nav a.on { background: color-mix(in srgb, var(--accent) 14%, transparent) !important; color: var(--accent) !important; }
-.sfa-adm-nav a.on::before { content: ""; position: absolute; inset-block: 9px; inset-inline-start: -14px; width: 4px;
-                            border-radius: 0 4px 4px 0; background: var(--accent); box-shadow: 0 0 14px color-mix(in srgb, var(--accent) 60%, transparent); }
-.sfa-adm-foot a { border-radius: var(--r-sm); transition: background .18s; }
-.sfa-adm-foot a:last-child { color: var(--danger); }
 
 /* ---- هدر و محتوای ادمین ---- */
-.sfa-adm-main { padding: 0 28px 48px !important; background: transparent; }
-.sfa-adm-hrow { position: sticky; top: 0; z-index: 20; margin: 0 -28px 20px !important; padding: 16px 28px !important;
-                background: color-mix(in srgb, var(--bg) 84%, transparent);
-                backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
-                border-bottom: 1px solid var(--line); }
-.sfa-adm-title { font-size: 26px !important; letter-spacing: -.2px; }
-.sfa-adm-stats { gap: 14px !important; margin-bottom: 20px !important; }
-.sfa-adm-stat { border-radius: var(--r-md) !important; padding: 16px 18px !important; position: relative; overflow: hidden;
-                transition: transform .2s var(--ease), border-color .2s; }
-.sfa-adm-stat::after { content: ""; position: absolute; inset-inline-end: -26px; top: -26px; width: 90px; height: 90px; border-radius: 50%;
-                       background: radial-gradient(circle, color-mix(in srgb, var(--accent) 18%, transparent), transparent 70%); pointer-events: none; }
-.sfa-adm-stat:hover { transform: translateY(-3px); border-color: color-mix(in srgb, var(--accent) 40%, var(--line)); }
 
 /* ---- جدول‌ها ---- */
 .table-wrap, .sf3-tbl-wrap { border: 1px solid var(--line); border-radius: var(--r-md); background: var(--s1); }
@@ -2677,7 +2537,6 @@ html[data-mode="coach"] #sf2dock { display: none !important; }
 .field input, .field select, .field textarea, .sf3-form2 input { min-height: 42px; border-radius: var(--r-sm); }
 .field input:focus, .field select:focus, .field textarea:focus { border-color: var(--accent) !important; }
 .card, .sf3-adm-card { border-radius: var(--r-md); }
-.sfa-adm-main .card { padding: 18px; }
 .empty { border-radius: var(--r-md); background: color-mix(in srgb, var(--text) 2%, transparent); }
 
 /* ---- پنل شاگرد ---- */
@@ -2693,38 +2552,15 @@ html[data-mode="coach"] #sf2dock { display: none !important; }
 .sf2-meal .body:hover { transform: translateY(-1px); }
 
 @media (hover: none) {
-  .sfa-adm-nav a:hover, .sfa-adm-stat:hover, .sf2-meal .body:hover { transform: none; }
+  .sf2-meal .body:hover { transform: none; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .sfa-adm-nav a, .sfa-adm-stat, .sf2-cta, .sf2-meal .body { transition: none !important; }
+  .sf2-cta, .sf2-meal .body { transition: none !important; }
 }
-@media print { .sfa-adm-side, .sf2-dock, .sfa-adm-hrow { display: none !important; } .sfa-adm-shell { display: block !important; } }
+@media print { .sf2-dock { display: none !important; } }
 </style>
 
-<script id="sf-layout-fix-js">
-/* همگام‌سازی کلاس‌های حالت ادمین/مربی با DOM واقعی تا استایل یکی از پنل‌ها روی دیگری نماند */
-(function () {
-  var H = document.documentElement, B = document.body, raf = 0;
-  function sync() {
-    raf = 0;
-    var root = document.getElementById('root');
-    if (!root) return;
-    var coachShell = !!root.querySelector(':scope > .sfa-adm-shell');
-    var adminInMain = !!root.querySelector('#main .sfa-adm-shell');
-    if (!coachShell && H.getAttribute('data-mode') === 'coach') H.removeAttribute('data-mode');
-    if (coachShell && H.getAttribute('data-mode') !== 'coach') H.setAttribute('data-mode', 'coach');
-    if (B.classList.contains('sfa-adm-mode') !== adminInMain && !coachShell) B.classList.toggle('sfa-adm-mode', adminInMain);
-    if (coachShell && B.classList.contains('sfa-adm-mode')) B.classList.remove('sfa-adm-mode');
-  }
-  function schedule() { if (!raf) raf = requestAnimationFrame(sync); }
-  function boot() {
-    var root = document.getElementById('root');
-    if (root) new MutationObserver(schedule).observe(root, { childList: true, subtree: true });
-    sync();
-  }
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
-})();
-</script>
+
 
 <style id="sf-pro-v3">
 /* =====================================================================
@@ -2739,21 +2575,21 @@ html[data-mode="coach"] #sf2dock { display: none !important; }
  * ===================================================================== */
 
 /* ---------- ریتم عمودی یکسان (فقط پنل شاگرد) ---------- */
-html:not([data-mode="coach"]) body:not(.sfa-adm-mode) #main { display: flex; flex-direction: column; gap: 10px; }
-html:not([data-mode="coach"]) body:not(.sfa-adm-mode) #main > * { margin-top: 0 !important; margin-bottom: 0 !important; }
-html:not([data-mode="coach"]) body:not(.sfa-adm-mode) #main > .sf5-sechead { margin-top: 4px !important; }
+html body #main { display: flex; flex-direction: column; gap: 10px; }
+html body #main > * { margin-top: 0 !important; margin-bottom: 0 !important; }
+html body #main > .sf5-sechead { margin-top: 4px !important; }
 
 /* ---------- بالای صفحه: فشرده ---------- */
-html:not([data-mode="coach"]) .sf7-band { padding: 10px 12px !important; gap: 10px !important; border-radius: 14px !important; }
-html:not([data-mode="coach"]) .sf7-band .sf7-macro-strip { display: none !important; }   /* همین اعداد در کارت «حلقه‌ها» هست */
-html:not([data-mode="coach"]) .sf2-head { padding: 0 2px !important; gap: 10px !important; }
-html:not([data-mode="coach"]) .sf2-head > svg, html:not([data-mode="coach"]) .sf2-head > .brand-mark, html:not([data-mode="coach"]) .sf2-head img { width: 28px !important; height: 32px !important; }
-html:not([data-mode="coach"]) .sf2-head .who b { font-size: 18px !important; }
-html:not([data-mode="coach"]) .sf3-date { min-height: 0 !important; padding: 0 2px !important; }
-html:not([data-mode="coach"]) .sf3-date-btn { min-width: 36px !important; min-height: 36px !important; }
-html:not([data-mode="coach"]) #main > .hero { padding: 2px 4px 0 !important; min-height: 0 !important; }
-html:not([data-mode="coach"]) #main > .hero h1 { font-size: 19px !important; margin: 0 !important; }
-html:not([data-mode="coach"]) #main > .hero p { font-size: 12px !important; margin: 2px 0 0 !important; }html:not([data-mode="coach"]) .card { padding: 12px; }
+html .sf7-band { padding: 10px 12px !important; gap: 10px !important; border-radius: 14px !important; }
+html .sf7-band .sf7-macro-strip { display: none !important; }   /* همین اعداد در کارت «حلقه‌ها» هست */
+html .sf2-head { padding: 0 2px !important; gap: 10px !important; }
+html .sf2-head > svg, html .sf2-head > .brand-mark, html .sf2-head img { width: 28px !important; height: 32px !important; }
+html .sf2-head .who b { font-size: 18px !important; }
+html .sf3-date { min-height: 0 !important; padding: 0 2px !important; }
+html .sf3-date-btn { min-width: 36px !important; min-height: 36px !important; }
+html #main > .hero { padding: 2px 4px 0 !important; min-height: 0 !important; }
+html #main > .hero h1 { font-size: 19px !important; margin: 0 !important; }
+html #main > .hero p { font-size: 12px !important; margin: 2px 0 0 !important; }html .card { padding: 12px; }
 
 /* ---------- تغذیه: متن کامل دستور غذا + حلقه‌های داخل عرض ---------- */
 .sf2-meal { align-items: flex-start !important; }
@@ -2840,38 +2676,38 @@ html:not([data-mode="coach"]) #main > .hero p { font-size: 12px !important; marg
 
 /* ---------- دسکتاپ: دیگر ستون 520px نیست ---------- */
 @media (min-width: 900px) {
-  html:not([data-mode="coach"]) body:not(.sfa-adm-mode) #root { max-width: 1080px !important; box-shadow: none !important; background: transparent !important; }
-  html:not([data-mode="coach"]) body:not(.sfa-adm-mode) .topbar,
-  html:not([data-mode="coach"]) body:not(.sfa-adm-mode) .topbar-inner { max-width: 1080px !important; }
-  html:not([data-mode="coach"]) body:not(.sfa-adm-mode) .container { max-width: 1080px !important; padding-top: 14px !important; padding-bottom: 130px !important; }
+  html body #root { max-width: 1080px !important; box-shadow: none !important; background: transparent !important; }
+  html body .topbar,
+  html body .topbar-inner { max-width: 1080px !important; }
+  html body .container { max-width: 1080px !important; padding-top: 14px !important; padding-bottom: 130px !important; }
   /* تب‌هایی که محتوای خطی دارند، ستون خوانا (860) */
-  html[data-sf-tab="workout"] body:not(.sfa-adm-mode) .container,
-  html[data-sf-tab="diet"] body:not(.sfa-adm-mode) .container,
-  html[data-sf-tab="progress"] body:not(.sfa-adm-mode) .container,
-  html[data-sf-tab="more"] body:not(.sfa-adm-mode) .container,
-  html[data-sf-tab="supp"] body:not(.sfa-adm-mode) .container,
-  html[data-sf-tab="chat"] body:not(.sfa-adm-mode) .container { max-width: 860px !important; }
+  html[data-sf-tab="workout"] body .container,
+  html[data-sf-tab="diet"] body .container,
+  html[data-sf-tab="progress"] body .container,
+  html[data-sf-tab="more"] body .container,
+  html[data-sf-tab="supp"] body .container,
+  html[data-sf-tab="chat"] body .container { max-width: 860px !important; }
   /* نوار پایین: شناور و وسط‌چین */
-  html:not([data-mode="coach"]) body:not(.sfa-adm-mode) #sf2dock,
-  html:not([data-mode="coach"]) body:not(.sfa-adm-mode) .topbar-inner > .nav {
+  html body #sf2dock,
+  html body .topbar-inner > .nav {
     width: min(560px, 92vw) !important; max-width: 560px !important; bottom: 16px !important; padding: 6px 8px !important;
     border: 1px solid var(--line2, var(--line)) !important; border-radius: 20px !important;
     background: color-mix(in srgb, var(--s1) 92%, transparent) !important; backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
     box-shadow: 0 22px 60px -16px rgba(0, 0, 0, .7);
   }
   /* خانه: دو ستون */
-  html[data-sf-tab="home"] body:not(.sfa-adm-mode) #main { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; align-items: stretch; }
-  html[data-sf-tab="home"] body:not(.sfa-adm-mode) #main > .sf7-band,
-  html[data-sf-tab="home"] body:not(.sfa-adm-mode) #main > .sf2-head,
-  html[data-sf-tab="home"] body:not(.sfa-adm-mode) #main > .sf3-date,
-  html[data-sf-tab="home"] body:not(.sfa-adm-mode) #main > details,
-  html[data-sf-tab="home"] body:not(.sfa-adm-mode) #main > .hero { grid-column: 1 / -1; }
-  html[data-sf-tab="home"] body:not(.sfa-adm-mode) #main > #rankCard:empty { display: none; }
+  html[data-sf-tab="home"] body #main { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; align-items: stretch; }
+  html[data-sf-tab="home"] body #main > .sf7-band,
+  html[data-sf-tab="home"] body #main > .sf2-head,
+  html[data-sf-tab="home"] body #main > .sf3-date,
+  html[data-sf-tab="home"] body #main > details,
+  html[data-sf-tab="home"] body #main > .hero { grid-column: 1 / -1; }
+  html[data-sf-tab="home"] body #main > #rankCard:empty { display: none; }
   .sfp-block .sf-item { grid-template-columns: 120px minmax(0, 1fr); }
   .sfp-block .sf-media { max-width: 120px; }
 }
 @media (min-width: 1280px) {
-  html[data-sf-tab="workout"] body:not(.sfa-adm-mode) .container { max-width: 940px !important; }
+  html[data-sf-tab="workout"] body .container { max-width: 940px !important; }
 }
 @media (prefers-reduced-motion: reduce) { .sfp-block, .sfp-set { transition: none !important; } }
 
@@ -2890,86 +2726,84 @@ html:not([data-mode="coach"]) #main > .hero p { font-size: 12px !important; marg
 /* =====================================================================
  * sf-pro v4 — لایهٔ «پریمیوم» کاملاً تم‌دار (فقط از متغیرهای خود تم‌ها: --a --s1 --line --text …)
  * ===================================================================== */
-html:not([data-mode="coach"]) body:not(.sfa-adm-mode) {
+html body {
   --sfp-ease: cubic-bezier(.2,.8,.2,1);
   --sfp-hair: color-mix(in srgb, var(--text) 8%, transparent);
   --sfp-hair2: color-mix(in srgb, var(--text) 14%, transparent);
   --sfp-shadow: color-mix(in srgb, #000 55%, transparent);
   -webkit-font-smoothing: antialiased; font-feature-settings: "kern" 1;
 }
-html:not([data-mode="coach"]) body:not(.sfa-adm-mode)::before { content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none;
+html body::before { content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none;
   background: radial-gradient(900px 420px at 85% -8%, color-mix(in srgb, var(--a) 9%, transparent), transparent 65%), radial-gradient(700px 380px at 5% 105%, color-mix(in srgb, var(--a2) 6%, transparent), transparent 60%); }
 
 /* کارت‌ها: لایهٔ شیشه‌ای، حاشیهٔ مو، سایهٔ نرم؛ بدون خط رنگی بالا */
-html:not([data-mode="coach"]) .card, html:not([data-mode="coach"]) .sfp-block {
+html .card, html .sfp-block {
   background: linear-gradient(180deg, color-mix(in srgb, var(--s1) 92%, var(--text) 3%), var(--s1)) !important;
   border: 1px solid var(--sfp-hair) !important; border-radius: 20px !important;
   box-shadow: 0 1px 0 color-mix(in srgb, #fff 6%, transparent) inset, 0 18px 36px -22px var(--sfp-shadow) !important;
 }
-html:not([data-mode="coach"]) .card::before, html:not([data-mode="coach"]) .card::after { background: none !important; box-shadow: none !important; }
+html .card::before, html .card::after { background: none !important; box-shadow: none !important; }
 
 /* هدر و خوشامد: لوگوی تکراری حذف، استریک به‌شکل قرص */
-html:not([data-mode="coach"]) .sf2-head > img, html:not([data-mode="coach"]) .sf2-head > svg { display: none !important; }
-html:not([data-mode="coach"]) .sf2-head .who b { font-size: 24px !important; letter-spacing: -.3px; }
-html:not([data-mode="coach"]) .sf2-head > :first-child:not(.who) { border-radius: 999px !important; padding: 6px 14px !important; min-height: 0 !important; height: auto !important;
+html .sf2-head > img, html .sf2-head > svg { display: none !important; }
+html .sf2-head .who b { font-size: 24px !important; letter-spacing: -.3px; }
+html .sf2-head > :first-child:not(.who) { border-radius: 999px !important; padding: 6px 14px !important; min-height: 0 !important; height: auto !important;
   background: color-mix(in srgb, var(--a) 12%, transparent) !important; border: 1px solid color-mix(in srgb, var(--a) 30%, transparent) !important; color: var(--a) !important; box-shadow: none !important; }
 
 /* نوار تشویقی */
-html:not([data-mode="coach"]) .sf7-band { background: linear-gradient(120deg, color-mix(in srgb, var(--a) 12%, var(--s1)), var(--s1) 70%) !important; border: 1px solid color-mix(in srgb, var(--a) 18%, transparent) !important; border-radius: 18px !important; box-shadow: none !important; }
-html:not([data-mode="coach"]) .sf7-band::before { display: none !important; }/* دکمه اصلی: یک‌رنگ با برجستگی ظریف (بدون گرادیان دو‌رنگ و بدون درخشش پهن) */
-html:not([data-mode="coach"]) .btn:not(.secondary):not(.ghost):not(.danger) {
+html .sf7-band { background: linear-gradient(120deg, color-mix(in srgb, var(--a) 12%, var(--s1)), var(--s1) 70%) !important; border: 1px solid color-mix(in srgb, var(--a) 18%, transparent) !important; border-radius: 18px !important; box-shadow: none !important; }
+html .sf7-band::before { display: none !important; }/* دکمه اصلی: یک‌رنگ با برجستگی ظریف (بدون گرادیان دو‌رنگ و بدون درخشش پهن) */
+html .btn:not(.secondary):not(.ghost):not(.danger) {
   background: linear-gradient(180deg, color-mix(in srgb, var(--a) 86%, #fff), var(--a)) !important; color: var(--on) !important; border: 0 !important;
   box-shadow: 0 1px 0 color-mix(in srgb, #fff 55%, transparent) inset, 0 12px 24px -12px color-mix(in srgb, var(--a) 70%, transparent) !important;
   font-weight: 800 !important; border-radius: 15px !important; letter-spacing: 0 !important;
-}html:not([data-mode="coach"]) .btn.secondary, html:not([data-mode="coach"]) .btn.ghost { background: color-mix(in srgb, var(--text) 5%, transparent) !important; border: 1px solid var(--sfp-hair2) !important; color: var(--text) !important; box-shadow: none !important; }
+}html .btn.secondary, html .btn.ghost { background: color-mix(in srgb, var(--text) 5%, transparent) !important; border: 1px solid var(--sfp-hair2) !important; color: var(--text) !important; box-shadow: none !important; }
 
 /* حلقه‌ها: نازک، تمیز، بدون glow */
-html:not([data-mode="coach"]) .sf2-ring svg, html:not([data-mode="coach"]) .sf2-kcal svg, html:not([data-mode="coach"]) .sf2-macro svg,
-html:not([data-mode="coach"]) .sf2-ring .rt, html:not([data-mode="coach"]) .sf2-kcal, html:not([data-mode="coach"]) .sf2-macro .rt { filter: none !important; box-shadow: none !important; }
-html:not([data-mode="coach"]) .sf2-ring svg circle, html:not([data-mode="coach"]) .sf2-kcal svg circle, html:not([data-mode="coach"]) .sf2-macro svg circle { stroke-width: 6 !important; }
-html:not([data-mode="coach"]) .sf2-ring svg circle:last-of-type, html:not([data-mode="coach"]) .sf2-kcal svg circle:last-of-type, html:not([data-mode="coach"]) .sf2-macro svg circle:last-of-type { stroke-linecap: round; }
-html:not([data-mode="coach"]) .sf2-ring .lb, html:not([data-mode="coach"]) .sf2-macro .lb { letter-spacing: .14em !important; font-size: 10.5px !important; font-weight: 600 !important; opacity: .8; }
+html .sf2-ring svg, html .sf2-kcal svg, html .sf2-macro svg, html .sf2-ring .rt, html .sf2-kcal, html .sf2-macro .rt { filter: none !important; box-shadow: none !important; }
+html .sf2-ring svg circle, html .sf2-kcal svg circle, html .sf2-macro svg circle { stroke-width: 6 !important; }
+html .sf2-ring svg circle:last-of-type, html .sf2-kcal svg circle:last-of-type, html .sf2-macro svg circle:last-of-type { stroke-linecap: round; }
+html .sf2-ring .lb, html .sf2-macro .lb { letter-spacing: .14em !important; font-size: 10.5px !important; font-weight: 600 !important; opacity: .8; }
 
 /* برچسب‌ها و انتخاب روز: تینت تم، نه گرادیان درخشان */
-html:not([data-mode="coach"]) .sf-tech, html:not([data-mode="coach"]) .pill { background: color-mix(in srgb, var(--a) 15%, transparent) !important; color: var(--a) !important; border: 1px solid color-mix(in srgb, var(--a) 28%, transparent) !important; font-weight: 700; box-shadow: none !important; }
-html:not([data-mode="coach"]) .sf-days button, html:not([data-mode="coach"]) .sf-days .chip { border-radius: 999px !important; background: color-mix(in srgb, var(--text) 5%, transparent) !important; border: 1px solid var(--sfp-hair) !important; color: var(--muted) !important; font-weight: 600; transition: all .25s var(--sfp-ease); }
-html:not([data-mode="coach"]) .sf-days button.on, html:not([data-mode="coach"]) .sf-days button.active, html:not([data-mode="coach"]) .sf-days .chip.on { background: var(--a) !important; color: var(--on) !important; border-color: transparent !important; box-shadow: 0 8px 18px -10px var(--a) !important; }
+html .sf-tech, html .pill { background: color-mix(in srgb, var(--a) 15%, transparent) !important; color: var(--a) !important; border: 1px solid color-mix(in srgb, var(--a) 28%, transparent) !important; font-weight: 700; box-shadow: none !important; }
+html .sf-days button, html .sf-days .chip { border-radius: 999px !important; background: color-mix(in srgb, var(--text) 5%, transparent) !important; border: 1px solid var(--sfp-hair) !important; color: var(--muted) !important; font-weight: 600; transition: all .25s var(--sfp-ease); }
+html .sf-days button.on, html .sf-days button.active, html .sf-days .chip.on { background: var(--a) !important; color: var(--on) !important; border-color: transparent !important; box-shadow: 0 8px 18px -10px var(--a) !important; }
 
 /* نوار پایین: شیشه‌ای + حالت فعال تینتی */
-html:not([data-mode="coach"]) #sf2dock, html:not([data-mode="coach"]) .topbar-inner > .nav { background: color-mix(in srgb, var(--s2) 82%, transparent) !important;
+html #sf2dock, html .topbar-inner > .nav { background: color-mix(in srgb, var(--s2) 82%, transparent) !important;
   backdrop-filter: blur(22px) saturate(1.5); -webkit-backdrop-filter: blur(22px) saturate(1.5); border-top: 1px solid var(--sfp-hair) !important; }
-html:not([data-mode="coach"]) .nav button, html:not([data-mode="coach"]) #sf2dock button { transition: color .25s var(--sfp-ease), background .25s var(--sfp-ease), transform .2s var(--sfp-ease); }
-html:not([data-mode="coach"]) .nav button.active, html:not([data-mode="coach"]) #sf2dock button.active { background: color-mix(in srgb, var(--a) 14%, transparent) !important; color: var(--a) !important; border: 0 !important; box-shadow: none !important; border-radius: 15px !important; }
-html:not([data-mode="coach"]) .nav button.active::before, html:not([data-mode="coach"]) #sf2dock button.active::before { display: none !important; }
-html:not([data-mode="coach"]) .nav button:active { transform: scale(.93); }
+html .nav button, html #sf2dock button { transition: color .25s var(--sfp-ease), background .25s var(--sfp-ease), transform .2s var(--sfp-ease); }
+html .nav button.active, html #sf2dock button.active { background: color-mix(in srgb, var(--a) 14%, transparent) !important; color: var(--a) !important; border: 0 !important; box-shadow: none !important; border-radius: 15px !important; }
+html .nav button.active::before, html #sf2dock button.active::before { display: none !important; }
+html .nav button:active { transform: scale(.93); }
 
 /* تمرین و غذا */
-html:not([data-mode="coach"]) .sfp-set { background: color-mix(in srgb, var(--text) 3%, transparent) !important; border-color: var(--sfp-hair) !important; border-radius: 14px; }
-html:not([data-mode="coach"]) .sfp-n { background: color-mix(in srgb, var(--a) 14%, transparent) !important; color: var(--a) !important; }
-html:not([data-mode="coach"]) .sf2-meal .body { background: color-mix(in srgb, var(--text) 3%, transparent) !important; border: 1px solid var(--sfp-hair) !important; border-radius: 16px !important; }
-html:not([data-mode="coach"]) .sfp-block .sf-media { max-width: 84px; }
-html:not([data-mode="coach"]) .sfp-block .sf-item { grid-template-columns: 84px minmax(0, 1fr); }
-html:not([data-mode="coach"]) input, html:not([data-mode="coach"]) select, html:not([data-mode="coach"]) textarea { border-radius: 13px; }
+html .sfp-set { background: color-mix(in srgb, var(--text) 3%, transparent) !important; border-color: var(--sfp-hair) !important; border-radius: 14px; }
+html .sfp-n { background: color-mix(in srgb, var(--a) 14%, transparent) !important; color: var(--a) !important; }
+html .sf2-meal .body { background: color-mix(in srgb, var(--text) 3%, transparent) !important; border: 1px solid var(--sfp-hair) !important; border-radius: 16px !important; }
+html .sfp-block .sf-media { max-width: 84px; }
+html .sfp-block .sf-item { grid-template-columns: 84px minmax(0, 1fr); }
+html input, html select, html textarea { border-radius: 13px; }
 
 /* ---------- حرکت ---------- */
 @keyframes sfpRise { from { opacity: 0; transform: translateY(12px) scale(.992); } to { opacity: 1; transform: none; } }
 @keyframes sfpDraw { from { stroke-dashoffset: var(--sfp-len, 400); } }
 @keyframes sfpAurora { from { transform: translate(0,0) scale(1); opacity: .8; } to { transform: translate(-24px,16px) scale(1.18); opacity: 1; } }
-html:not([data-mode="coach"]) body:not(.sfa-adm-mode) #main > * { animation: sfpRise .5s var(--sfp-ease) both; }
-html:not([data-mode="coach"]) body:not(.sfa-adm-mode) #main > *:nth-child(2) { animation-delay: .05s; }
-html:not([data-mode="coach"]) body:not(.sfa-adm-mode) #main > *:nth-child(3) { animation-delay: .1s; }
-html:not([data-mode="coach"]) body:not(.sfa-adm-mode) #main > *:nth-child(4) { animation-delay: .15s; }
-html:not([data-mode="coach"]) body:not(.sfa-adm-mode) #main > *:nth-child(5) { animation-delay: .2s; }
-html:not([data-mode="coach"]) body:not(.sfa-adm-mode) #main > *:nth-child(n+6) { animation-delay: .25s; }
-html:not([data-mode="coach"]) .sfp-set { animation: sfpRise .45s var(--sfp-ease) both; }
-html:not([data-mode="coach"]) .sfp-set:nth-child(2) { animation-delay: .05s; } html:not([data-mode="coach"]) .sfp-set:nth-child(3) { animation-delay: .1s; } html:not([data-mode="coach"]) .sfp-set:nth-child(n+4) { animation-delay: .15s; }
-html:not([data-mode="coach"]) .btn, html:not([data-mode="coach"]) .sf-ok, html:not([data-mode="coach"]) .sf2-meal button { transition: transform .18s var(--sfp-ease), filter .2s, box-shadow .25s; }
-html:not([data-mode="coach"]) .btn:active, html:not([data-mode="coach"]) .sf-ok:active { transform: scale(.96); }
-@media (hover: hover) { html:not([data-mode="coach"]) .btn:hover { filter: brightness(1.07); transform: translateY(-1px); } html:not([data-mode="coach"]) .card { transition: border-color .25s, transform .3s var(--sfp-ease); } html:not([data-mode="coach"]) .card:hover { border-color: var(--sfp-hair2) !important; } }
-@media (prefers-reduced-motion: reduce) {}html:not([data-mode="coach"]) .sf2-head .who b, html:not([data-mode="coach"]) .sf7-band b, html:not([data-mode="coach"]) .sf7-band h3, html:not([data-mode="coach"]) .sf7-band strong { color: var(--text) !important; -webkit-text-fill-color: var(--text) !important; background: none !important; }
-html:not([data-mode="coach"]) .sf7-band .sub, html:not([data-mode="coach"]) .sf7-band p, html:not([data-mode="coach"]) .sf7-band div { color: var(--muted); }
-html:not([data-mode="coach"]) .sf7-band .chip, html:not([data-mode="coach"]) .sf7-band span.pill, html:not([data-mode="coach"]) .sf7-band [class*="chip"] { background: color-mix(in srgb, var(--text) 7%, transparent) !important; color: var(--text) !important; border: 1px solid var(--sfp-hair) !important; }
-html:not([data-mode="coach"]) .card h2, html:not([data-mode="coach"]) .card h3, html:not([data-mode="coach"]) .card h4 { color: var(--text) !important; -webkit-text-fill-color: var(--text) !important; background: none !important; }
+html body #main > * { animation: sfpRise .5s var(--sfp-ease) both; }
+html body #main > *:nth-child(2) { animation-delay: .05s; }
+html body #main > *:nth-child(3) { animation-delay: .1s; }
+html body #main > *:nth-child(4) { animation-delay: .15s; }
+html body #main > *:nth-child(5) { animation-delay: .2s; }
+html body #main > *:nth-child(n+6) { animation-delay: .25s; }
+html .sfp-set { animation: sfpRise .45s var(--sfp-ease) both; }
+html .sfp-set:nth-child(2) { animation-delay: .05s; } html .sfp-set:nth-child(3) { animation-delay: .1s; } html .sfp-set:nth-child(n+4) { animation-delay: .15s; }
+html .btn, html .sf-ok, html .sf2-meal button { transition: transform .18s var(--sfp-ease), filter .2s, box-shadow .25s; }
+html .btn:active, html .sf-ok:active { transform: scale(.96); }
+@media (hover: hover) { html .btn:hover { filter: brightness(1.07); transform: translateY(-1px); } html .card { transition: border-color .25s, transform .3s var(--sfp-ease); } html .card:hover { border-color: var(--sfp-hair2) !important; } }html .sf2-head .who b, html .sf7-band b, html .sf7-band h3, html .sf7-band strong { color: var(--text) !important; -webkit-text-fill-color: var(--text) !important; background: none !important; }
+html .sf7-band .sub, html .sf7-band p, html .sf7-band div { color: var(--muted); }
+html .sf7-band .chip, html .sf7-band span.pill, html .sf7-band [class*="chip"] { background: color-mix(in srgb, var(--text) 7%, transparent) !important; color: var(--text) !important; border: 1px solid var(--sfp-hair) !important; }
+html .card h2, html .card h3, html .card h4 { color: var(--text) !important; -webkit-text-fill-color: var(--text) !important; background: none !important; }
 
 /* =====================================================================
  * sf-pro v5 — آیکون‌ها (جایگزین اموجی) و افکت‌های لمسی؛ همه تم‌دار
@@ -3135,8 +2969,7 @@ img, video, canvas { max-width: 100%; }
 .coach-nav-b button svg { width: 20px; height: 20px; }
 
 /* ---- نوارهای ثابت نباید محتوای انتها را بپوشانند ---- */
-html[data-mode="coach"] .coach-main { padding-bottom: 150px; }
-html:not([data-mode="coach"]) body:not(.sfa-adm-mode) #main { padding-bottom: 96px; }
+html body #main { padding-bottom: 96px; }
 
 /* ---- کارت‌های آماری: عدد و برچسب هم‌تراز، بدون درهم‌ریختگی ---- */
 .coach-metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 8px; }
@@ -3148,14 +2981,6 @@ html:not([data-mode="coach"]) body:not(.sfa-adm-mode) #main { padding-bottom: 96
 @media (max-width: 600px) { .modal-card, .sf6-modal-card, .modal > div { max-width: 94vw !important; max-height: 88vh; overflow: auto; } }
 
 /* ---- پوستهٔ ادمین روی موبایل/تبلت: ناوبری تب‌ها خودش یک ردیف کامل داشته باشد (قبلاً 73px عرض داشت و فقط «داشبو» دیده می‌شد) ---- */
-@media (max-width: 899px) {
-  .sfa-adm-side { flex-wrap: wrap !important; align-items: center !important; gap: 6px 10px !important; padding: 8px 10px 4px !important; }
-  .sfa-adm-brand { order: 1; flex: none !important; }
-  .sfa-adm-foot { order: 2; flex: 1 1 0 !important; min-width: 0; display: flex !important; justify-content: flex-end; gap: 4px !important; flex-wrap: nowrap; overflow: hidden; }
-  .sfa-adm-foot a { padding: 7px 10px !important; font-size: 12px !important; white-space: nowrap; flex: none; }
-  .sfa-adm-nav { order: 3; flex: 1 1 100% !important; width: 100%; max-width: 100%; padding: 2px 0 6px; scroll-snap-type: x proximity; -webkit-overflow-scrolling: touch; }
-  .sfa-adm-nav a { flex: none !important; scroll-snap-align: center; padding: 9px 14px !important; min-height: 40px !important; }
-}
 
 
 
@@ -3184,16 +3009,11 @@ body { overflow-x:hidden; }
   margin-inline:auto !important;
   padding-inline:clamp(12px, 2vw, 24px) !important;
 }
-#main, #main > *, .coach-main, .coach-main > *,
-.sfa-adm-main, .sfa-adm-main > *, .card, .sf2-card {
+#main, #main > *, .coach-main, .coach-main > *, .card, .sf2-card {
   min-width:0;
 }
 
 /* محتوا: فقط فرزندان مستقیم گرید/فلکس اجازه کوچک‌شدن دارند؛ نه تمام عناصر داخلی */
-:is(.grid-2,.grid-3,.grid-4,.stats,.form,.sfp-res,.sfp-bc-in,
-    .sfa-adm-stats,.coach-metrics,.sf2-rings,.sf2-macro) > * { min-width:0; }
-:is(.grid-2,.grid-3,.grid-4,.stats,.form,.sfp-res,.sfp-bc-in,
-    .sfa-adm-stats,.coach-metrics) { width:100%; max-width:100%; }
 
 /* تصاویر و ویدئوها نسبت طبیعی خود را حفظ کنند؛ هیچ کشیدگی اجباری */
 img, video { max-width:100%; height:auto; }
@@ -3202,10 +3022,7 @@ img, video { max-width:100%; height:auto; }
   width:100%; height:100%; object-fit:contain;
 }
 /* نمودارها: محدودیت ارتفاع ثابت حذف؛ نسبت viewBox/canvas حفظ شود */
-.sfa-adm-main svg:not(.icon) { max-width:100%; height:auto; }
-.sfa-adm-main canvas { display:block; max-width:100%; height:auto; }
-.sfa-adm-main .chart-wrap, .sfa-adm-main .table-wrap,
-.sfa-adm-main .sf3-tbl-wrap, .table-wrap, .sfp-tbl-wrap {
+.table-wrap, .sfp-tbl-wrap {
   max-width:100%; min-width:0; overflow-x:auto; -webkit-overflow-scrolling:touch;
 }
 
@@ -3221,8 +3038,7 @@ img, video { max-width:100%; height:auto; }
 .chat-form input, .chat-form textarea { flex:1 1 auto; width:100%; min-width:0; }
 
 /* فرم‌ها و کارت‌های ساخت برنامه / تحلیل بدن */
-.sfp-pro, .sfp-bc, .sfp-tx, #sfBuilderCard,
-.sfp-bc-out, .sfp-res, .sfp-plan, .sfp-macs, .sfp-tx-row {
+.sfp-pro, .sfp-bc, .sfp-tx, #sfBuilderCard, .sfp-bc-out, .sfp-res, .sfp-plan, .sfp-macs, .sfp-tx-row {
   width:100%; max-width:100%; min-width:0;
 }
 .sfp-bc-in {
@@ -3235,29 +3051,14 @@ img, video { max-width:100%; height:auto; }
   grid-template-columns:minmax(0,1fr);
   gap:12px; align-items:start;
 }
-.sfp-pro input, .sfp-pro select, .sfp-pro textarea,
-.sfp-bc input, .sfp-bc select, .sfp-tx textarea {
+.sfp-pro input, .sfp-pro select, .sfp-pro textarea, .sfp-bc input, .sfp-bc select, .sfp-tx textarea {
   width:100%; max-width:100%; min-width:0;
 }
 
 /* پوسته ادمین: ستون کناری و محتوای اصلی مستقل و بدون فشردگی */
-.sfa-adm-shell {
-  display:grid !important;
-  grid-template-columns:264px minmax(0,1fr) !important;
-  width:100% !important; max-width:100% !important; min-width:0;
-  gap:0 !important;
-}
-.sfa-adm-side { width:auto !important; min-width:0; }
-.sfa-adm-main { width:100%; max-width:100%; min-width:0; overflow-x:clip; }
-.sfa-adm-main .grid-4 { grid-template-columns:repeat(4,minmax(0,1fr)); }
-.sfa-adm-main .grid-3 { grid-template-columns:repeat(3,minmax(0,1fr)); }
-.sfa-adm-main .grid-2 { grid-template-columns:repeat(2,minmax(0,1fr)); }
-.sfa-adm-main input, .sfa-adm-main select, .sfa-adm-main textarea { max-width:100%; min-width:0; }
 
 /* کارت‌های شاگرد: عرض قاب با محتوا هماهنگ؛ نه اجبار به کشیدگی عناصر */
-.sf2-head, .sf2-hero, .sf2-rings, .sf2-meals, .sf2-meal,
-.sf2-week, .sf2-coach, .sf2-quick, .sf2-nutri, .sf2-macro,
-.sf2-empty, .sf2-dock, #sf2dock { max-width:100%; min-width:0; }
+.sf2-head, .sf2-hero, .sf2-rings, .sf2-meals, .sf2-meal, .sf2-week, .sf2-coach, .sf2-quick, .sf2-nutri, .sf2-macro, .sf2-empty, .sf2-dock, #sf2dock { max-width:100%; min-width:0; }
 .sf2-meals { grid-template-columns:minmax(0,1fr); }
 .sf2-meal .body { flex:1 1 auto; min-width:0; }
 .sf2-meal .tt { min-width:0; overflow-wrap:anywhere; }
@@ -3265,29 +3066,11 @@ img, video { max-width:100%; height:auto; }
 
 @media (min-width:1200px) {
   .container { padding-inline:24px !important; }
-  html[data-sf-tab="chat"] body:not(.sfa-adm-mode) .container { max-width:860px !important; }
-}
-@media (max-width:1100px) {
-  .sfa-adm-shell { grid-template-columns:minmax(0,1fr) !important; }
-  .sfa-adm-side {
-    position:sticky !important; top:0; z-index:30;
-    width:100% !important; height:auto !important; min-height:0 !important;
-    flex-direction:row !important; flex-wrap:wrap !important;
-    align-items:center; overflow:visible !important;
-  }
-  .sfa-adm-nav { display:flex !important; flex:1 1 100%; width:100%; max-width:100%;
-    flex-wrap:nowrap !important; overflow-x:auto !important; -webkit-overflow-scrolling:touch; }
-  .sfa-adm-nav a { flex:0 0 auto !important; white-space:nowrap; }
-  .sfa-adm-main { padding:14px 16px 90px !important; }
-  .sfa-adm-main .grid-4, .sfa-adm-main .grid-3 { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  html[data-sf-tab="chat"] body .container { max-width:860px !important; }
 }
 @media (max-width:700px) {
   #root, .topbar, .topbar-inner, .container { width:100% !important; max-width:100% !important; }
   .container { padding-inline:12px !important; }
-  .sfa-adm-main { padding:12px 10px 88px !important; }
-  .sfa-adm-main .grid-4, .sfa-adm-main .grid-3,
-  .sfa-adm-main .grid-2 { grid-template-columns:repeat(2,minmax(0,1fr)); }
-  .sfa-adm-stats { grid-template-columns:repeat(2,minmax(0,1fr)) !important; }
   .sfp-res { grid-template-columns:minmax(0,1fr); }
   .sfp-bc-in { grid-template-columns:repeat(2,minmax(0,1fr)); }
   .msg { max-width:90%; }
@@ -3295,8 +3078,6 @@ img, video { max-width:100%; height:auto; }
 }
 @media (max-width:420px) {
   .container { padding-inline:10px !important; }
-  .sfa-adm-main .grid-4, .sfa-adm-main .grid-3,
-  .sfa-adm-main .grid-2 { grid-template-columns:minmax(0,1fr); }
   .sfp-bc-in { grid-template-columns:repeat(2,minmax(0,1fr)); }
   .sfp-bmi { flex-wrap:wrap; }
   .msg { max-width:94%; }
@@ -3306,113 +3087,17 @@ img, video { max-width:100%; height:auto; }
 
 <style id="sf-responsive-content-v12">
 /* V12: محتوا بر اساس فضای واقعی بازچینی شود؛ نه کشیده یا در یک گوشه فشرده */
-#sfAdminApp,
-#sfAdminApp > *,
-#sfAdminApp .card,
-#sfAdminApp .section,
-#sfAdminApp .panel,
-#sfAdminApp .builder,
-#sfAdminApp .form,
-#sfAdminApp .grid,
 #sfBuilderCard,
 #sfBuilderCard > * {
   box-sizing: border-box;
   min-width: 0;
   max-width: 100%;
 }
-#sfAdminApp { width: 100%; display: block; }
-#sfAdminApp > * { width: 100%; }
 #sfBuilderCard { width: 100%; }
-#sfBuilderCard #sfAdminApp { width: 100%; }
 
 /* فرم‌های برنامه‌ساز: دسکتاپ افقی، تبلت چندستونه و موبایل تک‌ستونه */
-#sfAdminApp .form,
-#sfAdminApp .form.grid-2,
-#sfAdminApp .grid-2,
-#sfAdminApp .grid-3,
-#sfAdminApp .grid-4,
-#sfAdminApp .stats,
-#sfAdminApp .fields,
-#sfAdminApp .builder-fields,
-#sfAdminApp .sf-builder-fields,
-#sfAdminApp .sf-auto-fields {
-  display: grid;
-  grid-template-columns: repeat( auto-fit, minmax(min(100%, 230px), 1fr) );
-  align-items: start;
-  gap: clamp(8px, 1.2vw, 14px);
-  width: 100%;
-}
-#sfAdminApp .field,
-#sfAdminApp label,
-#sfAdminApp .form-group,
-#sfAdminApp .form-field,
-#sfAdminApp .control,
-#sfAdminApp .option,
-#sfAdminApp .day-option,
-#sfAdminApp .split-option {
-  min-width: 0;
-  max-width: 100%;
-}
-#sfAdminApp input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
-#sfAdminApp select,
-#sfAdminApp textarea {
-  display: block;
-  width: 100%;
-  min-width: 0;
-  max-width: 100%;
-  box-sizing: border-box;
-}
-#sfAdminApp button,
-#sfAdminApp .btn,
-#sfAdminApp .actions,
-#sfAdminApp .toolbar,
-#sfAdminApp .tabs {
-  max-width: 100%;
-  min-width: 0;
-}
-#sfAdminApp .actions,
-#sfAdminApp .toolbar,
-#sfAdminApp .tabs,
-#sfAdminApp .button-row,
-#sfAdminApp .builder-actions {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px;
-}
-#sfAdminApp h1, #sfAdminApp h2, #sfAdminApp h3,
-#sfAdminApp p, #sfAdminApp small, #sfAdminApp label,
-#sfAdminApp span, #sfAdminApp strong, #sfAdminApp b {
-  overflow-wrap: anywhere;
-}
-#sfAdminApp .card, #sfAdminApp .panel, #sfAdminApp .section {
-  height: auto;
-  min-height: 0;
-}
 
 /* انتخاب روزها و تقسیم تمرین؛ گزینه‌ها اندازه طبیعی داشته باشند */
-#sfAdminApp .days,
-#sfAdminApp .week-days,
-#sfAdminApp .day-selector,
-#sfAdminApp .split-selector,
-#sfAdminApp .goal-selector,
-#sfAdminApp .level-selector {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 7px;
-  align-items: center;
-  max-width: 100%;
-}
-#sfAdminApp .days > *,
-#sfAdminApp .week-days > *,
-#sfAdminApp .day-selector > *,
-#sfAdminApp .split-selector > *,
-#sfAdminApp .goal-selector > *,
-#sfAdminApp .level-selector > * {
-  flex: 0 1 auto;
-  min-width: 0;
-  white-space: normal;
-}
 
 /* پیام‌ها: عرض متن با طول پیام متناسب و راست/چپ‌چین بر اساس فرستنده */
 .chat-thread {
@@ -3477,59 +3162,14 @@ img, video { max-width:100%; height:auto; }
 }
 
 /* محتواهای افقی بزرگ، فقط در صورت نیاز اسکرول افقی بگیرند */
-#sfAdminApp .table-wrap,
-#sfAdminApp .table-responsive,
-#sfAdminApp .exercise-list,
-#sfAdminApp .library-list {
-  max-width: 100%;
-  min-width: 0;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-}
-
-@media (min-width: 1101px) {
-  #sfAdminApp .form.grid-2,
-  #sfAdminApp .grid-2,
-  #sfAdminApp .grid-3,
-  #sfAdminApp .grid-4 {
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr));
-  }
-}
 @media (max-width: 900px) {
-  #sfAdminApp .form.grid-2,
-  #sfAdminApp .grid-2,
-  #sfAdminApp .grid-3,
-  #sfAdminApp .grid-4 {
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 210px), 1fr));
-  }
   .sf2-week-card { max-width: 100%; }
 }
 @media (max-width: 600px) {
-  #sfAdminApp .form.grid-2,
-  #sfAdminApp .grid-2,
-  #sfAdminApp .grid-3,
-  #sfAdminApp .grid-4 {
-    grid-template-columns: minmax(0, 1fr);
-  }
-  #sfAdminApp .actions,
-  #sfAdminApp .toolbar,
-  #sfAdminApp .tabs,
-  #sfAdminApp .button-row,
-  #sfAdminApp .builder-actions {
-    align-items: stretch;
-  }
-  #sfAdminApp .actions > button,
-  #sfAdminApp .toolbar > button,
-  #sfAdminApp .button-row > button,
-  #sfAdminApp .builder-actions > button {
-    flex: 1 1 auto;
-  }
   .chat-thread .msg { max-width: 92%; }
   .sf2-week-card { max-width: 100%; }
 }
 @media (max-width: 360px) {
-  #sfAdminApp { font-size: 13px; }
-  #sfAdminApp .card { padding: 12px !important; }
   .chat-thread .msg { max-width: 96%; }
 }
 </style>
@@ -3560,21 +3200,17 @@ img, video { max-width:100%; height:auto; }
 <style id="sf-button-motion-v13">
 /* V13 — یک زبان حرکتی مشترک برای دکمه‌های ادمین و شاگرد */
 :root { --sf-motion-ease: cubic-bezier(.2,.75,.25,1); }
-button, .btn, [role="button"], .sfa-adm-nav a, .nav button, #sf2dock button,
-.sf-ok, .sf-days button, .sf-days .chip {
+button, .btn, [role="button"], .nav button, #sf2dock button, .sf-ok, .sf-days button, .sf-days .chip {
   -webkit-tap-highlight-color: transparent;
   transition: transform .18s var(--sf-motion-ease),
               background-color .22s ease, border-color .22s ease,
               color .22s ease, box-shadow .24s ease, filter .2s ease;
 }
-button:active, .btn:active, [role="button"]:active,
-.sfa-adm-nav a:active, .nav button:active, #sf2dock button:active,
-.sf-ok:active, .sf-days button:active, .sf-days .chip:active {
+button:active, .btn:active, [role="button"]:active, .nav button:active, #sf2dock button:active, .sf-ok:active, .sf-days button:active, .sf-days .chip:active {
   transform: scale(.975);
   filter: brightness(1.08);
 }
-button:focus-visible, .btn:focus-visible, [role="button"]:focus-visible,
-.sfa-adm-nav a:focus-visible {
+button:focus-visible, .btn:focus-visible, [role="button"]:focus-visible {
   outline: 2px solid var(--accent, #9bff00);
   outline-offset: 3px;
 }
@@ -3590,7 +3226,6 @@ button:focus-visible, .btn:focus-visible, [role="button"]:focus-visible,
     border-color: color-mix(in srgb, var(--accent, #9bff00) 48%, var(--line, #34434c));
     box-shadow: 0 5px 16px -11px rgba(155,255,0,.5);
   }
-  .sfa-adm-nav a:hover { transform: translateX(-2px); }
 }
 button:disabled, .btn:disabled, [aria-disabled="true"] {
   cursor: not-allowed !important;
@@ -3611,8 +3246,7 @@ button.is-success, .btn.is-success {
 }
 @keyframes sfBtnSpin { to { transform:rotate(360deg); } }
 @media (prefers-reduced-motion:reduce) {
-  button, .btn, [role="button"], .sfa-adm-nav a, .nav button, #sf2dock button,
-  .sf-ok, .sf-days button, .sf-days .chip { transition:none !important; animation:none !important; }
+  button, .btn, [role="button"], .nav button, #sf2dock button, .sf-ok, .sf-days button, .sf-days .chip { transition:none !important; animation:none !important; }
   button:active, .btn:active, [role="button"]:active { transform:none !important; }
 }
 /* در صفحه لمسی افکت hover اجرا نشود؛ فقط بازخورد کوتاه لمس باقی بماند */
@@ -3620,31 +3254,7 @@ button.is-success, .btn.is-success {
   button:hover, .btn:hover, [role="button"]:hover { transform:none; box-shadow:none; filter:none; }
 }
 </style>
-<script id="sf-admin-hide-set-count-v13">
-(function(){
-  function cleanAdminExerciseSetCounts(){
-    var root=document.getElementById('sfAdminApp');
-    if(!root) return;
-    var nodes=root.querySelectorAll('span,small,label,b,strong,em,i,div');
-    for(var i=0;i<nodes.length;i++){
-      var el=nodes[i];
-      if(el.children.length) continue;
-      var t=(el.textContent||'').replace(/\s+/g,' ').trim();
-      if(/^(?:تعداد\s*)?\d+\s*ست$/i.test(t) || /^تعداد\s*ست\s*[:：]?$/i.test(t)){
-        el.style.setProperty('display','none','important');
-        el.setAttribute('aria-hidden','true');
-      }
-    }
-  }
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',cleanAdminExerciseSetCounts);
-  else cleanAdminExerciseSetCounts();
-  var root=document.getElementById('root');
-  if(root && window.MutationObserver){
-    new MutationObserver(function(){ cleanAdminExerciseSetCounts(); }).observe(root,{childList:true,subtree:true,characterData:true});
-  }
-  window.addEventListener('load',cleanAdminExerciseSetCounts,{once:true});
-})();
-</script>
+
 
 <style id="sf-live-missing-css">
 /* =====================================================================
@@ -3854,20 +3464,20 @@ img, video, canvas, iframe { max-width: 100%; }
 
 /* ---------- B) شاگرد: روی دسکتاپ مثل اپلیکیشن موبایل، وسط صفحه، حداکثر 480px ---------- */
 @media (min-width: 769px) {
-  html:not([data-mode="coach"]) body:not(.sfa-adm-mode) { background: #04070a !important; }
-  html:not([data-mode="coach"]) body:not(.sfa-adm-mode) #root,
-  html[data-sf-tab] body:not(.sfa-adm-mode) #root { width: 100% !important; max-width: 480px !important; margin-inline: auto !important; min-height: 100vh;
+  html body { background: #04070a !important; }
+  html body #root,
+  html[data-sf-tab] body #root { width: 100% !important; max-width: 480px !important; margin-inline: auto !important; min-height: 100vh;
     box-shadow: 0 0 0 1px rgba(255,255,255,.06), 0 0 90px rgba(0,0,0,.75) !important; background: var(--bg, #070b10) !important; }
-  html:not([data-mode="coach"]) body:not(.sfa-adm-mode) .topbar,
-  html:not([data-mode="coach"]) body:not(.sfa-adm-mode) .topbar-inner { width: 100% !important; max-width: 480px !important; margin-inline: auto !important; }
-  html:not([data-mode="coach"]) body:not(.sfa-adm-mode) .container,
-  html[data-sf-tab] body:not(.sfa-adm-mode) .container { width: 100% !important; max-width: 480px !important; margin-inline: auto !important; padding-inline: 14px !important; }
+  html body .topbar,
+  html body .topbar-inner { width: 100% !important; max-width: 480px !important; margin-inline: auto !important; }
+  html body .container,
+  html[data-sf-tab] body .container { width: 100% !important; max-width: 480px !important; margin-inline: auto !important; padding-inline: 14px !important; }
   /* همهٔ تب‌ها تک‌ستونه (حالت شبکهٔ دو‌ستونهٔ قبلی خانه حذف) */
-  html[data-sf-tab] body:not(.sfa-adm-mode) #main { display: flex !important; flex-direction: column !important; gap: 10px; }
-  html[data-sf-tab] body:not(.sfa-adm-mode) #main > * { grid-column: auto !important; }
+  html[data-sf-tab] body #main { display: flex !important; flex-direction: column !important; gap: 10px; }
+  html[data-sf-tab] body #main > * { grid-column: auto !important; }
   /* منوی پایین: دقیقاً هم‌عرض قاب، وسط، چسبیده به پایین */
-  html:not([data-mode="coach"]) body:not(.sfa-adm-mode) #sf2dock,
-  html:not([data-mode="coach"]) body:not(.sfa-adm-mode) .topbar-inner > .nav {
+  html body #sf2dock,
+  html body .topbar-inner > .nav {
     position: fixed !important; left: 50% !important; right: auto !important; inset-inline-start: auto !important; transform: translateX(-50%) !important;
     width: min(480px, 100%) !important; max-width: 480px !important; bottom: 0 !important; border-radius: 18px 18px 0 0 !important; margin: 0 !important;
     border: 1px solid var(--line) !important; border-bottom: 0 !important; box-shadow: 0 -12px 40px -16px rgba(0,0,0,.8) !important; }
@@ -3878,26 +3488,16 @@ img, video, canvas, iframe { max-width: 100%; }
 }
 
 /* ---------- C) ادمین/مربی: ردیف عنوانِ تمام‌عرض دیگر از لبه‌ها بیرون نمی‌زند ---------- */
-.sfa-adm-main { --adm-pad: 28px; }
-@media (max-width: 1100px) { .sfa-adm-main { --adm-pad: 16px; } }
-@media (max-width: 560px) { .sfa-adm-main { --adm-pad: 10px; } }
-.sfa-adm-main { padding-inline: var(--adm-pad) !important; max-width: 100%; overflow-x: clip; }
-.sfa-adm-hrow { margin-inline: calc(-1 * var(--adm-pad)) !important; padding-inline: var(--adm-pad) !important; max-width: none; }
-.sfa-adm-shell { width: 100%; max-width: 1680px; margin-inline: auto; }
-@media (min-width: 769px) { html[data-mode="coach"] .sfa-adm-main > .coach-strip, html[data-mode="coach"] .sfa-adm-main > .coach-hero { max-width: 100%; } }
 
 /* ---------- D) خوانایی: متن روشن فقط روی زمینهٔ تیره؛ تم‌های روشن متن تیره‌تر می‌گیرند ---------- */
 html[data-theme="pink"] { --tx-a: #a3114e; --muted: #6b5360; }
 html[data-theme="day"]  { --tx-a: #0b6b30; --muted: #566274; --accent: #15803d; --a: #15803d; --on: #fff; }
 html[data-theme="navy"] { --tx-a: #8ec0ff; }
-html[data-theme="pink"] .chip, html[data-theme="pink"] .pill, html[data-theme="pink"] .cap, html[data-theme="pink"] .bn1, html[data-theme="pink"] .bn2,
-html[data-theme="day"] .chip, html[data-theme="day"] .pill, html[data-theme="day"] .cap, html[data-theme="day"] .bn1, html[data-theme="day"] .bn2,
-html[data-theme="navy"] .chip, html[data-theme="navy"] .pill, html[data-theme="navy"] .cap { color: var(--tx-a) !important; }
+html[data-theme="pink"] .chip, html[data-theme="pink"] .pill, html[data-theme="pink"] .cap, html[data-theme="pink"] .bn1, html[data-theme="pink"] .bn2, html[data-theme="day"] .chip, html[data-theme="day"] .pill, html[data-theme="day"] .cap, html[data-theme="day"] .bn1, html[data-theme="day"] .bn2, html[data-theme="navy"] .chip, html[data-theme="navy"] .pill, html[data-theme="navy"] .cap { color: var(--tx-a) !important; }
 html[data-theme="pink"] .nav button.active, html[data-theme="day"] .nav button.active, html[data-theme="pink"] #sf2dock button.active, html[data-theme="day"] #sf2dock button.active { color: var(--tx-a) !important; }
 html[data-theme="pink"] svg text, html[data-theme="day"] svg text { fill: var(--text) !important; }
 html[data-theme="pink"] .ltr, html[data-theme="day"] .ltr { color: inherit; }
 /* دکمه‌های لیمویی/روشن: متن تیره */
-html[data-mode="coach"] .btn:not(.secondary):not(.ghost):not(.danger) { color: #05140a !important; }
 html[data-theme="pink"] .btn:not(.secondary):not(.ghost):not(.danger):not(.small-danger), html[data-theme="day"] .btn:not(.secondary):not(.ghost):not(.danger) { color: var(--on, #fff); }
 .btn.danger { background: #d93351 !important; color: #fff !important; }
 
@@ -3925,8 +3525,6 @@ html[data-theme="pink"] .btn:not(.secondary):not(.ghost):not(.danger):not(.small
 html[data-theme="day"] .sf-lab, html[data-theme="day"] .sf-set-h, html[data-theme="pink"] .sf-lab, html[data-theme="pink"] .sf-set-h { color: #4b5563 !important; }
 
 /* گزینه‌های انتخاب‌شده (زمینهٔ لیمویی/روشن) همیشه متن تیره */
-html[data-mode="coach"] .chip.on, html[data-mode="coach"] .chip.active, html[data-mode="coach"] .tabs .on, html[data-mode="coach"] button.on:not(.btn),
-html[data-mode="coach"] .btn.on, html[data-mode="coach"] .coach-tab.on { color: #05140a !important; }
 
 </style>
 
@@ -3954,16 +3552,11 @@ html[data-mode="coach"] .btn.on, html[data-mode="coach"] .coach-tab.on { color: 
 #root small, #root .sub, #root .cap, #root .hint, #root .muted, #root .sf-last, #root .note{ font-size:12px !important; line-height:1.75 !important; }
 #root .bn2{ font-size:12px !important; letter-spacing:.3em !important; }
 #nav button{ font-size:12px !important; min-height:52px; }
-.sfa-adm-title{ font-size:24px !important; line-height:1.65 !important; overflow:visible !important; }
-#main, #main > *, .card, .sfa-adm-main > *{ min-width:0 !important; }
+#main, #main > *, .card{ min-width:0 !important; }
 .card{ padding:14px !important; overflow-wrap:anywhere; }
 .card h2, .card h3{ line-height:1.6; }
 img, canvas, video{ max-width:100%; height:auto; }
-html[data-mode="coach"] .sfa-adm-shell{ max-width:1280px !important; margin-inline:auto !important; gap:18px !important; }
-html[data-mode="coach"] .sfa-adm-main{ padding:16px 18px 56px !important; }
-html[data-mode="coach"] .sfa-adm-side{ padding:14px !important; }
 @media (max-width: 640px){
-  html[data-mode="coach"] .sfa-adm-main{ padding:10px 10px 64px !important; }
   .sfa-grid{ grid-template-columns:1fr !important; }
 }
 .sfp-tbl{ font-size:12.5px !important; }
@@ -3971,7 +3564,8 @@ html[data-mode="coach"] .sfa-adm-side{ padding:14px !important; }
 .sfp-tbl-wrap{ max-width:100% !important; overflow-x:auto !important; }
 table{ max-width:100%; }
 #root input:not([type=checkbox]):not([type=radio]):not([type=hidden]),
-#root select, #root textarea{ font-size:14px !important; min-height:40px; }
+#root select,
+#root textarea{ font-size:14px !important; min-height:40px; }
 #root input[type=checkbox], #root input[type=radio]{ min-height:0; }
 @media (pointer: coarse){
   #root .icon-btn, #root .btn.small, #root .chip{ min-height:44px; }
@@ -3992,28 +3586,10 @@ table{ max-width:100%; }
   /* حذف صفحه خانه قدیمی */
   .hero, .sf7-band, .today-hero, .tiles, .challenge, .today-list, .sfa-week, .sfa-water { display: none !important; }
   #main > .grid.grid-4, #main > .grid.grid-3 { display: none !important; }
-/* AI button text fix: بپرس → مربی آنلاین + only after login */
-  (function fixAiButtonText(){
-    function fix(){
-      var fab = document.getElementById('sfaiFab');
-      if (fab){
-        var span = fab.querySelector('span');
-        if (span && (span.textContent === 'بپرس' || span.textContent === 'پرسش')) span.textContent = 'مربی آنلاین';
-        fab.setAttribute('aria-label', 'مربی آنلاین');
-        fab.title = 'مربی آنلاین';
-      }
-    }
-    var observer = new MutationObserver(fix);
-    observer.observe(document.body, { childList: true, subtree: true });
-    fix();
-  })();
+</style>
+
 <style id="sf-sub-home-css">
 /* ---- ادمین در اپ: حذف بلوک تکراری خوشامد و جمع‌شدن آمار روی موبایل ---- */
-body.sfa-adm-mode .sfa-adm-intro { display: none !important; }
-@media (max-width: 640px) {
-  body.sfa-adm-mode .sfa-adm-stats { grid-template-columns: 1fr 1fr !important; }
-  body.sfa-adm-mode .sfa-adm-main { padding-inline: 12px !important; }
-}
 .sf-sub-home .section-title h2 { display: flex; align-items: center; gap: 6px; }
 
 /* ---- کادر چت مربی: ورودی و دکمهٔ ارسال واضح و لمس‌پذیر ---- */
@@ -4081,25 +3657,6 @@ body.sfa-adm-mode .sfa-adm-intro { display: none !important; }
     if (typeof W.sfOpenSubs === 'function') { e.preventDefault(); W.sfOpenSubs(); }
   }, true);
 
-  /* پنل ادمین داخل قاب ۴۸۰px موبایل رندر می‌شد و ستون‌ها بیرون می‌زدند */
-  function admSync() {
-    var root = D.getElementById('root');
-    if (!root) return;
-    var inMain = !!root.querySelector('#main .sfa-adm-shell');
-    if (inMain) {
-      if (!D.body.classList.contains('sfa-adm-mode')) D.body.classList.add('sfa-adm-mode');
-    } else if (D.body.classList.contains('sfa-adm-mode') && root.getAttribute('data-mode') !== 'coach') {
-      D.body.classList.remove('sfa-adm-mode');
-    }
-  }
-  function admBoot() {
-    var root = D.getElementById('root');
-    if (root && W.MutationObserver) new MutationObserver(admSync).observe(root, { childList: true, subtree: true });
-    admSync();
-    setTimeout(admSync, 400);
-    setTimeout(admSync, 1500);
-  }
-  if (D.readyState === 'loading') D.addEventListener('DOMContentLoaded', admBoot); else admBoot();
 })();
 </script>
 
