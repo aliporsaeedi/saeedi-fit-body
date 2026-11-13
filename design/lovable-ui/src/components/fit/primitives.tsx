@@ -72,22 +72,13 @@ export function Card({ className, children, style }: { className?: string; child
   return <div className={cn("card-surface animate-rise relative overflow-hidden", className)} style={style}>{children}</div>;
 }
 
-/** Counts up to a number when it first appears. */
+/** Replays a bounded count when a metric re-enters the viewport; never changes its underlying value. */
 export function CountUp({ value, digits = 0, className }: { value: number; digits?: number; className?: string }) {
-  const [v, setV] = useState(0);
-  const from = useRef(0);
-  useEffect(() => {
-    const start = performance.now(), a = from.current, b = Number(value) || 0, dur = 1100;
-    let raf = 0;
-    const step = (t: number) => {
-      const k = Math.min(1, (t - start) / dur), e = 1 - Math.pow(1 - k, 4);
-      setV(a + (b - a) * e);
-      if (k < 1) raf = requestAnimationFrame(step); else from.current = b;
-    };
-    raf = requestAnimationFrame(step);
-    return () => cancelAnimationFrame(raf);
-  }, [value]);
-  return <span className={cn("num", className)}>{v.toLocaleString("en-US", { maximumFractionDigits: digits, minimumFractionDigits: digits })}</span>;
+  const actual=Number.isFinite(Number(value))?Number(value):0;
+  const [v,setV]=useState(actual),host=useRef<HTMLSpanElement>(null);
+  const format=(n:number)=>n.toLocaleString('en-US',{maximumFractionDigits:digits,minimumFractionDigits:digits});
+  useEffect(()=>{const node=host.current;if(!node)return;let raf=0,inside=false;const reduced=matchMedia('(prefers-reduced-motion: reduce)');const stop=()=>{cancelAnimationFrame(raf);setV(actual);};const play=()=>{cancelAnimationFrame(raf);if(reduced.matches||document.visibilityState==='hidden'){setV(actual);return;}const start=performance.now(),from=actual*.72;const step=(t:number)=>{const k=Math.min(1,(t-start)/650);setV(from+(actual-from)*(1-Math.pow(1-k,3)));if(k<1)raf=requestAnimationFrame(step);};raf=requestAnimationFrame(step);};const visibility=()=>{if(document.visibilityState==='hidden')stop();else if(inside)play();};const preference=()=>{if(reduced.matches)stop();};let observer:IntersectionObserver|undefined;if(typeof IntersectionObserver!=='undefined'){observer=new IntersectionObserver(entries=>{inside=!!entries[0]?.isIntersecting;if(inside)play();else stop();},{threshold:.3});observer.observe(node);}else setV(actual);document.addEventListener('visibilitychange',visibility);reduced.addEventListener('change',preference);return()=>{cancelAnimationFrame(raf);observer?.disconnect();document.removeEventListener('visibilitychange',visibility);reduced.removeEventListener('change',preference);};},[actual]);
+  return <span ref={host} aria-label={format(actual)} className={cn('num',className)}><span aria-hidden="true">{format(v)}</span></span>;
 }
 
 /** Segmented tick ring like a race-watch bezel. */

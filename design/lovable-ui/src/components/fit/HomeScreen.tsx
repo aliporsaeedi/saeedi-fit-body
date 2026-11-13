@@ -1,3 +1,4 @@
+import {StoryEntry} from './StoryMode';
 import { classicUrl } from "@/lib/fit/api";
 import { useMemo } from "react";
 import { ArrowLeft, Crown, Droplets, Flame, LayoutDashboard, MessageCircle, Plus, Scale, Sparkles, Zap } from "lucide-react";
@@ -40,6 +41,7 @@ export function HomeScreen({ go, openChat }: { go: (t: "train" | "fuel" | "progr
   const staff = ["admin", "coach"].includes(String(boot.user.role).toLowerCase());
   return (
     <div className="space-y-3">
+      <StoryEntry go={go}/>
       {staff ? (
         <a href={classicUrl("/classic?page=admin")} className="card-surface animate-rise pressable flex items-center gap-3 border-volt/40 p-4">
           <span className="grid size-10 place-items-center rounded-xl bg-volt text-volt-foreground"><LayoutDashboard className="size-5" /></span>

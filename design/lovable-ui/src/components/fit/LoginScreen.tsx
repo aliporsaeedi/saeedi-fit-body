@@ -1,3 +1,4 @@
+import {LandingExperience} from './LandingExperience';
 import { useEffect, useRef, useState } from "react";
 import { ArrowLeft, Eye, EyeOff, Lock, ShieldCheck, User, Dumbbell, Utensils, TrendingUp } from "lucide-react";
 import { gas } from "@/lib/fit/api";
@@ -48,11 +49,8 @@ export function LoginScreen({ onSignedIn }: { onSignedIn: (token: string) => voi
           <div className="sfx-landing-brand"><Logo className="h-[150px] w-[150px]"/><div><span className="kicker text-volt">SAEEDI FIT BODY</span><p className="mt-2 text-sm text-muted-foreground">مربیگری تخصصی · مسیر شخصی پیشرفت</p></div></div>
           <h1>برنامهٔ دقیق.<br/><span className="text-volt">اجرای پیوسته.</span><br/>پیشرفت قابل مشاهده.</h1>
           <p>تمرین، تغذیه و پیگیری مربی در یک فضای اختصاصی. برنامهٔ خود را دنبال کنید، عملکردتان را ثبت کنید و مسیر تغییر را آگاهانه پیش ببرید.</p>
-          <div className="sfx-pillars">
-            <div className="sfx-pillar"><Dumbbell className="size-6 text-volt"/><div><strong>تمرین اختصاصی</strong><p>حرکت‌ها، تکنیک اجرا و سابقهٔ وزنه در کنار هم</p></div></div>
-            <div className="sfx-pillar"><Utensils className="size-6 text-volt"/><div><strong>تغذیهٔ هدفمند</strong><p>برنامهٔ غذا، ماکرو و زمان مصرف مکمل</p></div></div>
-            <div className="sfx-pillar"><TrendingUp className="size-6 text-volt"/><div><strong>پیگیری مستمر</strong><p>ثبت پیشرفت و ارتباط مستقیم با مربی</p></div></div>
-          </div>
+          <button type="button" className="sfx-discover-cta" onClick={()=>{formRef.current?.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'center'});formRef.current?.querySelector('input')?.focus({preventScroll:true});}}>ورود به فضای شخصی <ArrowLeft className="size-5"/></button>
+          <LandingExperience/>
         </section>
         <section>
           <form ref={formRef} onSubmit={submit} className={cn("sfx-signin space-y-3",shake&&"animate-shake")}>

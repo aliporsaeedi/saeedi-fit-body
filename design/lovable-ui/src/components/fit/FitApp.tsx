@@ -1,3 +1,5 @@
+import {Avatar} from './Avatar';
+import {PageMotion} from './PageMotion';
 import {BrandLoading} from "./BrandLoading";
 import {RemindersScreen} from "./RemindersScreen";
 import {SupplementsScreen} from "./SupplementsScreen";
@@ -88,7 +90,7 @@ function Shell() {
         ) : (
           <button type="button" onClick={() => setTab("home")} aria-label="خانه" className="relative shrink-0">
             <span aria-hidden className="absolute inset-0 rounded-full bg-volt/20 blur-xl" />
-            <Logo className="relative h-[76px] w-[76px]" />
+            <Logo className="relative h-[112px] w-[104px]" />
           </button>
         )}
         <div className="min-w-0 flex-1">
@@ -96,15 +98,15 @@ function Shell() {
             {KICKER[tab] ? <span className="kicker text-volt">{KICKER[tab]}</span> : <span className="num text-sm tracking-wider text-faint">{latinStamp(now).toUpperCase()}</span>}
             <span className="size-1 rounded-full bg-gold" /><span>{jalaliLong(now)}</span>
           </p>
-          <h1 key={tab} className="animate-rise truncate text-[28px] font-black leading-tight tracking-tight">
+          <h1 key={tab} className="animate-rise text-[22px] font-black leading-tight tracking-tight">
             {tab === "home" ? <>{greeting(now)}، <span className="text-volt-metal">{name}</span></> : TITLES[tab]}
           </h1>
         </div>
-        <span className="glass inline-flex h-12 items-center gap-1.5 rounded-2xl px-3" title="روزهای پیاپی">
+        {tab === "home" ? <button type="button" onClick={()=>setTab("more")} className="sfx-profile-entry" aria-label="مشاهدهٔ پروفایل شخصی"><Avatar url={boot.profile.avatarUrl} name={name}/><small>پروفایل شما</small></button> : <span className="glass inline-flex h-12 items-center gap-1.5 rounded-2xl px-3" title="روزهای پیاپی">
           <Flame className="size-5 text-ember" /><span className="num text-2xl">{boot.streak}</span>
-        </span>
+        </span>}
       </header>
-      <main key={tab}>{screen}</main>
+      <PageMotion key={tab} page={tab}>{screen}</PageMotion>
       <RestPill /><ReminderRuntime/>
       {isSub ? null : <Dock tab={tab} setTab={setTab} />}
       <ChatSheet open={chat} onOpenChange={setChat} />

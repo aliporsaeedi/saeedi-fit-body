@@ -29,3 +29,8 @@ Only runtime files are uploaded (34 files). Design source, build dependencies an
 ## Separate migration stage
 
 Cloudflare/domain/database migration, OTP, installable standalone PWA, background push and offline synchronization are not implemented by this release. DNS and the live Sheet data have not been moved. Browser notifications are explicitly described as foreground-only and cannot request permission inside the current Google frame. Migration architecture and data reconciliation requirements are recorded in MIGRATION.md. Browser login is not treated as an API credential.
+
+
+## Subsequent user-requested visual correction
+
+Release 550 removes the opaque logo backing and adds the transparent animated brand, interactive graphic landing, personal story mode, viewport motion and unified admin styling. See VISUAL-EXPERIENCE-550.md; the 549 design description above is historical.
