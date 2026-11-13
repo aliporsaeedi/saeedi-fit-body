@@ -1,0 +1,6 @@
+const fs=require('fs'),vm=require('vm'),assert=require('node:assert/strict');
+const src=fs.readFileSync('AppJs.html','utf8');const context={state:{selected:{workout:0},sfSel:{plan:0,day:0},data:{sfTraining:{plans:[{planName:'Exact original',days:[{title:'Day A',blocks:[{blockId:'b',items:[{pos:1},{pos:2}],sets:[{setNo:1,cells:[{pos:1,step:0},{pos:1,step:1},{pos:2,step:0}]}]}]}]}],today:{'b|1|1|0':{done:true},'b|1|2|0':{done:true}}}}},sfKey:(b,s,p,step)=>[b,s,p,step||0].join('|'),localStorage:{getItem:()=>null},doneMap:()=>({})};
+vm.createContext(context);vm.runInContext(src.slice(src.indexOf('function todayInfo(){'),src.indexOf('function tile(')),context);
+let t=context.todayInfo();assert.equal(t.total,2);assert.equal(t.sets,2);assert.equal(t.doneSets,1);assert.equal(t.c,1);assert.equal(t.planName,'Exact original');context.state.data.sfTraining.today['b|1|1|1']={done:true};assert.equal(context.todayInfo().c,2);
+context.state.data={workouts:[]};assert.equal(context.todayInfo(),null);
+context.state.data={workouts:[{name:'Old',days:[{title:'Old day',exercises:[{name:'a',sets:'3'}]}]}]};assert.equal(context.todayInfo().sets,null);console.log('PASS athlete home: modern plans, exact per-exercise sets, drop steps not double-counted, completion and empty/legacy states');

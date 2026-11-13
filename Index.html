@@ -1133,7 +1133,7 @@ html[data-theme="dark"] .topbar .nav{display:none}
   function weekStrip() {
     var set = {}, logs = (state.data.logs || []), i;
     for (i = 0; i < logs.length; i++) set[String(logs[i].date || '').slice(0, 10)] = 1;
-    var FA = { Sun: 'ش', Mon: 'ی', Tue: 'د', Wed: 'س', Thu: 'چ', Fri: 'پ', Sat: 'ج' };
+    var FA = { Sun: 'ی', Mon: 'د', Tue: 'س', Wed: 'چ', Thu: 'پ', Fri: 'ج', Sat: 'ش' };
     var h = '', n = 0;
     for (i = 6; i >= 0; i--) {
       var d = new Date(); d.setDate(d.getDate() - i);
@@ -1154,14 +1154,14 @@ html[data-theme="dark"] .topbar .nav{display:none}
     var wg = Number(water.goal || p.waterGoal || 8) || 8, wc = Number(water.glasses || 0);
     var kt = Number(p.targetCalories) || 0;
     var tot = t ? t.total : 0, done = t ? t.c : 0;
-    var dayNo = 1;
+    var dayNo = t ? t.dayNo : 1;
     try {
       var w = (d.workouts || [])[Math.min(state.selected.workout, (d.workouts || []).length - 1)];
-      dayNo = Number(localStorage.getItem('fc_today_day_' + w.name) || 0) + 1;
+      if(!t || !t.modern) dayNo = Number(localStorage.getItem('fc_today_day_' + w.name) || 0) + 1;
     } catch (e) {}
     var rest = t && t.day.isRest;
     var title = !t ? 'هنوز برنامه‌ای برایت ثبت نشده' : (rest ? 'امروز استراحت' : esc(t.day.title));
-    var mins = Math.max(20, Math.round(tot * 3.5) || 45);
+
     var wk = weekStrip();
 
     var h = '';
@@ -1172,28 +1172,23 @@ html[data-theme="dark"] .topbar .nav{display:none}
     if (W.sf3DateHeader) { try { h += W.sf3DateHeader(); } catch (e) {} }
     if (W.sf3SubBanner) { try { h += W.sf3SubBanner(); } catch (e) {} }
 
-    h += '<div class="card sf2-hero"><div class="ghost">' + ('0' + dayNo).slice(-2) + '</div>' +
-      '<div class="cap">' + (!t ? 'قدم بعدی' : rest ? 'روز استراحت' : 'جلسهٔ بعد · روز ' + fa(dayNo)) + '</div>' +
-      '<h2>' + title + '</h2>' +
-      '<div class="meta">' + (tot ? '<span>' + fa(tot) + ' حرکت</span><span>' + fa(tot * 3) + ' ست</span>' : '<span>بدون حرکت</span>') +
-      (t && !rest && tot ? '<span>≈ ' + fa(mins) + ' دقیقه</span>' : '') + '</div>' +
-      '<button class="sf2-cta sheen" onclick="state.tab=' + (!t ? '\'profile\'' : '\'workout\'') + ';render()">' + icon('dumbbell') +
-      (!t ? ' تکمیل پروفایل' : rest ? ' مشاهده برنامه' : (done > 0 ? ' ادامه تمرین' : ' شروع تمرین')) + '</button></div>';
+    h += '<section class="sf-athlete-hero" aria-labelledby="sf-next-title"><div class="sf-hero-copy"><span class="sf-eyebrow">' + (!t ? 'شروع مسیر تو' : rest ? 'ریکاوری هم بخشی از مسیر است' : 'جلسهٔ بعد · روز '+fa(dayNo)) + '</span><h2 id="sf-next-title">' + title + '</h2><p>' + (!t ? 'پروفایلت را کامل کن تا مربی برنامهٔ متناسب با هدفت را آماده کند.' : rest ? 'برنامه را مرور کن و برای جلسهٔ بعد آماده باش.' : esc(t.planName || 'برنامهٔ اختصاصی مربی')) + '</p><div class="sf-session-facts">' + (tot ? '<span><b>'+fa(tot)+'</b> حرکت</span>'+(t.sets!=null ? '<span><b>'+fa(t.sets)+'</b> ست ثبت‌شده در برنامه</span>' : '')+'<span><b>'+fa(done)+'</b> حرکت کامل‌شده</span>' : '') + '</div><button class="btn sf-session-start" onclick="state.tab=' + (!t ? "'profile'" : "'workout'") + ';render()">' + (!t ? 'تکمیل پروفایل' : rest ? 'مشاهدهٔ برنامه' : done ? 'ادامهٔ تمرین' : 'بریم برای تمرین') + icon('dumbbell') + '</button></div><div class="sf-hero-emblem" aria-hidden="true">'+brandLogo()+'</div></section>';
+    h += '<div class="sf-home-actions"><button class="sf-home-action" onclick="state.tab=\'diet\';render()">'+icon('apple')+'<span><b>تغذیهٔ امروز</b><small>برنامه و ثبت وعده‌ها</small></span></button><button class="sf-home-action" onclick="state.tab=\'chat\';render()">'+icon('chat')+'<span><b>ارتباط با مربی</b><small>سؤال‌ها و راهنمایی‌ها</small></span></button></div>';
 
     h += '<div class="card"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:2px">' +
-      '<span class="cap">DAILY RINGS</span>' +
+      '<span class="cap">وضعیت امروز</span>' +
       '<div style="display:flex;gap:6px"><button class="btn secondary small" id="waterMinus" aria-label="کاهش آب">−1</button>' +
       '<button class="btn small" id="waterPlus" aria-label="افزودن یک لیوان آب">+ آب</button></div></div>' +
       '<div class="sf2-rings">' +
-      ringC(82, 9, wg ? wc / wg : 0, '#ff9a3d', fa(wc) + '/' + fa(wg), 'WATER', 'water') +
-      ringC(82, 9, kt ? m.kcal / kt : 0, '#38d0ff', fmt(m.kcal), 'FUEL', 'fuel') +
-      ringC(82, 9, tot ? done / tot : 0, 'var(--accent)', fa(done) + '/' + fa(tot), 'MOVE', 'move') +
+      ringC(82, 9, wg ? wc / wg : 0, '#ff9a3d', fa(wc) + '/' + fa(wg), 'آب · لیوان', 'water') +
+      ringC(82, 9, kt ? m.kcal / kt : 0, '#38d0ff', fmt(m.kcal), 'انرژی · kcal', 'fuel') +
+      ringC(82, 9, tot ? done / tot : 0, 'var(--accent)', (tot ? fa(done) + '/' + fa(tot) : '—'), 'حرکت کامل‌شده', 'move') +
       '</div></div>';
 
     if (W.sf3PlanCard) { try { h += W.sf3PlanCard(); } catch (e) {} }
 
     h += '<div class="card" style="margin-top:12px"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">' +
-      '<span class="cap">SESSIONS ON TRACK ' + fa(wk.n) + ' / 7</span><span class="sub">این هفته</span></div>' + wk.html + '</div>';
+      '<span class="cap">روزهای ثبت پیشرفت ' + fa(wk.n) + ' / 7</span><span class="sub">این هفته</span></div>' + wk.html + '</div>';
 
     h += '<div id="rankCard"></div>';
 
@@ -1422,7 +1417,8 @@ html[data-theme="dark"] .topbar .nav{display:none}
     W.sfaMacroRings = function (Dd, p) { return macroRings2(Dd, p); };
 
     W.sfItemName = itemName2;
-
+    // Cached bootstrap may render before this module is installed. Replace that view once.
+    if(typeof state!=='undefined' && state.data && state.tab==='home' && $('main')) homeView2();
     chrome();
     return true;
   }
@@ -2745,7 +2741,7 @@ html .card, html .sfp-block {
 html .card::before, html .card::after { background: none !important; box-shadow: none !important; }
 
 /* هدر و خوشامد: لوگوی تکراری حذف، استریک به‌شکل قرص */
-html .sf2-head > img, html .sf2-head > svg { display: none !important; }
+html .sf2-head > img { display:none; }
 html .sf2-head .who b { font-size: 24px !important; letter-spacing: -.3px; }
 html .sf2-head > :first-child:not(.who) { border-radius: 999px !important; padding: 6px 14px !important; min-height: 0 !important; height: auto !important;
   background: color-mix(in srgb, var(--a) 12%, transparent) !important; border: 1px solid color-mix(in srgb, var(--a) 30%, transparent) !important; color: var(--a) !important; box-shadow: none !important; }
@@ -3659,5 +3655,35 @@ table{ max-width:100%; }
 
 })();
 </script>
+
+
+<style id="sf-athlete-design">
+/* Athlete identity and first-action layout. Theme colors remain inherited. */
+html .brand-mark{width:64px!important;height:64px!important;background:transparent!important;border:0!important;padding:0!important;box-shadow:none!important}
+html .brand-mark .brand-logo{width:64px!important;height:64px!important;object-fit:contain}
+html .brand-name{font:800 16px/1.3 Vazirmatn,sans-serif!important;letter-spacing:1.5px!important;color:var(--text)!important;transform:none!important;font-style:normal!important}
+html .brand-name .bn2{display:block;font-size:10px;letter-spacing:3px;color:var(--muted)}
+.sf-eyebrow{display:block;font-size:11px;font-weight:700;letter-spacing:1px;color:var(--accent);margin-bottom:12px}
+.sf-athlete-hero{position:relative;isolation:isolate;overflow:hidden;border:1px solid color-mix(in srgb,var(--accent) 25%,var(--line));border-radius:26px;padding:28px 24px;margin:14px 0 16px;background:radial-gradient(ellipse at 0 0,color-mix(in srgb,var(--accent) 14%,transparent),transparent 65%),linear-gradient(145deg,var(--panel2),var(--panel));box-shadow:0 20px 45px -30px #000}
+.sf-athlete-hero::before{content:'';position:absolute;inset:0;z-index:-1;background:repeating-linear-gradient(125deg,transparent 0 48px,color-mix(in srgb,var(--text) 3%,transparent) 49px 50px);pointer-events:none}
+.sf-hero-copy{position:relative;z-index:1;max-width:500px}.sf-athlete-hero h2{font:800 clamp(23px,4.5vw,34px)/1.65 Vazirmatn,sans-serif;margin:0 0 10px;max-width:85%;color:var(--text)}
+.sf-athlete-hero p{font-size:13px;line-height:2;color:var(--muted);max-width:85%;margin:0 0 18px}
+.sf-hero-emblem{position:absolute;inset-inline-end:-16px;top:8px;width:180px;opacity:.12;transform:rotate(-12deg);pointer-events:none}.sf-hero-emblem img{width:100%;height:auto}
+.sf-session-facts{display:flex;gap:16px;flex-wrap:wrap;margin:0 0 22px;font-size:11px;color:var(--muted)}.sf-session-facts b{font-size:20px;display:block;color:var(--text);font-variant-numeric:tabular-nums}
+html .sf-session-start{display:flex;align-items:center;justify-content:space-between;width:100%;min-height:52px!important;box-shadow:none!important;background:var(--accent)!important;color:var(--on,#08160d)!important}
+.sf-session-start svg{width:20px;height:20px}.sf-home-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}.sf-home-action{display:flex;align-items:center;gap:10px;text-align:right;border:1px solid var(--line);border-radius:18px;padding:14px 12px;background:var(--panel);color:var(--text);min-height:76px}.sf-home-action>svg{width:24px;height:24px;flex-shrink:0;color:var(--accent)}.sf-home-action b{display:block;font-size:12px}.sf-home-action small{display:block;font-size:10px;color:var(--muted);margin-top:3px}
+html .sf2-ring b{font-family:Vazirmatn,sans-serif!important;font-size:19px!important;font-style:normal!important;letter-spacing:0!important}html .sf2-ring .k{font:500 11px/1.8 Vazirmatn,sans-serif!important;letter-spacing:0!important;color:var(--muted)!important}
+html body #root:has(#vLogin){max-width:none!important;width:100%!important;background:transparent!important;box-shadow:none!important}
+html #vLogin .stage{background:radial-gradient(ellipse at 15% 20%,color-mix(in srgb,var(--accent) 14%,transparent),transparent 60%),var(--bg);gap:48px}
+html #vLogin .card{background:var(--panel)!important;border-color:var(--line)!important;box-shadow:0 28px 80px -40px #000!important}
+#vLogin .login-official-logo{display:block;width:170px;height:170px;object-fit:contain;margin:auto}
+.sf-welcome{position:relative;z-index:1;max-width:480px}.sf-welcome h2{font-size:42px;line-height:1.7;margin:0 0 20px;letter-spacing:-1.3px}.sf-welcome p{color:var(--muted);line-height:2.2}.sf-welcome small{color:var(--muted);font-size:12px}.sf-welcome-steps{display:grid;gap:16px;margin:28px 0}.sf-welcome-steps span{display:flex;align-items:center;gap:14px;font-size:14px}.sf-welcome-steps b{font-size:12px;color:var(--accent);padding:8px;border:1px solid var(--line);border-radius:10px;font-variant-numeric:tabular-nums}
+html #vLogin .streak,html #vLogin .ecg-bg{display:none}
+@media(min-width:900px){html #vLogin .stage{grid-template-columns:minmax(0,480px) minmax(0,400px);justify-content:center;padding:48px}html #vLogin .card{margin:0}}
+@media(max-width:899px){.sf-welcome{max-width:400px;text-align:center}.sf-welcome h2{font-size:25px;line-height:1.8;margin-bottom:8px}.sf-welcome h2 br{display:none}.sf-welcome p{font-size:12px;margin:0}.sf-welcome-steps,.sf-welcome>small,.sf-welcome>.sf-eyebrow{display:none}html #vLogin .stage{gap:20px;align-content:center;padding:24px 16px}.sf-welcome h2{letter-spacing:0}}
+@media(hover:hover){.sf-home-action:hover{border-color:var(--accent);transform:translateY(-2px)}}
+.sf-home-action:focus-visible,.sf-session-start:focus-visible{outline:3px solid var(--accent2);outline-offset:4px}
+@media(prefers-reduced-motion:no-preference){.sf-athlete-hero{animation:sfAthleteEnter .35s ease both}.sf-home-action{transition:transform .18s,border-color .18s}@keyframes sfAthleteEnter{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}}
+</style>
 
 </html>

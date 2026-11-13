@@ -287,43 +287,15 @@ function loginView() {
 
   $('root').innerHTML = `
   <main class="view on" id="vLogin">
-   <div class="stage">
+   <div class="stage"><aside class="sf-welcome"><span class="sf-eyebrow">SAEEDI FIT BODY</span><h2>هر روز،<br>یک قدم به خودت نزدیک‌تر.</h2><p>تمرین مشخص، تغذیهٔ هدفمند و همراهی مربی؛ همه در یک مسیر.</p><div class="sf-welcome-steps"><span><b>01</b> برنامهٔ اختصاصی تو</span><span><b>02</b> ثبت سادهٔ هر جلسه</span><span><b>03</b> دیدن روند پیشرفت</span></div><small>پیوستگی، از همین قدم شروع می‌شود.</small></aside>
     <i class="streak"></i><i class="streak s2"></i>
     <svg class="ecg-bg" viewBox="0 0 1200 90" preserveAspectRatio="none" aria-hidden="true"><path pathLength="400" vector-effect="non-scaling-stroke" d="M0 45H340L360 45L375 18L395 74L415 28L430 45H760L775 45L788 12L808 78L826 30L840 45H1200"/></svg>
     <section class="card" id="card" aria-labelledby="t">
      <div class="logo-wrap"><i class="rip"></i><i class="rip r2"></i>
-      <svg class="logo" viewBox="240 150 600 740" role="img" aria-label="Saeedi Fit Body">
-       <defs>
-        <linearGradient id="lime" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#b5e84a"/><stop offset="0.55" stop-color="#4fb848"/><stop offset="1" stop-color="#0f7a45"/></linearGradient>
-        <linearGradient id="navy" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1f2d3d"/><stop offset="1" stop-color="#0a1624"/></linearGradient>
-        <linearGradient id="pulse" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#b5e84a"/><stop offset="1" stop-color="#2fae5a"/></linearGradient>
-        <mask id="gapMask" maskUnits="userSpaceOnUse" x="0" y="0" width="1080" height="1080"><rect width="1080" height="1080" fill="#fff"/><polygon points="540,190 722,295 722,505 540,610 358,505 358,295" fill="#000"/></mask>
-        <clipPath id="innerClip"><polygon points="540,202 711,301 711,499 540,598 369,499 369,301"/></clipPath>
-       </defs>
-       <g class="lg-badge">
-        <g stroke-linejoin="round">
-         <polygon points="540,170 739,285 739,515 540,630 341,515 341,285" fill="url(#lime)" stroke="url(#lime)" stroke-width="16" mask="url(#gapMask)"/>
-         <polygon points="540,202 711,301 711,499 540,598 369,499 369,301" fill="url(#navy)"/>
-        </g>
-        <g clip-path="url(#innerClip)" fill="#b5e84a" opacity="0.10">
-         <rect x="445" y="440" width="80" height="46" rx="14"/><rect x="555" y="440" width="80" height="46" rx="14"/>
-         <rect x="445" y="498" width="80" height="46" rx="14"/><rect x="555" y="498" width="80" height="46" rx="14"/>
-         <rect x="450" y="556" width="75" height="40" rx="14"/><rect x="555" y="556" width="75" height="40" rx="14"/>
-        </g>
-        <g class="lg-s" transform="translate(66 -6) skewX(-10)">
-         <path d="M 618 342 H 492 Q 464 342 464 368 Q 464 394 492 397 L 590 413 Q 618 418 618 444 Q 618 470 590 470 H 458" fill="none" stroke="#ffffff" stroke-width="40" stroke-linejoin="round" stroke-linecap="butt"/>
-        </g>
-        <path class="lg-pulse" pathLength="100" d="M 420 540 H 488 L 508 508 L 537 568 L 562 520 L 578 540 H 660" fill="none" stroke="url(#pulse)" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
-       </g>
-       <text class="lg-name" x="540" y="800" text-anchor="middle" font-family="Montserrat,'Arial Black',Impact,sans-serif" font-weight="900" font-size="128" letter-spacing="8">SAEEDI</text>
-       <g class="lg-tag">
-        <rect x="262" y="853" width="120" height="6" rx="3" fill="url(#lime)"/><rect x="698" y="853" width="120" height="6" rx="3" fill="url(#lime)"/>
-        <text x="540" y="870" text-anchor="middle" font-family="Montserrat,Arial,sans-serif" font-weight="700" font-size="44" letter-spacing="16" fill="#1c8a4a">FIT BODY</text>
-       </g>
-      </svg>
+      ${brandLogo("login-official-logo")}
      </div>
      <h1 id="t">خوش برگشتی</h1>
-     <p class="sub">وارد شو تا برنامه تمرین امروزت را ادامه بدهی.</p>
+     <p class="sub">برنامه و مسیر پیشرفتت همین‌جاست.</p>
      <form id="f" novalidate>
       <div class="field">
        <input id="u" type="text" dir="ltr" placeholder=" " autocomplete="username" required>
@@ -656,7 +628,28 @@ function bindTodayCard() {
  * Home / dashboard
  * ---------------------------------------------------------------------- */
 function greet(){ const h=new Date().getHours(); return h<12?'صبح بخیر ☀️':h<18?'عصر بخیر 👋':'شب بخیر 🌙'; }
-function todayInfo(){ const ws=state.data.workouts||[]; const w=ws[Math.min(state.selected.workout, ws.length-1)]; if(!w||!w.days.length) return null; const i=Math.min(Number(localStorage.getItem('fc_today_day_'+w.name)||0), w.days.length-1); const day=w.days[i]; const done=JSON.parse(localStorage.getItem('fc_done_exercises')||'{}'); const total=day.isRest?0:day.exercises.length; let c=0; for(let x=0;x<total;x++) if(done[w.name+'_'+i+'_'+x]) c++; return {day,total,c}; }
+function todayInfo(){
+  const d=state.data || {}, tr=d.sfTraining || {}, plans=tr.plans || [];
+  if(plans.length){
+    const sel=state.sfSel || {}, plan=plans[Math.max(0,Math.min(Number(sel.plan)||0,plans.length-1))], days=plan.days || [];
+    if(!days.length)return null;
+    const di=Math.max(0,Math.min(Number(sel.day)||0,days.length-1)), day=days[di];
+    let total=0,c=0,sets=0,doneSets=0;
+    (day.blocks || []).forEach(b=>{(b.items || []).forEach(it=>{
+      total++;let planned=0,completed=0;
+      (b.sets || []).forEach(st=>{const cells=(st.cells || []).filter(cell=>Number(cell.pos)===Number(it.pos));
+        if(!cells.length)return; planned++;sets++;
+        if(cells.every(cell=>(tr.today || {})[sfKey(b.blockId,st.setNo,cell.pos,cell.step || 0)]?.done)){completed++;doneSets++;}
+      });
+      if(planned && completed===planned)c++;
+    });});
+    return {day:{title:day.title || ('روز '+(di+1)),isRest:!total},total,c,sets,doneSets,dayNo:di+1,planName:plan.planName || '',modern:true};
+  }
+  const ws=d.workouts || [], w=ws[Math.max(0,Math.min(state.selected.workout,ws.length-1))];if(!w || !w.days.length)return null;
+  const i=Math.max(0,Math.min(Number(localStorage.getItem('fc_today_day_'+w.name)||0),w.days.length-1)),day=w.days[i],done=doneMap();
+  const total=day.isRest?0:day.exercises.length;let c=0;for(let x=0;x<total;x++)if(done[w.name+'_'+i+'_'+x])c++;
+  return {day,total,c,sets:null,dayNo:i+1,planName:w.name};
+}
 function tile(ico,label,val,pct){ return `<div class="card tile"><span class="tico">${ico}</span><small>${label}</small><b>${val}</b><div class="tbar"><span style="width:${Math.max(0,Math.min(100,pct))}%"></span></div></div>`; }
 function mealsNow(){ return state.data.meals || {today:[], days:{}}; }
 function mealTotals(){ const t=mealsNow().today||[]; const f=k=>t.reduce((s,x)=>s+(Number(x[k])||0),0); return {kcal:f('kcal'),protein:f('protein'),carbs:f('carbs'),fat:f('fat')}; }
@@ -666,7 +659,7 @@ function homeTop(){ const d=state.data, p=d.profile, wt=d.water||{}, t=todayInfo
   const bg = HERO_IMG ? `style="background-image:linear-gradient(90deg,rgba(5,9,8,.92) 30%,rgba(5,9,8,.25)),url('${esc(HERO_IMG)}');background-size:cover;background-position:center"` : '';
   const hero = t ? `<div class="card today-hero" ${bg}><div><small>تمرین امروز</small><h2>${esc(t.day.title)}</h2><p>${t.day.isRest?'روز استراحت':fmt(t.c)+' از '+fmt(t.total)+' حرکت انجام شد'}</p><button class="btn startbtn" onclick="state.tab='workout';render()">شروع</button></div>${HERO_IMG?'':BARBELL}</div>` : '';
   return hero + `<div class="tiles">${tile('🔥','کالری',fmt(m.kcal)+'<i>/'+fmt(kt)+'</i>',kt?m.kcal/kt*100:0)}${tile('💪','پروتئین',fmt(m.protein)+'<i>/'+fmt(pt)+' g</i>',pt?m.protein/pt*100:0)}${tile('💧','آب',fmt(wc)+'<i>/'+fmt(wg)+'</i>',wg?wc/wg*100:0)}</div>` + challengeCard(); }
-function weeklyCard(){ const set=new Set((state.data.logs||[]).map(x=>String(x.date||'').slice(0,10))); const days=[]; const FA={Sun:'ش',Mon:'ی',Tue:'د',Wed:'س',Thu:'چ',Fri:'پ',Sat:'ج'}; for(let i=6;i>=0;i--){ const d=new Date(); d.setDate(d.getDate()-i); const iso=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); days.push({on:set.has(iso), l:FA[d.toLocaleDateString('en-US',{weekday:'short'})]||'-'}); } const n=days.filter(x=>x.on).length;
+function weeklyCard(){ const set=new Set((state.data.logs||[]).map(x=>String(x.date||'').slice(0,10))); const days=[]; const FA={Sun:'ی',Mon:'د',Tue:'س',Wed:'چ',Thu:'پ',Fri:'ج',Sat:'ش'}; for(let i=6;i>=0;i--){ const d=new Date(); d.setDate(d.getDate()-i); const iso=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); days.push({on:set.has(iso), l:FA[d.toLocaleDateString('en-US',{weekday:'short'})]||'-'}); } const n=days.filter(x=>x.on).length;
   return `<div class="card" style="margin-top:14px"><div class="section-title"><h2>پیشرفت هفتگی</h2><span class="pill">${Math.round(n/7*100)}%</span></div><div class="sfa-week">${days.map((x,i)=>`<span class="${x.on?'on':''}" style="animation-delay:${0.06*i}s">${x.l}</span>`).join('')}</div><div class="sub">${fmt(n)} از 7 روز ثبت پیشرفت</div></div>`; }
 function suppPills(s){ const f=state.suppF||''; return `<div class="tabs" id="suppPills"><button data-sf="" class="${f?'':'active'}">همه</button>${s.schedule.map(b=>`<button data-sf="${esc(b.timing)}" class="${f===b.timing?'active':''}">${esc(b.timing)}</button>`).join('')}</div>`; }
 function weightChart(logs, goalWeight){
@@ -5212,15 +5205,16 @@ function sf7EnsureAdmUsers() {
   });
 }
 function render() {
+  var loginStyle=document.getElementById('sf4-login-css'); if(loginStyle) loginStyle.remove();
   var d = state.data;
   if (!d) { loginView(); return; }
   // The athlete application has no entry into the separate management portal.
-  if (['coach','students','student','dietTip','workoutTip','admin'].indexOf(state.tab)>=0) state.tab='home';
+  if (['coach','students','student','admin'].indexOf(state.tab)>=0) state.tab='home';
   state.mode='athlete';
   var theme = sf7ThemeId();
   $('root').innerHTML = '<div class="topbar"><div class="topbar-inner">' +
     '<div class="brand"><div class="brand-mark">' + brandLogo() + '</div>' +
-      '<div><div class="brand-name" style="font-size:17px"><span class="bn1">SAEEDI</span><span class="bn2">FIT BODY</span></div><div class="sub">' + esc(d.profile.name || d.user.username) + '</div></div>' +
+      '<div><div class="brand-name"><span class="bn1">SAEEDI</span><span class="bn2">FIT BODY</span></div><div class="sub">' + esc(d.profile.name || d.user.username) + '</div></div>' +
     '</div>' +
     '<div class="nav" id="nav"></div>' +
     '<div style="display:flex;gap:6px;align-items:center">' +
@@ -6276,7 +6270,7 @@ function sf7cMoreTiles() {
 function sf7cTipsData(kind) {
   var D = sfViewData();
   var arr = (kind === 'diet') ? (D.diets || []) : (kind === 'workout' ? (D.workouts || []) : (D.supplements || []));
-  return arr.map(function (p) {
+  var result=arr.map(function (p) {
     var notes = [].concat(p.notes || []);
     if (kind === 'diet') {
       (p.sections || []).forEach(function (s) {
@@ -6292,6 +6286,8 @@ function sf7cTipsData(kind) {
     }
     return { name: p.name || p.planName || '', notes: notes };
   }).filter(function (x) { return x.notes.length; });
+  if(kind==='workout') ((D.sfTraining || {}).plans || []).forEach(function(p){var note=String(p.coachNotes || '').trim();if(note && !result.some(function(x){return x.name===p.planName;}))result.push({name:p.planName || '',notes:[note]});});
+  return result;
 }
 
 function sf7cTipsHtml(kind, hostId) {
