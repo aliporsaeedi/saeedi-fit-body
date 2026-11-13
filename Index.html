@@ -1170,7 +1170,7 @@ html[data-theme="dark"] .topbar .nav{display:none}
       (Number(d.streak) > 0 ? '<div class="sf2-streak">🔥 <b>' + fmt(d.streak) + '</b></div>' : '') + '</div>';
 
     if (W.sf3DateHeader) { try { h += W.sf3DateHeader(); } catch (e) {} }
-    if (W.sf3SubBanner) { try { h += W.sf3SubBanner(); } catch (e) {} }
+
 
     h += '<section class="sf-athlete-hero" aria-labelledby="sf-next-title"><div class="sf-hero-copy"><span class="sf-eyebrow">' + (!t ? 'شروع مسیر تو' : rest ? 'ریکاوری هم بخشی از مسیر است' : 'جلسهٔ بعد · روز '+fa(dayNo)) + '</span><h2 id="sf-next-title">' + title + '</h2><p>' + (!t ? 'پروفایلت را کامل کن تا مربی برنامهٔ متناسب با هدفت را آماده کند.' : rest ? 'برنامه را مرور کن و برای جلسهٔ بعد آماده باش.' : esc(t.planName || 'برنامهٔ اختصاصی مربی')) + '</p><div class="sf-session-facts">' + (tot ? '<span><b>'+fa(tot)+'</b> حرکت</span>'+(t.sets!=null ? '<span><b>'+fa(t.sets)+'</b> ست ثبت‌شده در برنامه</span>' : '')+'<span><b>'+fa(done)+'</b> حرکت کامل‌شده</span>' : '') + '</div><button class="btn sf-session-start" onclick="state.tab=' + (!t ? "'profile'" : "'workout'") + ';render()">' + (!t ? 'تکمیل پروفایل' : rest ? 'مشاهدهٔ برنامه' : done ? 'ادامهٔ تمرین' : 'بریم برای تمرین') + icon('dumbbell') + '</button></div><div class="sf-hero-emblem" aria-hidden="true">'+brandLogo()+'</div></section>';
     h += '<div class="sf-home-actions"><button class="sf-home-action" onclick="state.tab=\'diet\';render()">'+icon('apple')+'<span><b>تغذیهٔ امروز</b><small>برنامه و ثبت وعده‌ها</small></span></button><button class="sf-home-action" onclick="state.tab=\'chat\';render()">'+icon('chat')+'<span><b>ارتباط با مربی</b><small>سؤال‌ها و راهنمایی‌ها</small></span></button></div>';
@@ -1190,6 +1190,7 @@ html[data-theme="dark"] .topbar .nav{display:none}
     h += '<div class="card" style="margin-top:12px"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">' +
       '<span class="cap">روزهای ثبت پیشرفت ' + fa(wk.n) + ' / 7</span><span class="sub">این هفته</span></div>' + wk.html + '</div>';
 
+    if (W.sf3SubBanner) { try { h += W.sf3SubBanner(); } catch (e) {} }
     h += '<div id="rankCard"></div>';
 
     h += '<details class="card" style="margin-top:12px"><summary style="cursor:pointer;font-weight:700;font-size:13px">روند وزن و برنامه‌های فعال</summary>' +
@@ -3659,6 +3660,7 @@ table{ max-width:100%; }
 
 <style id="sf-athlete-design">
 /* Athlete identity and first-action layout. Theme colors remain inherited. */
+.sf-session-days{display:flex;gap:8px;overflow-x:auto;padding:4px 0 14px;scrollbar-width:thin}.sf-session-days button{flex:0 0 auto;min-height:44px;max-width:260px;white-space:normal;text-align:right}.sf-session-days button[aria-pressed="true"]{background:var(--accent);color:var(--on,#07150b);border-color:transparent}
 html .brand-mark{width:64px!important;height:64px!important;background:transparent!important;border:0!important;padding:0!important;box-shadow:none!important}
 html .brand-mark .brand-logo{width:64px!important;height:64px!important;object-fit:contain}
 html .brand-name{font:800 16px/1.3 Vazirmatn,sans-serif!important;letter-spacing:1.5px!important;color:var(--text)!important;transform:none!important;font-style:normal!important}

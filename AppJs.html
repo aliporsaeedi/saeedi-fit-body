@@ -2187,19 +2187,21 @@ function sf2HeroCard(D, w, di, day, done) {
 function workoutView() {
   var D = sfViewData();
   var customHtml = sfStudentHtml();
-  var workouts = (D.workouts || []);
+  var workouts = customHtml ? [] : (D.workouts || []);
   var idx = Math.min(state.selected.workout || 0, Math.max(0, workouts.length - 1));
   var w = workouts[idx];
   var done = (D === state.data) ? doneMap() : sf2DoneMap(D);
-  var todayDayIdx = w ? Number(localStorage.getItem('fc_today_day_' + w.name) || 0) : 0;
+  var todayDayIdx = w ? Math.max(0,Math.min(Number(localStorage.getItem('fc_today_day_' + w.name) || 0),w.days.length-1)) : 0;
 
   $('main').innerHTML =
     '<div class="hero"><div><h1>برنامه تمرینی</h1><p>' + (w ? esc(w.name.trim()) : 'تخصیص داده نشده') + '</p></div></div>' +
     sfStuBar('workout') +
     customHtml +
     planTabs('workout', workouts) +
+    (w ? '<div class="sf-session-days" role="group" aria-label="انتخاب روز تمرین">'+w.days.map(function(day,di){return '<button type="button" data-workout-day="'+di+'" aria-pressed="'+(di===todayDayIdx)+'" class="chip'+(di===todayDayIdx?' on':'')+'">روز '+(di+1)+' · '+esc(day.title)+'</button>';}).join('')+'</div>' : '') +
     sf2HeroCard(D, w, todayDayIdx, (w && w.days && w.days[todayDayIdx]) || null, done) +
     (w && w.days.length ? w.days.map(function (day, di) {
+      if(di!==todayDayIdx)return '';
       return '<div class="card day-card">' +
         '<div class="day-head"><h2>' + (di + 1) + '. ' + esc(day.title) + (di === todayDayIdx ? ' <span class="pill">امروز</span>' : '') + '</h2>' +
         '<span class="pill">' + (day.isRest ? 'روز استراحت' : day.exercises.length + ' حرکت') + '</span></div>' +
@@ -2207,9 +2209,10 @@ function workoutView() {
           return sf2ExCard(ex, w.name + '_' + di + '_' + xi, done, w.name, sf2IsStudentView());
         }).join('')) +
       '</div>';
-    }).join('') : '<div class="empty">برای این ورزشکار هنوز برنامه تمرینی تخصیص داده نشده.</div>') +
+    }).join('') : customHtml ? '' : '<div class="empty">هنوز برنامهٔ تمرینی نداری. برای آماده‌سازی برنامه با مربی در ارتباط باش.</div>') +
     (w && w.notes.length ? '<div class="card"><h2>توصیه‌های عمومی</h2>' + w.notes.map(function (n) { return '<div class="notice">' + esc(n) + '</div>'; }).join('') + '</div>' : '');
 
+  document.querySelectorAll('[data-workout-day]').forEach(function(button){button.onclick=function(){localStorage.setItem('fc_today_day_'+w.name,button.getAttribute('data-workout-day'));workoutView();};});
   bindPlanTabs(workoutView);
   sfStuBind('workout');
   document.querySelectorAll('.sf-ex2 input[type=checkbox]').forEach(function (cb) {
