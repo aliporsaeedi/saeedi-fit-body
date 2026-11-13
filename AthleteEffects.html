@@ -1,0 +1,160 @@
+<style id="sfx-css">
+:root{--sfx-e:cubic-bezier(.16,1,.3,1);--sfx-b:cubic-bezier(.34,1.56,.64,1)}
+.sfx-sp{position:fixed;top:0;left:0;right:0;height:3px;z-index:99998;transform:scaleX(0);transform-origin:right;background:var(--a,var(--accent,#b7ff00));box-shadow:0 0 10px var(--a,#b7ff00);pointer-events:none}
+
+/* ---------- لیکوید گلس: فقط روی کنترل‌ها ---------- */
+html.sfx-dk :is(#sf2dock,#restTimer,.toast,#sfxq){background:linear-gradient(160deg,rgba(255,255,255,.14),rgba(255,255,255,.04) 60%,rgba(255,255,255,.08))!important;backdrop-filter:blur(20px) saturate(190%) brightness(1.08)!important;-webkit-backdrop-filter:blur(20px) saturate(190%) brightness(1.08)!important;border:1px solid rgba(255,255,255,.14)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.4),inset 0 -1px 0 rgba(255,255,255,.05),0 14px 34px -16px #000!important}
+html.sfx-dk :is(.btn.secondary,.chip,.tabs button,.sf-days button,.sf-ok,.icon-btn,.sf2-streak){backdrop-filter:blur(14px) saturate(170%);-webkit-backdrop-filter:blur(14px) saturate(170%);box-shadow:inset 0 1px 0 rgba(255,255,255,.28)}
+.btn::before,.sf-ok::before,.chip::before,.tabs button::before,.sf-days button::before,#sfxq button::before{content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:radial-gradient(110px 80px at var(--mx,50%) var(--my,0%),rgba(255,255,255,.3),transparent 70%);opacity:0;transition:opacity .3s}
+.btn:hover::before,.sf-ok:hover::before,.chip:hover::before,.tabs button:hover::before,.sf-days button:hover::before,#sfxq button:hover::before{opacity:1}
+.btn,.sf-ok,.chip,.tabs button,.sf-days button,#sfxq button{position:relative;overflow:hidden}
+.sfx-rip{position:absolute;border-radius:50%;width:14px;height:14px;margin:-7px 0 0 -7px;background:radial-gradient(circle,rgba(255,255,255,.75),transparent 70%);pointer-events:none;z-index:3;animation:sfxR .7s var(--sfx-e) forwards}
+@keyframes sfxR{to{transform:scale(22);opacity:0}}
+.sfx-pt{position:fixed;z-index:99999;width:6px;height:15px;background:var(--a,#b7ff00);pointer-events:none;animation:sfxP .8s var(--sfx-e) forwards}
+.sfx-pt:nth-child(3n){background:#ff8a3d}.sfx-pt:nth-child(4n){background:var(--a2,#38d0ff)}
+@keyframes sfxP{to{transform:translate(var(--dx),var(--dy)) rotate(var(--rt));opacity:0}}
+
+/* ---------- حس ورزشی: اسلش، حرکت اسکرول، تیکر ---------- */
+.sf2-head .who b,.sf2-hero h2,#main>.hero h1{transform:skewY(var(--sfx-sk,0deg));transform-origin:100% 50%}
+.sf2-hero::before{content:'';position:absolute;top:-30%;bottom:-30%;inset-inline-start:36%;width:44px;background:color-mix(in srgb,var(--a,#b7ff00) 8%,transparent);transform:skewX(-22deg);pointer-events:none}
+.sfx-tk{overflow:hidden;margin:2px -4px;padding:10px 0;border-block:1px solid var(--line);direction:ltr;-webkit-mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent);mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent)}
+.sfx-tk>div{display:flex;gap:26px;width:max-content;will-change:transform}
+.sfx-tk span{display:flex;align-items:center;gap:26px;white-space:nowrap;font:800 17px 'Barlow Condensed',Vazirmatn,sans-serif;font-style:italic;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+.sfx-tk span::after{content:'';width:8px;height:8px;background:var(--a,#b7ff00);transform:skewX(-20deg)}
+
+/* ---------- اسکلت لودینگ و ظاهرشدن با اسکرول ---------- */
+.card.sfx-pre{background:linear-gradient(100deg,var(--s1) 30%,color-mix(in srgb,var(--text) 10%,var(--s1)) 50%,var(--s1) 70%) 0 0/250% 100%!important;animation:sfxShm 1.2s linear infinite!important;border-color:transparent!important}
+.sf2-meal.sfx-pre,.sfp-block.sfx-pre{opacity:0;transform:translateY(20px)}
+.sfx-pre>*{opacity:0}
+.sfx-rev{animation:sfxRev .8s var(--sfx-e) both!important}.sfx-rev>*{animation:sfxIn2 .6s var(--sfx-e) both}
+@keyframes sfxShm{to{background-position:-150% 0}}
+@keyframes sfxRev{from{transform:translateY(22px) scale(.985);filter:blur(4px)}}
+@keyframes sfxIn2{from{opacity:0}}
+
+/* ---------- پرده‌ی تغییر تب ---------- */
+.sfx-wipe{position:fixed;inset:0;z-index:99990;pointer-events:none;background:linear-gradient(90deg,var(--bg,#070b10) calc(100% - 7px),var(--a,#b7ff00) calc(100% - 7px));clip-path:polygon(-40% 0,-40% 0,-60% 100%,-60% 100%)}
+.sfx-wipe.go{animation:sfxW .56s cubic-bezier(.7,0,.3,1)}
+@keyframes sfxW{0%{clip-path:polygon(-40% 0,-40% 0,-60% 100%,-60% 100%)}42%,52%{clip-path:polygon(-40% 0,140% 0,140% 100%,-60% 100%)}100%{clip-path:polygon(140% 0,140% 0,120% 100%,120% 100%)}}
+
+/* ---------- اینترو (روی #splash موجود) ---------- */
+#splash .sfa-hexwrap{animation:sfxHex 1s var(--sfx-b) both,sfa-float 4.6s ease-in-out infinite 1s}
+@keyframes sfxHex{from{opacity:0;transform:scale(.5) rotate(-24deg)}}
+#splash::before{content:'';position:absolute;top:-20%;bottom:-20%;width:90px;left:-30%;background:linear-gradient(90deg,transparent,color-mix(in srgb,var(--a,#b7ff00) 26%,transparent),transparent);transform:skewX(-20deg);animation:sfxSl 1.7s var(--sfx-e) .2s both;pointer-events:none}
+@keyframes sfxSl{to{left:130%}}
+.sfx-spl{position:absolute;bottom:11%;left:50%;transform:translateX(-50%);width:min(240px,70%);text-align:center}
+.sfx-spl b{display:block;font:800 58px/1 'Barlow Condensed',sans-serif;font-style:italic;color:var(--a,#b7ff00);direction:ltr}
+.sfx-spl i{display:block;height:4px;margin-top:10px;background:rgba(255,255,255,.1);overflow:hidden;transform:skewX(-20deg)}
+.sfx-spl u{display:block;height:100%;background:var(--a,#b7ff00);transform:scaleX(0);transform-origin:right;box-shadow:0 0 12px var(--a,#b7ff00)}
+
+/* ---------- ثبت سریع ست (وزن/تکرار) ---------- */
+#sfxq{position:fixed;left:50%;bottom:calc(78px + env(safe-area-inset-bottom));z-index:85;width:min(468px,calc(100% - 20px));padding:12px 14px;border-radius:22px;background:var(--s1);color:var(--text);opacity:0;transform:translate(-50%,26px) scale(.97);pointer-events:none;transition:opacity .3s,transform .5s var(--sfx-b)}
+#sfxq.on{opacity:1;transform:translate(-50%,0);pointer-events:auto}
+.sfxq-h{display:flex;justify-content:space-between;gap:8px;font-size:12.5px;color:var(--muted)}.sfxq-h b{color:var(--text)}
+.sfxq-rig{display:flex;align-items:center;justify-content:center;height:60px;direction:ltr}
+.sfxq-rig .rod{flex:1;height:6px;min-width:8px;background:linear-gradient(#d9d9d4,#6d6d68)}.sfxq-rig .col{width:6px;height:18px;background:#9a9a95;border-radius:2px}
+.sfxq-s{display:flex;align-items:center;gap:2px}.sfxq-s .pl{border-radius:3px;box-shadow:inset 0 2px 0 rgba(255,255,255,.35),inset 0 0 0 1px rgba(0,0,0,.3)}.sfxq-s .pl.n{animation:sfxPl .4s var(--sfx-b)}
+@keyframes sfxPl{from{transform:scaleX(0) scaleY(.4);opacity:0}}
+.sfxq-w{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:2px 0 8px}
+.sfxq-w b{font:800 58px/.95 'Barlow Condensed',Vazirmatn,sans-serif;font-style:italic;direction:ltr;transition:transform .25s var(--sfx-b),color .25s}.sfxq-w b.bp{transform:scale(1.14);color:var(--a,#b7ff00)}.sfxq-w b small{font-size:20px;color:var(--muted)}
+.sfxq-w button{width:52px;height:52px;border-radius:50%;font-size:26px;font-weight:800;background:color-mix(in srgb,var(--text) 8%,transparent);color:var(--text);border:1px solid var(--line)}
+.sfxq-c{display:flex;gap:6px;margin-top:6px}.sfxq-c button{flex:1;min-height:44px;border-radius:12px;font:800 20px 'Barlow Condensed',Vazirmatn,sans-serif;background:color-mix(in srgb,var(--text) 7%,transparent);color:var(--text);border:1px solid var(--line)}.sfxq-c button.on{background:var(--a,#b7ff00);color:var(--on,#05140a);border-color:transparent}
+.sfxq-c .go{flex:1.6;background:var(--a,#b7ff00);color:var(--on,#05140a);border:0;font:800 15px Vazirmatn,sans-serif}
+
+@media (prefers-reduced-motion:reduce){.sfx-wipe,.sfx-rip,.sfx-pt,.sfx-spl,#splash::before{display:none!important}.sfx-pre{animation:none!important}.sfx-pre>*{opacity:1}.sf2-hero h2,.sf2-head .who b{transform:none}}
+
+/* ---------- لودینگ‌های حین صفحه (sf3Loader) — طرح اتلتیک ---------- */
+.sf3-loader{background:repeating-linear-gradient(115deg,rgba(255,255,255,.022) 0 1px,transparent 1px 15px),color-mix(in srgb,var(--bg,#070b10) 92%,transparent)!important}
+.sfl-orbit{display:none!important}
+.sfl-mark::before,.sfl-mark::after{content:'';position:absolute;inset:0;border-radius:50%;background:repeating-conic-gradient(var(--a,#b7ff00) 0 4deg,transparent 4deg 9deg);-webkit-mask:radial-gradient(circle,transparent 47px,#000 48px,#000 60px,transparent 61px);mask:radial-gradient(circle,transparent 47px,#000 48px,#000 60px,transparent 61px)}
+.sfl-mark::after{opacity:.16}
+.sfl-mark::before{z-index:1;animation:sflSpin 1.1s linear infinite;-webkit-mask:radial-gradient(circle,transparent 47px,#000 48px,#000 60px,transparent 61px),conic-gradient(#000,transparent 60%);-webkit-mask-composite:source-in;mask:radial-gradient(circle,transparent 47px,#000 48px,#000 60px,transparent 61px),conic-gradient(#000,transparent 60%);mask-composite:intersect}
+.sfl-mark{width:124px!important;height:124px!important}
+.sfl-bar{transform:skewX(-20deg);border-radius:0!important}.sfl-bar i{border-radius:0!important;box-shadow:0 0 12px var(--a,#b7ff00)}
+/* ---------- خروج اینترو: بالا رفتن پرده ---------- */
+#splash{clip-path:inset(0)}
+#splash.hide{clip-path:inset(0 0 100% 0)!important;opacity:1!important;transition:clip-path .7s var(--sfx-e)!important}
+/* ---------- ورود/تست/اسکلت‌ها ---------- */
+.login .btn.is-loading::after{border-color:currentColor!important;border-inline-end-color:transparent!important}
+.toast{animation:sfxT .5s var(--sfx-b) both!important}
+@keyframes sfxT{from{opacity:0;transform:translate(-50%,16px) scale(.9)}}
+.skeleton,.coach-empty:empty,.sfp-skel{background:linear-gradient(100deg,transparent 20%,rgba(183,255,0,.10) 50%,transparent 80%) 0 0/200% 100%!important}
+@media (prefers-reduced-motion:reduce){.sfl-mark::before{animation:none!important}#splash.hide{transition:none!important}}
+
+/* ---------- پوسته‌های دیگر: همان طراحی با رنگ‌بندی خود هر تم ---------- */
+html.sfx-lt :is(#sf2dock,#restTimer,.toast,#sfxq){background:linear-gradient(160deg,rgba(255,255,255,.88),rgba(255,255,255,.55))!important;backdrop-filter:blur(20px) saturate(180%)!important;-webkit-backdrop-filter:blur(20px) saturate(180%)!important;border:1px solid rgba(0,0,0,.08)!important;box-shadow:inset 0 1px 0 #fff,0 14px 34px -16px rgba(0,0,0,.35)!important}
+html.sfx-lt :is(.btn.secondary,.chip,.tabs button,.sf-days button,.sf-ok,.icon-btn,.sf2-streak){backdrop-filter:blur(14px) saturate(160%);-webkit-backdrop-filter:blur(14px) saturate(160%);box-shadow:inset 0 1px 0 #fff}
+html.sfx-lt .btn::before,html.sfx-lt #sfxq button::before{background:radial-gradient(110px 80px at var(--mx,50%) var(--my,0%),rgba(255,255,255,.85),transparent 70%)}
+.skeleton,.coach-empty:empty,.sfp-skel{background:linear-gradient(100deg,transparent 20%,color-mix(in srgb,var(--a,#b7ff00) 12%,transparent) 50%,transparent 80%) 0 0/200% 100%!important}
+/* ---------- پردهٔ تغییر تب: تمام‌رنگ تم + لوگوی خودت وسطش ---------- */
+.sfx-wipe{background:var(--a,#b7ff00)!important;display:grid;place-items:center}
+.sfx-wipe img{width:112px;height:auto;filter:drop-shadow(0 12px 26px rgba(0,0,0,.35))}
+.sfl-lg{position:relative;z-index:2;width:56px;height:auto;filter:drop-shadow(0 0 14px color-mix(in srgb,var(--a,#b7ff00) 55%,transparent));animation:sflPulse 1.6s ease-in-out infinite}
+.sfx-tk>div{animation:sfxTicker 45s linear infinite}@keyframes sfxTicker{to{transform:translateX(-50%)}}@media(prefers-reduced-motion:reduce){.sfx-tk>div{animation:none}}
+</style>
+<script id="sfx-js">
+(function(){
+var W=window,D=document,H=D.documentElement,RED=matchMedia('(prefers-reduced-motion:reduce)').matches;
+function $(s,r){return (r||D).querySelector(s)}function $$(s,r){return [].slice.call((r||D).querySelectorAll(s))}
+function buzz(n){try{navigator.vibrate&&navigator.vibrate(n||10)}catch(e){}}
+function th(){var t=H.getAttribute('data-theme')||'dark';var lt=/^(pink|light|day)$/.test(t);H.classList.toggle('sfx-dk',!lt);H.classList.toggle('sfx-lt',lt)}
+th();new MutationObserver(th).observe(H,{attributes:true,attributeFilter:['data-theme']});
+var sp=D.createElement('div');sp.className='sfx-sp';D.body.appendChild(sp);
+var wp=D.createElement('div');wp.className='sfx-wipe';D.body.appendChild(wp);
+function lgs(){var i=$('#splashLogo')||$('.brand-mark img')||$('img.brand-logo');return i&&i.getAttribute('src')||''}
+function wlg(){if(wp.firstChild)return;var s=lgs();if(s){var m=D.createElement('img');m.alt='';m.src=s;wp.appendChild(m)}}
+function swp(){$$('.sf3-loader .sfl-hex').forEach(function(h){var s=lgs();if(!s)return;var m=D.createElement('img');m.className='sfl-lg';m.alt='';m.src=s;h.replaceWith(m)})}
+wlg();new MutationObserver(function(){wlg();swp()}).observe(D.body,{childList:true});
+
+/* نور دنبال‌کنندهٔ اشاره‌گر + ریپل + جرقه */
+var BT='.btn,.sf-ok,.chip,.tabs button,.sf-days button,.sf2-cta,#sfxq button';
+D.addEventListener('pointermove',function(e){var g=e.target.closest&&e.target.closest(BT);if(!g)return;var r=g.getBoundingClientRect();g.style.setProperty('--mx',(e.clientX-r.left)+'px');g.style.setProperty('--my',(e.clientY-r.top)+'px')},{passive:true});
+D.addEventListener('pointerdown',function(e){var b=e.target.closest&&e.target.closest(BT+',.icon-btn');if(!b)return;buzz(8);if(RED)return;if(getComputedStyle(b).position==='static')b.style.position='relative';b.style.overflow='hidden';var r=b.getBoundingClientRect(),s=D.createElement('span');s.className='sfx-rip';s.style.left=(e.clientX-r.left)+'px';s.style.top=(e.clientY-r.top)+'px';b.appendChild(s);setTimeout(function(){s.remove()},750)});
+function burst(x,y){if(RED)return;for(var i=0;i<16;i++){var p=D.createElement('i'),a=Math.random()*6.28,d=60+Math.random()*90;p.className='sfx-pt';p.style.cssText='left:'+x+'px;top:'+y+'px;--dx:'+Math.cos(a)*d+'px;--dy:'+Math.sin(a)*d+'px;--rt:'+(Math.random()*540-270)+'deg';D.body.appendChild(p);setTimeout(function(q){q.remove()},850,p)}}
+D.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('.sf-ok');if(!b)return;var r=b.getBoundingClientRect(),x=r.left+r.width/2,y=r.top+r.height/2;setTimeout(function(){if(!D.contains(b)||b.classList.contains('on')){burst(x,y);buzz(25)}},70)});
+
+/* Motion follows real navigation; it never replays clicks. */
+D.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('#sf2dock button');if(!b||RED)return;wlg();wp.classList.remove('go');void wp.offsetWidth;wp.classList.add('go')});
+var tx=0;
+addEventListener('scroll',function(){var h=H.scrollHeight-innerHeight;sp.style.transform='scaleX('+(h>0?scrollY/h:0)+')'},{passive:true});
+/* شمارندهٔ اعداد، حلقه‌ها، ظاهرشدن با اسکرول */
+var CNT='.sf2-ring .rt b,.sf2-kcal b,.sf2-macro .rt b,.pstats b';
+function cnt(el){var m=(el.textContent||'').trim().match(/^(\d[\d,]*(?:\.\d+)?)(.*)$/);if(!m||RED)return;var to=parseFloat(m[1].replace(/,/g,'')),dec=(m[1].split('.')[1]||'').length,g=m[1].indexOf(',')>-1,suf=m[2],t0=performance.now();el.style.minWidth=el.offsetWidth+'px';(function s(n){var p=Math.min(1,(n-t0)/1100),v=to*(1-Math.pow(1-p,4));el.textContent=v.toLocaleString('en-US',{minimumFractionDigits:dec,maximumFractionDigits:dec,useGrouping:g})+suf;if(p<1)requestAnimationFrame(s)})(t0)}
+function ring(sv){var c=sv.querySelectorAll('circle'),f=c[c.length-1];if(!f||RED)return;var da=f.getAttribute('stroke-dasharray'),of=f.getAttribute('stroke-dashoffset');if(!da)return;f.style.animation='none';f.style.transition='none';f.style.strokeDashoffset=da;f.getBoundingClientRect();f.style.transition='stroke-dashoffset 1.4s cubic-bezier(.16,1,.3,1) .15s';f.style.strokeDashoffset=of}
+var io=new IntersectionObserver(function(es){es.forEach(function(e){if(!e.isIntersecting)return;var el=e.target;io.unobserve(el);if(el.__k==='c')cnt(el);else if(el.__k==='r')ring(el);else{el.classList.remove('sfx-pre');el.classList.add('sfx-rev');setTimeout(function(){el.classList.remove('sfx-rev')},900)}})},{threshold:.1});
+function tick(){var h=$('.sf2-hero');if(!h||$('.sfx-tk'))return;var it=[],c=$('.cap',h),t=$('h2',h),st=$('.sf2-streak b');if(c)it.push(c.textContent.trim());if(t)it.push(t.textContent.trim());$$('.meta span',h).forEach(function(s){it.push(s.textContent.trim())});if(st)it.push('STREAK '+st.textContent.trim());$$('.sf2-ring').forEach(function(r){var b=$('b',r),k=$('.k',r);if(b&&k)it.push(k.textContent.trim()+' '+b.textContent.trim())});if(!it.length)return;var s='';for(var i=0;i<4;i++)it.forEach(function(x){s+='<span>'+x.replace(/</g,'&lt;')+'</span>'});var d=D.createElement('div');d.className='sfx-tk';d.innerHTML='<div>'+s+'</div>';h.insertAdjacentElement('afterend',d);tx=0}
+function scan(){
+ $$('#main > .card,#main .sf2-meal,#main .sfp-block').forEach(function(el){if(el.__s)return;el.__s=1;if(!RED&&el.getBoundingClientRect().top>innerHeight*.92){el.classList.add('sfx-pre');el.__k='p';io.observe(el)}});
+ $$(CNT).forEach(function(el){if(el.__s)return;el.__s=1;el.__k='c';io.observe(el)});
+ $$('.sf2-ring .rt svg,.sf2-kcal svg,.sf2-macro svg').forEach(function(el){if(el.__s)return;el.__s=1;el.__k='r';io.observe(el)});
+ tick();spl()}
+
+/* اینترو: شمارندهٔ ۰→۱۰۰ روی #splash موجود */
+function spl(){}
+var q=0,debounce=function(){if(q)return;q=requestAnimationFrame(function(){q=0;scan()})};
+var root=$('#root');if(root)new MutationObserver(debounce).observe(root,{childList:true,subtree:true});
+
+scan();
+
+/* ثبت سریع ست: نوار شیشه‌ای + میلهٔ هالتر با صفحه‌های رنگی */
+var PL=[[20,'#2f6cff',16,60],[10,'#2bbf5f',13,50],[5,'#f2f2ee',11,40],[2.5,'#ffb21f',9,32],[1.25,'#9a9a95',7,26]],Q=D.createElement('div'),row=null,pc={};Q.id='sfxq';D.body.appendChild(Q);
+Q.addEventListener('pointerdown',function(e){if(e.target.closest('button'))e.preventDefault()});
+function fld(r){var i=$$('input',r).filter(function(x){return x.type!=='checkbox'&&x.type!=='hidden'}),w,rp;function tx(x){return [x.placeholder,x.getAttribute('aria-label'),x.name,x.id,x.className,Object.keys(x.dataset).join(' ')].join(' ')}i.forEach(function(x){if(!w&&/وزن|kg|کیلو|weight|load|\bw\b/i.test(tx(x)))w=x;else if(!rp&&/تکرار|rep|\br\b/i.test(tx(x)))rp=x});if(!w)w=i.filter(function(x){return x!==rp})[0];if(!rp)rp=i.filter(function(x){return x!==w})[0];return{w:w,r:rp,ok:$('.sf-ok,[data-ref-save]',r)}}
+function setv(el,v){if(!el)return;Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set.call(el,String(v));el.dispatchEvent(new Event('input',{bubbles:true}));el.dispatchEvent(new Event('change',{bubbles:true}))}
+function side(w,dir){var s=Math.max(0,(w-20)/2),h='',c={};PL.forEach(function(p){var k=Math.floor(s/p[0]+1e-6);s-=k*p[0];c[p[0]]=k;for(var i=0;i<k;i++)h+='<i class="pl'+(i>=(pc[p[0]]||0)?' n':'')+'" style="width:'+p[2]+'px;height:'+p[3]+'px;background:'+p[1]+'"></i>'});pc=c;return '<div class="sfxq-s" style="flex-direction:'+dir+'">'+h+'</div>'}
+function paint(){if(!row||!D.contains(row))return;var x=fld(row);if(!x.w&&!x.r)return;var w=+(x.w&&x.w.value)||0,r=+(x.r&&x.r.value)||0,b=row.closest('.sfp-block,.sf-block,.card'),nm=b&&$('.sf-item-name,.sfp-name,.sf-ex-name',b),bar=nm&&/هالتر|barbell/i.test(nm.textContent),sn=row.closest('.sfp-set'),ps=sn&&sn.previousElementSibling,pr=ps&&fld(ps),h='<div class="sfxq-h"><b>'+(nm?nm.textContent.trim().replace(/</g,'&lt;'):'')+'</b><span>'+(sn?'SET '+(1+$$('.sfp-set',sn.parentNode).indexOf(sn)):'')+'</span></div>';
+ if(bar&&w>=20)h+='<div class="sfxq-rig">'+side(w,'row-reverse')+'<i class="col"></i><i class="rod"></i><i class="col"></i>'+side(w,'row')+'</div>';else pc={};
+ h+='<div class="sfxq-w"><button data-a="w" data-d="-2.5" aria-label="کم کردن وزن">−</button><b id="sfxw">'+w+'<small> kg</small></b><button data-a="w" data-d="2.5" aria-label="اضافه کردن وزن">+</button></div>';
+ h+='<div class="sfxq-c">'+[20,10,5,2.5].map(function(p){return '<button data-a="w" data-d="'+p*2+'">+'+p*2+'</button>'}).join('')+'</div>';
+ h+='<div class="sfxq-c">'+[6,8,10,12,15].map(function(p){return '<button data-a="r" data-v="'+p+'"'+(p===r?' class="on"':'')+'>'+p+'</button>'}).join('')+'</div>';
+ h+='<div class="sfxq-c">'+(pr&&pr.w?'<button data-a="p" style="font:700 13px Vazirmatn">مثل ست قبل</button>':'')+'<button class="go" data-a="ok">ثبت ست</button></div>';Q.innerHTML=h}
+Q.addEventListener('click',function(e){var b=e.target.closest('button');if(!b||!row)return;var x=fld(row),a=b.dataset.a;buzz(12);
+ if(a==='w'){if(!x.w)return;setv(x.w,Math.max(0,Math.round(((+x.w.value||0)+ +b.dataset.d)*100)/100));paint();var n=$('#sfxw');if(n){n.classList.add('bp');setTimeout(function(){n.classList.remove('bp')},180)}}
+ else if(a==='r'){setv(x.r,b.dataset.v);paint()}
+ else if(a==='p'){var sn=row.closest('.sfp-set'),pr=sn&&sn.previousElementSibling&&fld(sn.previousElementSibling);if(pr){setv(x.w,pr.w&&pr.w.value);setv(x.r,pr.r&&pr.r.value);paint()}}
+ else if(a==='ok'){var r=b.getBoundingClientRect();if(x.ok && !x.ok.disabled)x.ok.click();setTimeout(function(){Q.classList.remove('on');row=null;pc={}},250)}});
+D.addEventListener('focusin',function(e){var r=e.target.closest&&e.target.closest('.sfp-row:not(.view),.sf-row,.sf-ref-log-row');if(!r||!e.target.matches('input'))return;if(row!==r)pc={};row=r;paint();Q.classList.add('on')});
+D.addEventListener('focusout',function(){setTimeout(function(){var a=D.activeElement;if(!a||!a.closest||(!a.closest('.sfp-row,.sf-row,.sf-ref-log-row')&&!a.closest('#sfxq'))){Q.classList.remove('on');row=null}},200)});
+D.addEventListener('input',function(e){if(row&&row.contains(e.target))paint()});
+if(W.visualViewport)W.visualViewport.addEventListener('resize',function(){var v=W.visualViewport,k=innerHeight-v.height-v.offsetTop;Q.style.bottom=k>80?(k+8)+'px':''});
+})();
+</script>

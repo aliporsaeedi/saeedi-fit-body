@@ -2116,6 +2116,7 @@ function getBootstrap(token, clientToday) {
   const result = {
     user: { username: session.username, role: session.role, email: ((getUserRecord_(session.username) || {}).email || '') },
     profile,
+    wellness: sfRefWellnessToday_(session.username,isValidDateStr_(clientToday)?clientToday:todayISO_()),
     profileHistory: getProfileHistory_(session.username),
     assignments,
     logs: getLogs_(session.username),

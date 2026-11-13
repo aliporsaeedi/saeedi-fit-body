@@ -2284,7 +2284,7 @@ function sfProgressBoard(token, clientToday) {
     username: username, today: today,
     weight: { points: [], latest: null, first: null, change: null },
     workouts: { done: 0, last30: 0, streak: 0, days: [], perDay: {} },
-    sets: { total: 0, last30: 0, volume: 0, byExercise: [], prs: [], recent: [] },
+    sets: { days: {}, total: 0, last30: 0, volume: 0, byExercise: [], prs: [], recent: [] },
     meals: { days: [], today: null, avgKcal: 0, loggedDays: 0 },
     water: { days: [], today: 0, avg: 0, goal: 8 },
     photos: [],
@@ -2334,6 +2334,7 @@ function sfProgressBoard(token, clientToday) {
       const ex = normalize_(r[iE]) || 'حرکت';
       const d = dayOf(r[iD]);
       total++;
+      if(d && d<=today){var daily=out.sets.days[d] || (out.sets.days[d]={sets:0,volume:0});daily.sets++;daily.volume+=w*reps;}
       if (d >= daysAgo(30)) last30++;
       vol += w * reps;
       if (d) mark(d);
@@ -2427,6 +2428,8 @@ function sfProgressBoard(token, clientToday) {
     }).filter(function (p) { return p.url; });
   } catch (e) {}
 
+  out.sessions=sfRefSessionSummary_(username);
+  Object.keys(out.sessions.days).forEach(function(d){if(out.sessions.days[d].sessions>0 && !out.workouts.perDay[d]){out.workouts.perDay[d]=1;mark(d);}});
   /* جدول فعالیت ۸۴ روز گذشته */
   out.activity = activity;
   const heat = [];

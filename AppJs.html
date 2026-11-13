@@ -702,11 +702,21 @@ function metricCard(title,field,unit){ const v=(state.data.logs||[]).filter(l=>l
 const REM_T={workout:'تمرین',water:'آب',meal:'ثبت غذا',weight:'وزن‌کشی'};
 
 function checkinView(){
-  const sc=(id,l)=>`<div class="field"><label>${l}</label><div class="scale" data-sc="${id}">${[1,2,3,4,5].map(n=>`<button type="button" data-v="${n}" class="${n===3?'on':''}">${n}</button>`).join('')}</div></div>`;
-  $('main').innerHTML=`<div class="hero"><div><h1>چک‌این هفتگی</h1><p>گزارش کوتاه برای مربی</p></div></div><div class="card"><div class="form">${sc('energy','سطح انرژی')}${sc('sleep','کیفیت خواب')}${sc('hunger','اشتها و پایبندی به رژیم')}${sc('sore','خستگی عضلات')}<div class="field"><label>توضیحات (اختیاری)</label><textarea id="ciNote" rows="3"></textarea></div><button class="btn" id="ciSend">ارسال برای مربی</button></div></div>`;
-  const val={energy:3,sleep:3,hunger:3,sore:3};
+  var existing=state.data.wellness || {};
+  const sc=(id,l)=>`<div class="field"><label>${l}</label><div class="scale" data-sc="${id}">${[1,2,3,4,5].map(n=>`<button type="button" data-v="${n}" class="${n===(Number(existing[id]) || 3)?'on':''}">${n}</button>`).join('')}</div></div>`;
+  $('main').innerHTML=`<div class="hero"><div><h1>چک‌این هفتگی</h1><p>گزارش کوتاه برای مربی</p></div></div><div class="card"><div class="form"><div class="field"><label for="ciHours">ساعت خواب دیشب (اختیاری)</label><input id="ciHours" type="number" min="0" max="24" step="0.25" value="${existing.sleepHours==null?'':esc(existing.sleepHours)}"></div>${sc('energy','سطح انرژی')}${sc('sleep','کیفیت خواب')}${sc('hunger','اشتها و پایبندی به رژیم')}${sc('sore','خستگی عضلات')}<div class="field"><label>توضیحات (اختیاری)</label><textarea id="ciNote" rows="3"></textarea></div><button class="btn" id="ciSend">ارسال برای مربی</button></div></div>`;
+  const val={energy:Number(existing.energy)||3,sleep:Number(existing.sleep)||3,hunger:Number(existing.hunger)||3,sore:Number(existing.sore)||3};
   document.querySelectorAll('[data-sc]').forEach(g=>g.querySelectorAll('button').forEach(b=>b.onclick=()=>{ val[g.dataset.sc]=+b.dataset.v; g.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b)); }));
-  $('ciSend').onclick=async()=>{ const txt=`چک‌این هفتگی\nانرژی: ${val.energy}/5 | خواب: ${val.sleep}/5 | رژیم: ${val.hunger}/5 | خستگی: ${val.sore}/5 | تمرین این هفته: ${weekWorkoutDays()} روز${$('ciNote').value.trim()?'\nتوضیح: '+$('ciNote').value.trim():''}`; try{ await server('sendMessage',[state.token,'',txt]); toast('برای مربی ارسال شد'); state.tab='home'; render(); }catch(e){ toast(e.message,true); } };
+  $('ciSend').onclick=async()=>{
+    var button=$('ciSend');if(button.disabled)return;button.disabled=true;
+    var note=$('ciNote').value.trim(),hours=$('ciHours').value;
+    try{var saved=await server('sfRefWellnessSave',[state.token,Object.assign({},val,{sleepHours:hours,note:note})]);state.data.wellness=saved.wellness;}
+    catch(e){button.disabled=false;toast(e.message,true);return;}
+    var text='چک‌این هفتگی\nانرژی: '+val.energy+'/5 | خواب: '+val.sleep+'/5 | رژیم: '+val.hunger+'/5 | خستگی: '+val.sore+'/5'+(hours!==''?' | ساعت خواب: '+hours:'')+(note?'\nتوضیح: '+note:'');
+    try{await server('sendMessage',[state.token,'',text]);toast('گزارش ذخیره و برای مربی ارسال شد');}
+    catch(e){toast('گزارش ذخیره شد؛ ارسال پیام انجام نشد: '+e.message,true);}
+    state.tab='home';render();
+  };
 }
 
 async function loadBotAdmin(){
@@ -721,21 +731,6 @@ async function loadBotAdmin(){
   if($('bsTest')) $('bsTest').onclick=async()=>{ try{ await server('sendBotTest',[state.token]); toast('پیام آزمایشی ارسال شد'); }catch(e){ toast(e.message,true); } };
 }
 function restFor(ex){ const sv=Number(localStorage.getItem('fc_rest_'+ex.name)); if(sv>0) return sv; const m=String(ex.notes||'').replace(/[۰-۹]/g,d=>'۰۱۲۳۴۵۶۷۸۹'.indexOf(d)).match(/استراحت\D{0,6}(\d{2,3})/); return m?Number(m[1]):90; }
-/* دکمهٔ کم‌کردن آب (−1): شنوندهٔ سراسری تا در هر صفحه‌ای کار کند */
-document.addEventListener('click', function (e) {
-  var tg = e.target;
-  if (!tg || !tg.closest || !tg.closest('#waterMinus')) return;
-  e.preventDefault();
-  if (!state || !state.data) return;
-  var prev = state.data.water || {};
-  state.data.water = Object.assign({}, prev, { glasses: Math.max(0, (Number(prev.glasses) || 0) - 1) });
-  homeView();
-  server('addWater', [state.token, -1, todayISO()]).then(function (r) {
-    if (r && r.water) state.data.water = r.water;
-    homeView();
-  }).catch(function () { state.data.water = prev; homeView(); });
-});
-
 function guideCard() {
   var rows = [
     ['🏠 خانه', 'خلاصهٔ روز تو: کالری، آب، تمرین امروز و روند وزن. همین‌جا شروع کن.'],
@@ -802,10 +797,10 @@ async function toggleExerciseLog(key, exerciseName, workoutName) {
   try { history = await server('getExerciseHistory', [state.token, exerciseName]); } catch (e) {}
 
   panel.innerHTML = `
-    <div class="row">
+    <div class="row sf-ref-log-row">
       <div class="field"><label>وزنه (kg)</label><input type="number" step="0.5" id="wt-${key}"></div>
       <div class="field"><label>تکرار</label><input type="number" id="rp-${key}"></div>
-      <button type="button" class="btn small" id="save-${key}">${icon('plus')} ثبت</button>
+      <button type="button" class="btn small" data-ref-save="1" id="save-${key}">${icon('plus')} ثبت</button>
     </div>
     <div id="spark-${key}">${exStats(history)}</div>
   `;
@@ -813,12 +808,14 @@ async function toggleExerciseLog(key, exerciseName, workoutName) {
   $('save-' + key).onclick = async () => {
     const weight = $('wt-' + key).value, reps = $('rp-' + key).value;
     if (!weight && !reps) { toast('وزنه یا تکرار رو وارد کن', true); return; }
+    const saveButton=$('save-'+key); if(saveButton.disabled)return; saveButton.disabled=true;
     try {
       const r = await server('logExerciseSet', [state.token, { exerciseName, workoutName, weight, reps }]);
+      state._refBoard=null; if(document.getElementById('sfRefSession')){var current=(state.data.workouts || [])[state.selected.workout || 0];if(current)sfReferenceSessionMount(current,Number(localStorage.getItem('fc_today_day_'+current.name)||0));}
       $('spark-' + key).innerHTML = exStats(r.history); startRestTimer(restFor({ name: exerciseName }));
       
       toast('ثبت شد');
-    } catch (e) { toast(e.message, true); }
+    } catch (e) { toast(e.message, true); } finally {if(saveButton.isConnected)saveButton.disabled=false;}
   };
 }
 
@@ -2184,6 +2181,28 @@ function sf2HeroCard(D, w, di, day, done) {
   return h;
 }
 
+function sfReferencePlannedSets(workout,day){
+  var target=workout && (workout.days || [])[day];if(!target)return null;var total=0,unknown=false;
+  (target.exercises || []).forEach(function(ex){var text=String(ex.sets || '').trim().replace(/[۰-۹]/g,function(d){return '۰۱۲۳۴۵۶۷۸۹'.indexOf(d);});if(!/^\d+$/.test(text) || Number(text)<1){unknown=true;return;}total+=Number(text);});return unknown ? null : total;
+}
+function sfReferenceSessionMount(workout,day){
+  var host=document.getElementById('sfRefSession');if(!host || !workout)return;
+  var owner=state.token;
+  function show(session){
+    if(!host.isConnected || owner!==state.token)return;
+    if(state._refClock){clearInterval(state._refClock);state._refClock=null;}
+    var active=session && session.status==='active',elapsed=session ? session.seconds : 0;
+    var activeWorkout=session ? (state.data.workouts || []).filter(function(w){return w.name===session.workoutName;})[0] : workout;
+    var planned=sfReferencePlannedSets(activeWorkout,session ? session.dayNo-1 : day),saved=session ? session.sets : 0,percentage=planned ? Math.min(100,Math.round(saved/planned*100)) : null;
+    host.innerHTML='<div class="section-title"><h2>جلسهٔ زنده</h2><span class="pill">'+(active?'در حال اجرا':session?'پایان‌یافته':'آمادهٔ شروع')+'</span></div><p class="sub">'+esc(session ? session.workoutName+' · روز '+session.dayNo : workout.name+' · روز '+(day+1))+'</p><div class="sf-ref-week-stats"><div><b id="sfRefClock">—</b><small>زمان واقعی جلسه</small></div><div><b>'+fmt(session ? session.sets : 0)+'</b><small>ست ذخیره‌شده'+(planned!=null ? ' / '+fmt(planned)+' برنامه' : '')+'</small></div><div><b>'+fmt(session ? session.volume : 0)+'</b><small>kg حجم ذخیره‌شده</small></div></div>'+(planned!=null ? '<p class="sub">'+percentage+'٪ · '+fmt(Math.max(0,planned-saved))+' ست باقی‌مانده</p><div class="sf-ref-track"><i style="width:'+percentage+'%"></i></div>' : '<p class="sub">تعداد ست هدف در برنامه مشخص نیست.</p>')+'<button class="btn" id="sfRefSessionAction">'+(active?'پایان و ذخیرهٔ جلسه':'شروع جلسه')+'</button><p class="sub">ست و حجم از ثبت وزنه‌ها می‌آید؛ علامت‌زدن حرکت به‌تنهایی ثبت وزنه نیست.</p>';
+    var clock=document.getElementById('sfRefClock'),anchor=Date.now();
+    function tick(){if(!host.isConnected){clearInterval(state._refClock);state._refClock=null;return;}var seconds=elapsed+(active ? Math.floor((Date.now()-anchor)/1000) : 0);clock.textContent=String(Math.floor(seconds/60)).padStart(2,'0')+':'+String(seconds%60).padStart(2,'0');}
+    tick();if(active)state._refClock=setInterval(tick,1000);
+    document.getElementById('sfRefSessionAction').onclick=function(){var button=this;button.disabled=true;server(active?'sfRefSessionFinish':'sfRefSessionStart',[state.token,active?session.id:{workoutName:workout.name,dayNo:day+1}]).then(function(r){show(r.session);state._refBoard=null;if(!active)toast('جلسه شروع شد');else toast('جلسه ذخیره شد');}).catch(function(e){button.disabled=false;toast(e.message,true);});};
+  }
+  host.innerHTML='<p class="sub">دریافت وضعیت جلسه…</p>';
+  server('sfRefSessionState',[state.token]).then(function(r){show(r.session);}).catch(function(e){if(host.isConnected)host.innerHTML='<p class="notice">'+esc(e.message)+'</p>';});
+}
 function workoutView() {
   var D = sfViewData();
   var customHtml = sfStudentHtml();
@@ -2197,6 +2216,7 @@ function workoutView() {
     '<div class="hero"><div><h1>برنامه تمرینی</h1><p>' + (w ? esc(w.name.trim()) : 'تخصیص داده نشده') + '</p></div></div>' +
     sfStuBar('workout') +
     customHtml +
+    (w ? '<section class="card" id="sfRefSession"></section>' : '') +
     planTabs('workout', workouts) +
     (w ? '<div class="sf-session-days" role="group" aria-label="انتخاب روز تمرین">'+w.days.map(function(day,di){return '<button type="button" data-workout-day="'+di+'" aria-pressed="'+(di===todayDayIdx)+'" class="chip'+(di===todayDayIdx?' on':'')+'">روز '+(di+1)+' · '+esc(day.title)+'</button>';}).join('')+'</div>' : '') +
     sf2HeroCard(D, w, todayDayIdx, (w && w.days && w.days[todayDayIdx]) || null, done) +
@@ -2213,6 +2233,7 @@ function workoutView() {
     (w && w.notes.length ? '<div class="card"><h2>توصیه‌های عمومی</h2>' + w.notes.map(function (n) { return '<div class="notice">' + esc(n) + '</div>'; }).join('') + '</div>' : '');
 
   document.querySelectorAll('[data-workout-day]').forEach(function(button){button.onclick=function(){localStorage.setItem('fc_today_day_'+w.name,button.getAttribute('data-workout-day'));workoutView();};});
+  sfReferenceSessionMount(w,todayDayIdx);
   bindPlanTabs(workoutView);
   sfStuBind('workout');
   document.querySelectorAll('.sf-ex2 input[type=checkbox]').forEach(function (cb) {
@@ -2542,48 +2563,26 @@ function sfaWaterSeg(water) {
   return s + '</div>';
 }
 
+function sfReferencePeriods(pb,end){
+  var out=[],setDays=(pb.sets || {}).days || {},workouts=(pb.workouts || {}).perDay || {};
+  for(var i=7;i>=0;i--){var last=new Date(end+'T12:00:00');last.setDate(last.getDate()-i*7);var stop=isoOf(last);last.setDate(last.getDate()-6);var start=isoOf(last),row={start:start,end:stop,sets:0,volume:0,sessions:0,minutes:0};Object.keys(setDays).filter(function(d){return d>=start && d<=stop;}).forEach(function(d){row.sets+=Number(setDays[d].sets)||0;row.volume+=Number(setDays[d].volume)||0;});row.sessions=Object.keys(workouts).filter(function(d){return d>=start && d<=stop && workouts[d]>0;}).length;Object.keys((pb.sessions || {}).days || {}).filter(function(d){return d>=start && d<=stop;}).forEach(function(d){row.minutes+=Number(pb.sessions.days[d].minutes)||0;});out.push(row);}
+  return out;
+}
+function sfReferenceWeek(){
+  var owner=state.token,host=document.getElementById('sfRefWeek');if(!host)return;
+  function draw(pb){if(!host.isConnected || state.token!==owner)return;var end=todayISO(),first=new Date(end+'T12:00:00');first.setDate(first.getDate()-6);var start=isoOf(first),days=((pb.sets || {}).days || {}),sets=0,volume=0;
+    Object.keys(days).filter(function(d){return d>=start && d<=end;}).forEach(function(d){sets+=days[d].sets;volume+=days[d].volume;});
+    var sessions=Object.keys((pb.workouts || {}).perDay || {}).filter(function(d){return d>=start && d<=end;}).length;
+    host.innerHTML='<div class="section-title"><h2>خلاصهٔ هفته</h2><small class="sub">7 روز اخیر</small></div><div class="sf-ref-week-stats"><div><b>'+fmt(sessions)+'</b><small>روز تمرین ثبت‌شده</small></div><div><b>'+fmt(sets)+'</b><small>ست ثبت‌شده</small></div><div><b>'+fmt(Math.round(volume)/1000)+'</b><small>تن حجم ثبت‌شده</small></div><div><b>'+fmt(Math.round(sfReferencePeriods(pb,end)[7].minutes))+'</b><small>دقیقهٔ ثبت‌شده</small></div></div><p class="sub">مدت و حجم فقط برای جلسه‌ها و ست‌های ذخیره‌شده محاسبه می‌شوند.</p>';
+  }
+  var key=state.token+'|'+todayISO();if(state._refBoard && state._refBoard.key===key && Date.now()-state._refBoard.at<60000){draw(state._refBoard.data);return;}
+  var pending=state._refBoardPending;
+  if(!pending || pending.key!==key){pending={key:key,promise:server('sfProgressBoard',[owner,todayISO()])};state._refBoardPending=pending;}
+  pending.promise.then(function(pb){if(state.token!==owner)return;state._refBoard={key:key,at:Date.now(),data:pb};draw(pb);}).catch(function(){if(host.isConnected && state.token===owner)host.innerHTML='<p class="sub">خلاصهٔ هفته دریافت نشد.</p><button class="btn secondary" onclick="sfReferenceWeek()">تلاش دوباره</button>';}).finally(function(){if(state._refBoardPending===pending)state._refBoardPending=null;});
+}
 function homeView() {
-  var d = state.data;
-  if (!d) return;
-  var p = d.profile, logs = d.logs || [], water = d.water || {};
-  $('main').innerHTML =
-    '<div class="hero"><div class="mini-profile">' + (p.avatarUrl ? '<img class="mini-avatar" src="' + esc(p.avatarUrl) + '" alt="تصویر پروفایل">' : '<div class="mini-avatar" style="display:grid;place-items:center;font-size:18px">👤</div>') + '<div><p>' + greet() + '</p><h1>' + esc((p.name || d.user.username).split(' ')[0]) + '</h1></div></div><span class="pill">' + esc(goalFa(p.goal)) + '</span></div>' +
-    homeTop() +
-    '<div class="grid grid-4">' + kpi('وزن فعلی', fmt(p.weight), 'kg') + kpi('هدف وزن', fmt(p.goalWeight), 'kg') + kpi('BMI', fmt(p.bmi), '') + kpi('کالری هدف', fmt(p.targetCalories), 'kcal') + '</div>' +
-    todayCard() +
-    '<div class="grid grid-3" style="margin-top:14px">' +
-      '<div class="card"><h2>متابولیسم</h2><div class="stats">' + stat('BMR', fmt(p.bmr)) + stat('TDEE', fmt(p.tdee)) + stat('هدف', fmt(p.targetCalories)) + '</div></div>' +
-      '<div class="card"><h2>برنامه‌های فعال</h2><div class="notice">' +
-        '<b>تمرین:</b> ' + (d.assignments.workout.map(esc).join('، ') || 'تخصیص داده نشده') + '<br>' +
-        '<b>رژیم:</b> ' + (d.assignments.diet.map(esc).join('، ') || 'تخصیص داده نشده') + '<br>' +
-        '<b>مکمل:</b> ' + (d.assignments.supplement.map(esc).join('، ') || 'تخصیص داده نشده') +
-      '</div></div>' +
-      '<div class="card"><div class="section-title"><h2>آب امروز</h2><span class="pill">' + fmt(water.glasses || 0) + ' / ' + fmt(water.goal || p.waterGoal) + ' لیوان</span></div>' +
-        '<div style="font-size:26px;font-weight:800;margin:6px 0 10px">💧 ' + fmt(water.glasses || 0) + '</div>' + sfaWaterSeg(water) +
-        '<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn secondary small" id="waterMinus">−1</button><button class="btn small" id="waterPlus">+1 لیوان</button><button class="btn secondary small" id="waterReset">ریست</button></div></div>' +
-    '</div>' +
-    weeklyCard() +
-    '<div class="card" style="margin-top:14px"><div class="section-title"><h2>روند وزن</h2><span class="sub">آخرین 10 ثبت — خط نقطه‌چین: هدف</span></div>' + weightChart(logs.slice(0, 10).reverse(), p.goalWeight) + '</div>' +
-    '<div id="rankCard"></div>';
-  bindTodayCard();
-  $('waterPlus').onclick = async function () {
-    var prev = state.data.water;
-    state.data.water = Object.assign({}, prev, { glasses: (Number(prev.glasses) || 0) + 1 });
-    homeView();
-    try {
-      var r = await server('addWater', [state.token, 1, todayISO()]);
-      if (r && r.water) state.data.water = r.water;
-      homeView();
-    } catch (e) { state.data.water = prev; homeView(); toast(e.message, true); }
-  };
-  $('waterReset').onclick = async function () {
-    try { var r = await server('resetWater', [state.token, todayISO()]); if (r && r.water) state.data.water = r.water; homeView(); } catch (e) { toast(e.message, true); }
-  };
-  server('getLeaderboard', [state.token]).then(function (lb) {
-    var host = $('rankCard');
-    if (!host || !lb || lb.mode !== 'athlete' || !lb.rank) return;
-    host.innerHTML = '<div class="card" style="margin-top:14px"><div class="section-title"><h2>' + icon('trophy') + ' رتبه‌ی تو</h2><span class="pill">' + fmt(lb.rank) + ' از ' + fmt(lb.total) + '</span></div><div class="sub">بر اساس روزهای پیاپی ثبت پیشرفت</div></div>';
-  }).catch(function () {});
+  if(typeof window.sfReferenceHome==='function')return window.sfReferenceHome();
+  $('main').innerHTML='<div class="card" role="status">در حال آماده‌سازی خانه…</div>';
 }
 
 /* ---------- 11) پنل ادمین (خانه + تب ادمین) ---------- */
@@ -3995,18 +3994,9 @@ function sf6Dash(pb) {
   var w = pb.weight || {}, s = pb.sets || {}, wo = pb.workouts || {}, me = pb.meals || {}, wa = pb.water || {};
   var chg = w.change;
   var chgTxt = (chg == null) ? '—' : ((chg > 0 ? '+' : '') + fmt(chg) + ' kg');
-  var html =
-    '<div class="section-title"><h2>داشبورد پیشرفت</h2><span class="pill">' + esc(pb.username) + '</span></div>' +
-    '<div class="sf6-kpis">' +
-    '<div class="sf6-kpi"><small>وزن فعلی</small><b>' + (w.latest != null ? fmt(w.latest) : '—') + '<i>kg</i></b><span class="sub">' + chgTxt + ' نسبت به شروع</span></div>' +
-    '<div class="sf6-kpi"><small>دور کمر</small><b>' + (w.waistLatest != null ? fmt(w.waistLatest) : '—') + '<i>cm</i></b><span class="sub">' + (w.waistFirst != null && w.waistLatest != null ? fmt(Math.round((w.waistLatest - w.waistFirst) * 10) / 10) + ' cm تغییر' : 'ثبت نشده') + '</span></div>' +
-    '<div class="sf6-kpi"><small>تمرین‌های ثبت‌شده</small><b>' + fmt(wo.done || 0) + '</b><span class="sub">' + fmt(wo.last30 || 0) + ' روز در 30 روز اخیر</span></div>' +
-    '<div class="sf6-kpi"><small>استریک فعالیت</small><b>' + fmt(pb.streakAny || 0) + '<i>روز</i></b><span class="sub">پیاپی</span></div>' +
-    '<div class="sf6-kpi"><small>ست‌های ثبت‌شده</small><b>' + fmt(s.total || 0) + '</b><span class="sub">' + fmt(s.last30 || 0) + ' ست در 30 روز اخیر</span></div>' +
-    '<div class="sf6-kpi"><small>حجم کل تمرین</small><b>' + fmt(s.volume || 0) + '<i>kg</i></b><span class="sub">مجموع وزن × تکرار</span></div>' +
-    '<div class="sf6-kpi"><small>میانگین کالری</small><b>' + fmt(me.avgKcal || 0) + '<i>kcal</i></b><span class="sub">' + fmt(me.loggedDays || 0) + ' روز ثبت غذا</span></div>' +
-    '<div class="sf6-kpi"><small>آب امروز</small><b>' + fmt(wa.today || 0) + '<i>/' + fmt(wa.goal || 8) + '</i></b><span class="sub">میانگین ' + fmt(wa.avg || 0) + ' لیوان</span></div>' +
-    '</div>' +
+  var summary=sfReferencePeriods(pb,todayISO()), current=summary[7],previous=summary[6],max=Math.max.apply(null,summary.map(function(x){return x.volume;}).concat([1]));
+  var growth=previous.volume>0 ? Math.round((current.volume-previous.volume)/previous.volume*100) : null;
+  var html='<div class="section-title"><h2>خلاصهٔ هفته</h2><span class="sub">7 روز اخیر</span></div><div class="sf-ref-week-stats"><div><b>'+fmt(current.sessions)+'</b><small>روز تمرین ثبت‌شده</small></div><div><b>'+fmt(current.sets)+'</b><small>ست</small></div><div><b>'+fmt(current.volume)+'</b><small>kg حجم</small></div></div><p class="sub">'+(growth==null ? 'برای مقایسهٔ حجم با هفتهٔ قبل، ثبت کافی نداریم.' : 'حجم ثبت‌شده نسبت به 7 روز قبل: '+(growth>0?'+':'')+fmt(growth)+'٪')+'</p><h3>8 هفتهٔ اخیر · حجم ثبت‌شده</h3><div class="sf-ref-bars">'+summary.map(function(x,i){return '<div style="height:'+Math.max(1,x.volume/max*100)+'%" title="'+esc(x.start)+' · '+fmt(x.volume)+' kg"><small>'+(i===7?'این هفته':(8-i)+' هفته')+'</small></div>';}).join('')+'</div><div class="notice">وزن: '+chgTxt+' نسبت به اولین ثبت</div>' +
     '<div class="grid grid-2" style="margin-top:12px">' +
     '<div><h3 style="margin:6px 0">روند وزن</h3>' + sf6Line(w.points || [], 'weight', '#3f9f3c') + '</div>' +
     '<div><h3 style="margin:6px 0">روند دور کمر</h3>' + sf6Line(w.points || [], 'waist', '#ff8f3f') + '</div>' +
