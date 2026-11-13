@@ -28,6 +28,14 @@ Small correctness adaptations accompany the port: a first-time account starts at
 - RPC tests exercise real adapter success/error propagation, classic-link destinations, endpoint availability, own-account AI state/goals/history and failed receipt handling with mocks.
 - Source classes and stylesheet checks are code evidence, not a full pixel-comparison claim.
 - In the review deployment @546, browser inspection with an already signed-in athlete confirmed real home data, workout/day switching and assigned movement list, the exercise sheet and real movement image, profile, nutrition, progress and membership state/packages/payment history. No test exercise set, water log, meal, message, payment or AI request was submitted. Numeric count-up animations were allowed to finish before assessing values.
-- Subsequent minor changes update unused upstream story CSS tokens, logo aspect ratio, English text rendering and redacted RPC-error reporting. Their rendering/contract tests pass; they require the final deployment refresh.
+- Subsequent minor changes update unused upstream story CSS tokens, logo aspect ratio, English text rendering and redacted RPC-error reporting. Their rendering/contract tests pass and they are included in the final @547 deployment.
+
+## Publication and artifact verification
+
+The review deployment and the existing primary deployment both point to version **547**. Primary URL: `https://script.google.com/macros/s/AKfycbzFoSJEDDO2aZ2uzlha1heDAa-0wS5P-2ue4qlBUkWYXlC48poJuOsUchfZz589fNFG/exec`. Existing primary deployment permissions and address are retained. Previous primary version for rollback: **538**.
+
+Both the main athlete route and separate `?page=admin` route returned HTTP 200 without a reported server syntax/HtmlService error. The main response contains the React mount and current stylesheet; the admin response has admin markup and no athlete React mount. After decoding Google's outer HTML/JavaScript string escapes, the primary response's embedded client base64 matches the built local client **exactly** (765456 base64 characters). An initial naive base64 scan did not account for Google's escaped slashes; that comparison was inconclusive, not evidence of a stale deployment. The corrected comparison passed.
+
+The browser also showed a working pink/light theme after a user theme change; no theme preference was overwritten during final publication. Sending a live coach/AI message, uploading a receipt, writing exercise sets and every deep classic workflow were not tested against real data during this release. Those functional limits do not change the direct-source UI fidelity checks. No remote Lovable project files or Supabase records were edited by this port.
 
 Install the UI build dependencies with `npm ci --prefix design/lovable-ui --ignore-scripts`. Build with `npm run build:lovable`; run regression checks with `npm test`. The generated HTML embeds the client script as base64 to avoid HtmlService parsing failures. Tests, dependencies, source snapshots and build tools are excluded from clasp uploads; only the 33 runtime files are uploaded.
