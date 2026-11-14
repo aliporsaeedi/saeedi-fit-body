@@ -11,6 +11,8 @@
 @import "./experience.css";
 @import "./premium.css";
 @import "./receipt.css";
+@import "./editorial.css";
+@import "./compact.css";
 
 @custom-variant dark (&:is(.dark *));
 

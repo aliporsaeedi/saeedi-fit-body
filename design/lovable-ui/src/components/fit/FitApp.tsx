@@ -1,3 +1,6 @@
+import {AssessmentScreen} from './AssessmentScreen';
+import {ShoppingScreen} from './ShoppingScreen';
+import {OfflinePlans} from './OfflinePlans';
 import {ReceiptStudio} from './ReceiptStudio';
 import {Avatar} from './Avatar';
 import {PageMotion} from './PageMotion';
@@ -24,7 +27,7 @@ import { addRest, stopRest, useRest } from "./restTimer";
 import { greeting, jalaliLong, latinStamp } from "@/lib/fit/format";
 import { cn } from "@/lib/utils";
 
-type Tab = "home" | "train" | "fuel" | "progress" | "more" | "membership" | "coach" | "reminders" | "supplements" | "files" | "receipt";
+type Tab = "home" | "train" | "fuel" | "progress" | "more" | "membership" | "coach" | "reminders" | "supplements" | "files" | "receipt" | "offline" | "assessment" | "shopping";
 export type Go = (t: Tab) => void;
 const TABS: { id: Tab; label: string; icon: typeof Home }[] = [
   { id: "home", label: "خانه", icon: Home },
@@ -33,9 +36,9 @@ const TABS: { id: Tab; label: string; icon: typeof Home }[] = [
   { id: "progress", label: "پیشرفت", icon: LineChart },
   { id: "more", label: "بیشتر", icon: LayoutGrid },
 ];
-const TITLES: Record<Tab, string> = { home: "خانه", train: "تمرین", fuel: "تغذیه", progress: "پیشرفت", more: "پروفایل", membership: "اشتراک", coach: "مربی هوشمند", reminders:"یادآورها", supplements:"مکمل‌ها", files:"برنامه‌های PDF", receipt:"استودیو استوری" };
-const KICKER: Record<Tab, string> = { home: "", train: "TRAINING", fuel: "NUTRITION", progress: "PROGRESS", more: "PROFILE", membership: "MEMBERSHIP", coach: "AI COACH", reminders:"REMINDERS", supplements:"SUPPLEMENTS", files:"MY PROGRAMS", receipt:"STORY STUDIO" };
-const SUB: Tab[] = ["membership", "coach", "reminders", "supplements", "files", "receipt"];
+const TITLES: Record<Tab, string> = { home: "خانه", train: "تمرین", fuel: "تغذیه", progress: "پیشرفت", more: "پروفایل", membership: "اشتراک", coach: "مربی هوشمند", reminders:"یادآورها", supplements:"مکمل‌ها", files:"برنامه‌های PDF", receipt:"استودیو استوری", offline:"برنامه‌های آفلاین", assessment:"ارزیابی و سلامت", shopping:"لیست خرید" };
+const KICKER: Record<Tab, string> = { home: "", train: "TRAINING", fuel: "NUTRITION", progress: "PROGRESS", more: "PROFILE", membership: "MEMBERSHIP", coach: "AI COACH", reminders:"REMINDERS", supplements:"SUPPLEMENTS", files:"MY PROGRAMS", receipt:"STORY STUDIO", offline:"OFFLINE PLANS", assessment:"YOUR PROFILE", shopping:"SHOPPING LIST" };
+const SUB: Tab[] = ["membership", "coach", "reminders", "supplements", "files", "receipt", "offline", "assessment", "shopping"];
 
 export function FitApp() {
   const { token, signIn, signOut } = useSession();
@@ -79,6 +82,9 @@ function Shell() {
   else if (tab === "supplements") screen = <SupplementsScreen go={setTab}/>;
   else if (tab === "files") screen = <PlanFiles/>;
   else if (tab === "receipt") screen = <ReceiptStudio/>;
+  else if (tab === "offline") screen = <OfflineEntry/>;
+  else if (tab === "assessment") screen = <AssessmentScreen/>;
+  else if (tab === "shopping") screen = <ShoppingScreen/>;
   else if (tab === "train") screen = <TrainScreen />;
   else if (tab === "fuel") screen = <FuelScreen />;
   else if (tab === "progress") screen = <ProgressScreen />;
@@ -164,3 +170,5 @@ function ErrorView({ retry, message }: { retry: () => void; message: string }) {
   );
 }
 
+
+function OfflineEntry(){const {boot}=useFit();return <OfflinePlans boot={boot}/>;}

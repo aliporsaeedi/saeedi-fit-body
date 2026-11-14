@@ -15,5 +15,8 @@ previews/
 .DS_Store
 cloudflare/dist/
 cloudflare/.wrangler/
+**/.wrangler/
 cloudflare/private/
 .dev.vars
+MigrationSecret.js
+ProgramRequestSecret.js

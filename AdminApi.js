@@ -23,12 +23,13 @@ const ADM_MENU = [
     { id: 'plans.workout', title: 'برنامه‌های تمرینی' },
     { id: 'plans.create', title: 'برنامه‌ساز (برنامهٔ تازه)', roles: ['admin'] },
     { id: 'plans.edit', title: 'ویرایش ست و تکرار', roles: ['admin'] },
-    { id: 'plans.bank', title: 'بانک برنامه‌ها' },
+    { id: 'plans.bank', title: 'بانک جامع و قالب‌ها' },
     { id: 'plans.anatomy', title: 'آناتومی و تعادل عضلانی' },
     { id: 'plans.supp', title: 'برنامه‌های مکمل', roles: ['admin'] }
   ] },
   { id: 'smart', title: 'مربی هوشمند و AI', icon: '✦', roles: ['admin', 'coach'], sub: [
     { id: 'smart.coach', title: 'دستیار مربی' },
+    { id: 'smart.match', title: 'ارزیابی و پیشنهاد برنامه' },
     { id: 'plans.generate', title: 'ساخت هوشمند تمرین', roles: ['admin'] },
     { id: 'plans.diet', title: 'ساخت هوشمند تغذیه', roles: ['admin'] },
     { id: 'plans.analysis', title: 'تحلیل تمرین' },
@@ -51,6 +52,7 @@ const ADM_MENU = [
   ] },
   { id: 'comms', title: 'ارتباط', icon: '✉', roles: ['admin', 'coach'], sub: [
     { id: 'comms.chat', title: 'گفت‌وگو با شاگردها' },
+    { id: 'comms.requests', title: 'درخواست‌های برنامه', roles: ['admin'] },
     { id: 'comms.alerts', title: 'هشدارهای مربی' },
     { id: 'comms.telegram', title: 'تلگرام' }
   ] },

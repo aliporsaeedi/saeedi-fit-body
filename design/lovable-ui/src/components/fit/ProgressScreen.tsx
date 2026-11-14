@@ -140,7 +140,8 @@ function Photos({ photos, token, onAdded }: { photos: { date: string; label: str
     try {
       const { base64, type } = await compressImage(file);
       const r = await gas<{ photos?: { date: string; label: string; url: string }[] }>("uploadProgressPhoto", token, base64, type, "");
-      if (r?.photos) onAdded(r.photos); else onAdded([{ date: todayISO(), label: "", url: URL.createObjectURL(file) }, ...photos]);
+      if (!Array.isArray(r?.photos)) throw new Error('تأیید ذخیرهٔ عکس از سرور دریافت نشد.');
+      onAdded(r.photos);
       toast.success("عکس ذخیره شد");
     } catch (e) { toastError(e); } finally { setBusy(false); }
   };

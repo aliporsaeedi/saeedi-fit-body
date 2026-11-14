@@ -1,18 +1,34 @@
-# Cloudflare migration — 2026-11-13
+# Cloudflare migration — 2026-11-14
 
 ## Live hosting
 
 - Athlete / landing: https://saeedi-fit-body.aliisaeedi7116.workers.dev
 - Separate portal: https://saeedi-fit-body.aliisaeedi7116.workers.dev/admin
 - Custom domains registered on the Worker: `saeedifitbody.ir`, `www.saeedifitbody.ir`, `admin.saeedifitbody.ir`.
-- Cloudflare zone was still `pending` after the owner confirmed changing registrar nameservers. Expected nameservers: `clarissa.ns.cloudflare.com`, `fattouche.ns.cloudflare.com`. Do not declare DNS/TLS healthy without checking it.
+- Zone is active after the owner's nameserver recheck. Root and admin hosts returned HTTPS 200; www redirects to the root. Nameservers are `clarissa.ns.cloudflare.com` and `fattouche.ns.cloudflare.com`.
 - The current React UI runs directly on Cloudflare, without the Google iframe. Content-hashed JS/CSS and embedded local fonts preserve the existing design and themes. Admin is a separate HTML asset.
 
 ## Runtime boundary — migration is NOT complete
 
 The Worker currently proxies an explicit list of authenticated RPC methods to Apps Script deployment **556**. The original server still enforces sessions, roles, plan ownership and subscriptions. There is no automatic retry of writes. Cross-origin API requests are rejected. API responses are not cached.
 
-**Production reads and writes still use Google Sheets.** D1 currently contains an isolated, verified source snapshot, not the live application database. There is no dual-write or automatic synchronization. Changes made in Sheets after the snapshot are not reflected in D1. Private media still resides in Drive. Telegram scheduling, AI and PDF generation still run in Apps Script. `/api/health` exposes this distinction explicitly.
+**Production reads and writes still use Google Sheets.** D1 contains isolated snapshots and a separate native preview, not the live application database. There is no dual-write or automatic synchronization. Changes made in Sheets after the snapshot are not reflected in D1. Existing private media still resides in Drive. Telegram scheduling, AI and PDF generation still run in Apps Script. `/api/health` exposes this distinction explicitly.
+
+## UI and offline release
+
+- Main domain serves the campaign landing, official transparent logo, locally hosted 104 KB WebP hero, bounded procedural WebGL equipment scene and all existing themes.
+- Dashboard secondary metrics are collapsed; water, sleep check-in and assigned supplements share a quick strip. Sleep records use the existing authenticated wellness API.
+- Story exports default to English and offer FHD/QHD/4K 9:16, 4:5 and 1:1. Calorie estimates remain explicitly estimated; only saved sets count as completed work.
+- Public shell/PWA assets are cached by an explicit allowlist. No API, admin, private image, message, payment or authentication response is put in that cache.
+- Downloading assigned plans is opt-in and device-local. The separate offline screen is read-only, carries a saved-at timestamp and has no live metrics. Every login/logout invalidates the account partition; logout clears the downloaded copy. GIFs are not included in the offline download. No offline write queue or background push is implemented.
+- Browser fixture checks at 390/1440 px passed landing/login/home/story/QHD, offline reload with exact assigned plan, logout deletion, no horizontal overflow/page errors, and reduced-motion fallback. These are synthetic browser checks, not a claim of inspecting a real athlete's authenticated session.
+- Design preview: https://saeedi-fit-body-design-preview.aliisaeedi7116.workers.dev — uses the real Google backend and visibly warns that saves affect the real account.
+
+## Isolated native backend preview
+
+`saeedi-fit-body-native` uses a separate D1 database and cookie sessions. A signed read-only owner export was reconciled across 6 accounts and 14 bootstrap fields; historical subscription entitlements were preserved. Native authentication, owned reads, water/profile/body/wellness/reminder writes and private uploads have targeted SQLite tests. Many remaining production APIs and admin workflows are still unported and explicitly return an unavailable response; do not point the main domain at it.
+
+R2 is not enabled. The owner chose a route without payment/card activation. New native-preview private uploads use private KV with a bounded temporary D1 buffer for propagation delay. Real deployed acceptance checks created and deleted only a synthetic account and verified exact uploaded bytes, access controls, logout and cleanup. No real Telegram message, AI call or payment decision was made by those tests.
 
 Apps Script remains online. Hosting rollback is version 555; current compatible bridge version is 556. Do not disable Google services or repoint Telegram while these dependencies remain.
 
@@ -44,7 +60,7 @@ The preparation tool refuses to generate private data under this public reposito
 
 ## Remaining exit criteria
 
-1. Athlete login and own home/programs were confirmed by the owner on the Cloudflare origin. Portal login and public domain DNS/certificate still need verification after propagation.
+1. Athlete login and own home/programs were confirmed by the owner on the Cloudflare origin. The root/admin domain, HTTPS certificate and www redirect have been verified. The generated admin RPC bridge is now parsed and browser-tested as part of release validation.
 2. Replace Google authentication/cache and every used API with native Worker/D1 implementations, preserving roles, ownership and idempotency. Upgrade password storage without exposing old credentials. Keep a complete endpoint inventory.
 3. Convert snapshot tables into indexed domain tables; preserve IDs, plan names, assignments, sets, subscriptions, financial history and date semantics. Validate against fresh source data.
 4. Migrate private files to authenticated object storage; separately validate any storage activation/billing requirements. Do not publish body photos or payment receipts.
@@ -52,3 +68,5 @@ The preparation tool refuses to generate private data under this public reposito
 6. Reconcile writes, run athlete/coach/admin regression tests, switch the database, and only then retire Apps Script. OTP, installability and authenticated offline synchronization remain separate planned features.
 
 References: [Workers Static Assets](https://developers.cloudflare.com/workers/static-assets/), [Custom Domains](https://developers.cloudflare.com/workers/configuration/routing/custom-domains/), [D1 pricing](https://developers.cloudflare.com/d1/platform/pricing/).
+
+Public program requests use a separate native D1 database and an idempotent signed mirror to Google Sheets. Actual requests are queued for owner follow-up and one initial Telegram notification; delivery failure is visible rather than presented as success. This feature does not migrate the remaining athlete/admin APIs or automatically activate paid plans.

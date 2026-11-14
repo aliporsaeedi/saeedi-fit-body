@@ -1,3 +1,4 @@
+import {useState} from 'react';
 import { classicUrl } from "@/lib/fit/api";
 import {Avatar} from './Avatar';
 import {Themes} from './Themes';
@@ -9,8 +10,9 @@ import { cn } from "@/lib/utils";
 
 const GOALS: Record<string, string> = { lose: "کاهش وزن", gain: "افزایش حجم", maintain: "تثبیت وزن", cut: "کات", bulk: "حجم" };
 
-export function MoreScreen({ openChat, go }: { openChat: () => void; go: (t: "membership" | "coach" | "reminders" | "supplements" | "files" | "receipt") => void }) {
+export function MoreScreen({ openChat, go }: { openChat: () => void; go: (t: "membership" | "coach" | "reminders" | "supplements" | "files" | "receipt" | "offline" | "assessment" | "shopping") => void }) {
   const { boot, logout } = useFit();
+  const [group,setGroup]=useState('daily');
   const p = boot.profile, g = boot.gate;
   const staff = ["admin", "coach"].includes(String(boot.user.role).toLowerCase());
   return (
@@ -38,7 +40,8 @@ export function MoreScreen({ openChat, go }: { openChat: () => void; go: (t: "me
         </div>
       </Card>
 
-      {g ? (
+      <div className="sf-more-groups" role="group" aria-label="گروه ابزارهای بیشتر">{[["daily","روزمره"],["support","پرونده و ارتباط"],["account","حساب و اشتراک"]].map(([id,label])=><button type="button" key={id} aria-pressed={group===id} onClick={()=>setGroup(id)}>{label}</button>)}</div>
+      {g&&group==='account' ? (
         <>
           <Section en="MEMBERSHIP" title="اشتراک" />
           <Card className="lux-edge overflow-hidden p-0">
@@ -52,16 +55,23 @@ export function MoreScreen({ openChat, go }: { openChat: () => void; go: (t: "me
         </>
       ) : null}
 
-      <Section en="TOOLS" title="ابزارها" />
-      <div className="grid grid-cols-2 gap-2.5">
-        <Themes/>
-        <Tool onClick={()=>go("receipt")} icon={<Camera className="size-5"/>} title="استودیو استوری و رسید" sub="عکس شخصی، آمار تمرین و خروجی انتشار" accent/>
-        <Tool onClick={()=>go("supplements")} icon={<Pill className="size-5"/>} title="مکمل‌ها و ویتامین‌ها" sub="برنامه و زمان مصرف"/>
-        <Tool onClick={()=>go("files")} icon={<FileText className="size-5"/>} title="دریافت برنامه‌ها" sub="دانلود PDF تمرین، تغذیه و مکمل"/>
-        <Tool onClick={openChat} icon={<MessageCircle className="size-5" />} title="پیام به مربی" sub="سؤال، گزارش، هماهنگی" />
-        <Tool onClick={() => go("coach")} icon={<Sparkles className="size-5" />} title="مربی هوشمند" sub="راهنمایی شخصی با هوش مصنوعی" accent />
-        <Tool onClick={()=>go("reminders")} icon={<Bot className="size-5" />} title="یادآورها" sub="ربات تلگرام / بله" />
-        {staff ? <Tool href={classicUrl("/classic?page=admin")} icon={<LayoutDashboard className="size-5" />} title="پنل مربی" sub="مدیریت شاگردها" accent /> : null}
+      <div className="sf-more-tools mt-4 grid gap-2">
+        {group==='daily'?<>
+          <Tool onClick={()=>go("receipt")} icon={<Camera className="size-5"/>} title="استودیو استوری و رسید" sub="عکس شخصی و خروجی FHD / QHD / 4K" accent/>
+          <Tool onClick={()=>go("supplements")} icon={<Pill className="size-5"/>} title="مکمل‌ها و ویتامین‌ها" sub="برنامه و زمان مصرف"/>
+          <Tool onClick={()=>go("reminders")} icon={<Bot className="size-5"/>} title="یادآورها" sub="زمان‌بندی شخصی و ربات"/>
+          <Tool onClick={()=>go("shopping")} icon={<FileText className="size-5"/>} title="لیست خرید برنامه" sub="مواد اولیه و مقدار مورد نیاز"/>
+          <Tool onClick={()=>go("offline")} icon={<FileText className="size-5"/>} title="برنامه‌های آفلاین" sub="دریافت نسخهٔ خواندنی روی دستگاه"/>
+        </>:group==='support'?<>
+          <Tool onClick={()=>go("assessment")} icon={<User className="size-5"/>} title="ارزیابی، آسیب و سابقهٔ سلامت" sub="هدف، شرایط و درخواست بررسی مربی"/>
+          <Tool onClick={openChat} icon={<MessageCircle className="size-5"/>} title="پیام به مربی" sub="سؤال، گزارش و هماهنگی"/>
+          <Tool onClick={()=>go("coach")} icon={<Sparkles className="size-5"/>} title="مربی هوشمند" sub="راهنمایی در کنار برنامهٔ مربی" accent/>
+          <Tool onClick={()=>go("files")} icon={<FileText className="size-5"/>} title="دریافت برنامه‌ها" sub="دانلود PDF تمرین، تغذیه و مکمل"/>
+        </>:<>
+          <Themes/>
+          <Tool onClick={()=>go("membership")} icon={<Crown className="size-5"/>} title="مدیریت اشتراک" sub="پکیج‌ها، پرداخت و اعتبار حساب"/>
+          {staff?<Tool href={classicUrl("/classic?page=admin")} icon={<LayoutDashboard className="size-5"/>} title="پنل مربی" sub="مدیریت شاگردها" accent/>:null}
+        </>}
       </div>
 
       <button onClick={() => void logout()} className="pressable mt-8 flex w-full items-center justify-center gap-2 rounded-xl border border-destructive/30 py-3.5 text-sm font-bold text-destructive">
@@ -73,7 +83,7 @@ export function MoreScreen({ openChat, go }: { openChat: () => void; go: (t: "me
 }
 
 function Tool({ icon, title, sub, href, onClick, accent }: { icon: React.ReactNode; title: string; sub: string; href?: string; onClick?: () => void; accent?: boolean }) {
-  const cls = cn("card-surface pressable animate-rise flex flex-col gap-3 p-4 text-start", accent && "border-volt/40");
+  const cls = cn("card-surface pressable animate-rise flex items-center gap-3 p-3 text-start", accent && "border-volt/40");
   const inner = (<><span className={cn("grid size-10 place-items-center rounded-xl", accent ? "bg-volt text-volt-foreground" : "bg-volt/10 text-volt")}>{icon}</span><span><b className="block text-sm">{title}</b><span className="text-xs text-muted-foreground">{sub}</span></span></>);
   return href ? <a href={href} className={cls}>{inner}</a> : <button onClick={onClick} className={cls}>{inner}</button>;
 }

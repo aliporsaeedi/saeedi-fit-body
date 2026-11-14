@@ -17,6 +17,7 @@ export type Profile = {
 };
 export type Gate = { active: boolean; staff: boolean; tier: string; tierName: string; status: string; daysLeft: number; endDate: string; renewSoon: boolean };
 export type Boot = {
+  wellness?:{date:string;sleepHours:number|null;sleep:number;energy:number;hunger:number;sore:number;note:string}|null;
   reminders?:{timeZone?:string;items:{type:string;time:string;on:boolean;daily:boolean;label:string}[];configured:boolean;linked:boolean;platform:string};
   user: { username: string; role: string; email: string };
   profile: Profile;

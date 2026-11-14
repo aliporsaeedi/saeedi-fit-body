@@ -6,6 +6,7 @@ import { FitApp } from './components/fit/FitApp';
 import {applyStoredTheme} from './components/fit/Themes';
 import {ErrorBoundary,reportError} from './ErrorBoundary';
 applyStoredTheme();
+if('serviceWorker' in navigator && window.isSecureContext && !window.google?.script?.run){window.addEventListener('load',()=>{void navigator.serviceWorker.register('/sfb-worker.js',{scope:'/'}).catch(()=>{/* Offline download UI reports whether the worker is ready. */});});}
 window.addEventListener('error',e=>reportError(e.error||e.message));
 window.addEventListener('unhandledrejection',e=>reportError(e.reason,'promise'));
 const client=new QueryClient({defaultOptions:{queries:{refetchOnWindowFocus:true,retry:1}}});

@@ -1,7 +1,8 @@
+import {DailyRhythm} from './DailyRhythm';
 import {StoryEntry} from './StoryMode';
 import { classicUrl } from "@/lib/fit/api";
 import { useMemo } from "react";
-import { ArrowLeft, Crown, Droplets, Flame, LayoutDashboard, MessageCircle, Plus, Scale, Sparkles, Zap } from "lucide-react";
+import { ArrowLeft, Crown, Droplets, Flame, LayoutDashboard, MessageCircle, Plus, Scale, Sparkles, Zap, ChevronDown } from "lucide-react";
 import { useFit } from "./store";
 import { Card, CountUp, FitButton, Section, TickRing, Bar } from "./primitives";
 import { activeWorkoutIndex, activityLevel, mealTotals, suggestedDay, validActivity, weekDays, weightSeries } from "@/lib/fit/plan";
@@ -9,7 +10,7 @@ import { addDays, fmt, jalaliShort, todayISO } from "@/lib/fit/format";
 import { cn } from "@/lib/utils";
 import { useWater } from "./useActions";
 
-export function HomeScreen({ go, openChat }: { go: (t: "train" | "fuel" | "progress" | "more" | "membership" | "coach" | "receipt") => void; openChat: () => void }) {
+export function HomeScreen({ go, openChat }: { go: (t: "train" | "fuel" | "progress" | "more" | "membership" | "coach" | "receipt" | "supplements" | "reminders") => void; openChat: () => void }) {
   const { boot } = useFit();
   const p = boot.profile;
   const w = boot.workouts[activeWorkoutIndex(boot)];
@@ -40,7 +41,7 @@ export function HomeScreen({ go, openChat }: { go: (t: "train" | "fuel" | "progr
 
   const staff = ["admin", "coach"].includes(String(boot.user.role).toLowerCase());
   return (
-    <div className="space-y-3">
+    <div className="sf-home-screen space-y-3">
       <StoryEntry go={go}/>
       {staff ? (
         <a href={classicUrl("/classic?page=admin")} className="card-surface animate-rise pressable flex items-center gap-3 border-volt/40 p-4">
@@ -50,7 +51,7 @@ export function HomeScreen({ go, openChat }: { go: (t: "train" | "fuel" | "progr
         </a>
       ) : null}
       {/* Hero: today's session */}
-      <article className="animate-rise relative overflow-hidden rounded-2xl border border-volt/25 p-5 shadow-[var(--shadow-card)]" style={{ background: "var(--gradient-hero)" }}>
+      <article className="sf-session-hero animate-rise relative overflow-hidden rounded-2xl border border-volt/25 p-5 shadow-[var(--shadow-card)]" style={{ background: "var(--gradient-hero)" }}>
         <div aria-hidden className="num pointer-events-none absolute -top-4 -end-2 text-[128px] font-black text-transparent [-webkit-text-stroke:1px_color-mix(in_oklab,var(--volt)_22%,transparent)]">
           DAY {dayIdx + 1}
         </div>
@@ -60,7 +61,7 @@ export function HomeScreen({ go, openChat }: { go: (t: "train" | "fuel" | "progr
         <p className="relative text-sm text-muted-foreground">{w ? w.name : "مربی هنوز برنامه‌ای برایت ثبت نکرده"}</p>
 
         <div className="relative my-5 flex items-center gap-5">
-          <TickRing value={weekDone / weekGoal}>
+          <TickRing size={96} value={weekDone / weekGoal}>
             <div dir="ltr"><CountUp value={Math.round((weekDone / weekGoal) * 100)} className="text-[40px]" /><small className="num text-sm text-muted-foreground">%</small></div>
             <small className="text-[11px] text-muted-foreground">این هفته</small>
           </TickRing>
@@ -87,6 +88,8 @@ export function HomeScreen({ go, openChat }: { go: (t: "train" | "fuel" | "progr
         )}
       </article>
 
+      <DailyRhythm go={go} water={water}/>
+      <details className="sf-dashboard-fold"><summary>شاخص‌ها، اشتراک و ابزارهای بیشتر <ChevronDown aria-hidden/></summary>
       {/* Ticker */}
       <div dir="ltr" className="-mx-4 overflow-hidden border-y border-line py-3 [mask-image:linear-gradient(90deg,transparent,black_10%,black_90%,transparent)]">
         <div className="animate-marquee flex w-max gap-8">
@@ -146,6 +149,7 @@ export function HomeScreen({ go, openChat }: { go: (t: "train" | "fuel" | "progr
           foot={<span>{bmiLabel(p.bmi)}</span>} />
       </div>
 
+      </details>
       {/* Coach message */}
       {boot.lastMessage?.sender ? (
         <button onClick={openChat} className="card-surface animate-rise pressable flex w-full items-center gap-3 p-4 text-start">
@@ -158,6 +162,7 @@ export function HomeScreen({ go, openChat }: { go: (t: "train" | "fuel" | "progr
         </button>
       ) : null}
 
+      <details className="sf-dashboard-fold"><summary>تقویم فعالیت و استمرار <ChevronDown aria-hidden/></summary>
       {/* Heatmap */}
       <Section en="28-DAY ACTIVITY" title="فعالیت ۲۸ روز اخیر" aside={<><span className="num text-sm text-foreground">{activeDays}</span> روز فعال</>} />
       <Card className="grid grid-cols-7 gap-1.5 p-3.5">
@@ -176,6 +181,7 @@ export function HomeScreen({ go, openChat }: { go: (t: "train" | "fuel" | "progr
           <span className="flex items-center gap-1"><i className="size-2.5 rounded-sm bg-volt" />هر دو</span>
         </div>
       </Card>
+      </details>
     </div>
   );
 }

@@ -3,7 +3,7 @@ declare global { interface Window { google:any; SF_APP_URL:string; } }
 const TOKEN_KEY = "fc_session";
 let reportedFailures=0;
 
-export class GasError extends Error {}
+export class GasError extends Error {constructor(message:string,public status=0,public network=false){super(message);}}
 
 export function getToken(): string {
   if (typeof window === "undefined") return "";
@@ -37,23 +37,23 @@ async function httpRpc<T>(fn: string, args: unknown[]): Promise<T> {
   try {
     const response = await fetch('/api/rpc', {
       method: 'POST', credentials: 'same-origin',
-      headers: {'Content-Type': 'application/json'},
+      headers: {'Content-Type': 'application/json', 'X-Request-ID': crypto.randomUUID()},
       body: JSON.stringify({fn, args}), signal: controller.signal,
     });
     const result = await response.json();
-    if (!response.ok || !result.ok) throw new GasError(result.error || 'ارتباط با سرور برقرار نشد.');
+    if (!response.ok || !result.ok) throw new GasError(result.error || 'ارتباط با سرور برقرار نشد.',response.status);
     if(fn==='getBootstrap') {
       try { const user=result.data?.user?.username; if(user)localStorage.setItem('sfb_plan_owner',user); } catch {}
     }
     return result.data as T;
   } catch(error) {
     if(error instanceof GasError) throw error;
-    throw new GasError('پاسخ سرور دریافت نشد. پیش از تکرار ثبت، وضعیت اطلاعات را بررسی کنید.');
+    throw new GasError('پاسخ سرور دریافت نشد. پیش از تکرار ثبت، وضعیت اطلاعات را بررسی کنید.',0,true);
   } finally { clearTimeout(timer); }
 }
 
 /** True when the error means the saved login is no longer valid. */
 export function isSessionError(e: unknown) {
-  return e instanceof Error && /جلسه/.test(e.message);
+  return e instanceof Error && ((e instanceof GasError&&e.status===401)||/جلسه/.test(e.message));
 }
 

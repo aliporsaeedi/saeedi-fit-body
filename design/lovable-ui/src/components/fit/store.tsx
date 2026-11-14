@@ -3,6 +3,8 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { gas, getToken, isSessionError, setToken } from "@/lib/fit/api";
 import { todayISO } from "@/lib/fit/format";
 import type { Boot } from "@/lib/fit/types";
+import {clearOfflinePack,sessionPartition} from '@/lib/fit/offline';
+import {OfflineFallback} from './OfflinePlans';
 
 type Ctx = {
   token: string;
@@ -20,9 +22,10 @@ export function useFit() {
 }
 
 export function useSession() {
+  const qc=useQueryClient();
   const [token, setTok] = useState<string>(() => getToken());
-  const signIn = useCallback((t: string) => { setToken(t); setTok(t); }, []);
-  const signOut = useCallback(() => { setToken(""); setTok(""); }, []);
+  const signIn = useCallback((t: string) => { void clearOfflinePack();qc.clear();setToken(t); setTok(t); }, [qc]);
+  const signOut = useCallback(() => { void clearOfflinePack();qc.clear();setToken(""); setTok(""); }, [qc]);
   return { token, signIn, signOut };
 }
 
@@ -34,9 +37,10 @@ export function BootProvider({ token, onSignedOut, children, fallback, errorView
   errorView: (retry: () => void, message: string) => ReactNode;
 }) {
   const qc = useQueryClient();
+  const [partition]=useState(sessionPartition);
   const [day,setDay]=useState(todayISO);
   useEffect(()=>{const id=setInterval(()=>setDay(todayISO()),30_000);return ()=>clearInterval(id);},[]);
-  const key = useMemo(() => ["fit-boot", token, day] as const, [token,day]);
+  const key = useMemo(() => ["fit-boot", token, partition, day] as const, [token,partition,day]);
   const q = useQuery({
     queryKey: key,
     queryFn: () => gas<Boot>("getBootstrap", token, day),
@@ -56,6 +60,7 @@ export function BootProvider({ token, onSignedOut, children, fallback, errorView
     onSignedOut();
   }, [qc, token, onSignedOut]);
 
+  if(q.fetchStatus==='paused'||(q.error instanceof Error&&'network' in q.error&&q.error.network===true))return <OfflineFallback retry={()=>void q.refetch()} logout={()=>void logout()}/>;
   if (q.isPending) return <>{fallback}</>;
   if (q.error || !q.data) return <>{errorView(() => void q.refetch(), q.error?.message || "")}</>;
   return (

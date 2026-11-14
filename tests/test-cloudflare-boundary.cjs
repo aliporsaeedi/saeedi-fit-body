@@ -15,6 +15,8 @@ const assert=require('node:assert/strict'),path=require('node:path'),{pathToFile
     r=await worker.fetch(new Request('https://example.com/admin'),env);assert.equal(await r.text(),'/admin.html');assert.equal(r.headers.get('Cache-Control'),'no-store');assert.match(r.headers.get('X-Robots-Tag'),/noindex/);
     r=await worker.fetch(new Request('https://example.com/?page=admin'),env);assert.equal(r.headers.get('Location'),'https://example.com/admin');
     r=await worker.fetch(new Request('https://example.com/api/health'),env);const h=await r.json();assert.equal(h.migrationComplete,false);assert.equal(h.database,'google-sheets');
+    r=await worker.fetch(new Request('http://saeedifitbody.ir/'),env);assert.equal(r.status,308);assert.equal(r.headers.get('Location'),'https://saeedifitbody.ir/');
+    r=await worker.fetch(new Request('https://www.saeedifitbody.ir/'),env);assert.equal(r.status,308);assert.equal(r.headers.get('Location'),'https://saeedifitbody.ir/');
     console.log('PASS Cloudflare API boundary: same origin, explicit methods, private no-store responses, expired sessions preserved, mutation timeout is not retried, separate admin and truthful migration status.');
   }finally{global.fetch=original;}
 })().catch(e=>{console.error(e);process.exitCode=1});

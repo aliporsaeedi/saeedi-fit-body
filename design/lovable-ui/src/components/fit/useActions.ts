@@ -12,13 +12,13 @@ export function useWater() {
   const queue = useRef<Promise<unknown>>(Promise.resolve());
   const glasses = boot.water?.glasses ?? 0, goal = boot.water?.goal || boot.profile.waterGoal || 8;
   const set = useCallback((next: number) => {
-    const target = Math.max(0, next), delta = target - glasses;
+    const target = Math.min(60, Math.max(0, next)), delta = target - glasses;
     if (!delta) return;
     const t = todayISO();
     patch((b) => ({ ...b, water: { ...b.water, glasses: target }, activity: target > 0 ? { ...b.activity, [t]: { ...b.activity[t], h: 1 } } : b.activity }));
     queue.current = queue.current.then(() =>
       gas<{ water: { glasses: number; goal: number } }>("setWater", token, target, t)
-        .then((r) => {patch((b) => ({ ...b, water: r.water }));if (r.water.glasses >= goal && glasses < goal) toast.success("هدف آب امروز کامل شد 💧");})
+        .then((r) => {patch((b) => ({ ...b, water: r.water }));if (r.water.glasses >= goal && glasses < goal) toast.success("هدف آب امروز کامل شد.");})
         .catch((e)=>{fail(e);void refresh();}));
   }, [glasses, goal, patch, token, refresh]);
   return { glasses, goal, set };

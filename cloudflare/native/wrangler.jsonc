@@ -1,0 +1,13 @@
+{
+  "name":"saeedi-fit-body-native",
+  "main":"worker.mjs",
+  "compatibility_date":"2026-11-13",
+  "account_id":"7eda224d6c9b5361506b0572f10ca8b3",
+  "workers_dev":true,
+  "preview_urls":false,
+  "kv_namespaces":[{"binding":"PRIVATE_MEDIA","id":"27a6b6c990554ef78f7e4913cc138d85"}],
+  "triggers":{"crons":["15 * * * *"]},
+  "d1_databases":[{"binding":"DB","database_name":"saeedi-fit-body-native-preview","database_id":"52d9617b-bd88-4286-8d0f-7bb4777f0270"}],
+  "assets":{"directory":"../dist","binding":"ASSETS","html_handling":"none","run_worker_first":["/","/api/*","/admin","/admin/*"]},
+  "vars":{"RELEASE":"native-preview-1","TIME_ZONE":"Asia/Tehran","PREVIEW":"true"}
+}

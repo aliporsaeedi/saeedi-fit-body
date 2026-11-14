@@ -24,7 +24,7 @@ const SF = {
 
 const SF_HEADERS = {
   SF_ExerciseBank: SF_BANK_HEADERS,
-  SF_Plans: ['PlanID', 'Username', 'PlanName', 'Goal', 'Level', 'Active', 'CreatedAt', 'UpdatedAt', 'CreatedBy', 'CoachNotes', 'Audience'],
+  SF_Plans: ['PlanID', 'Username', 'PlanName', 'Goal', 'Level', 'Active', 'CreatedAt', 'UpdatedAt', 'CreatedBy', 'CoachNotes', 'Audience', 'DaysJSON'],
   SF_Blocks: ['BlockID', 'PlanID', 'DayNo', 'DayTitle', 'OrderNo', 'Technique', 'BlockNotes', 'RestBetweenSec', 'Extra'],
   SF_BlockItems: ['ItemID', 'BlockID', 'PlanID', 'PosNo', 'ExerciseID', 'ExerciseName', 'MuscleGroup', 'Category'],
   SF_Sets: ['SetID', 'BlockID', 'PlanID', 'SetNo', 'PosNo', 'ExerciseID', 'Reps', 'TargetWeightKg', 'RestAfterSec', 'Technique', 'Extra'],
@@ -625,10 +625,12 @@ function sfValidatePlan_(input, bank) {
 function sfAdminSavePlan(token, input) {
   const session = sfAdmin_(token); sfEnsure_();
   return sfWithLock_(() => {
+    sfEnsureSheet_(getSS_(), SF.PLANS);
     const bank = sfBankMap_();
     const v = sfValidatePlan_(input, bank);
     const editing = sfText_(input.planId, 60);
     const planRd = sfRead_(SF.PLANS);
+    let daysJSON = input.daysSpec == null ? '' : JSON.stringify(sfPlanDaysSpec_(input.daysSpec, v.blocks));
     let planId = editing, createdAt = new Date().toISOString(), createdBy = session.username, active = 'TRUE';
     if (editing) {
       const row = planRd.rows.find(r => normalize_(r[planRd.idx.PlanID]) === editing);
@@ -636,6 +638,7 @@ function sfAdminSavePlan(token, input) {
       createdAt = row[planRd.idx.CreatedAt] || createdAt; createdBy = row[planRd.idx.CreatedBy] || createdBy;
       active = row[planRd.idx.Active] == null ? 'TRUE' : row[planRd.idx.Active];
       if(input.audience == null) v.audience=row[planRd.idx.Audience] || '';
+      if(input.daysSpec == null) daysJSON=row[planRd.idx.DaysJSON] || '';
     } else planId = sfNewPlanId_();
     const now = new Date().toISOString();
     let prevInfo = null; try { prevInfo = sfPrevPlanInfo_(v.username, planId); } catch (ePrev) {}
@@ -655,7 +658,7 @@ function sfAdminSavePlan(token, input) {
         RestAfterSec: String(s.rest), Technique: b.technique, Extra: pi === 0 ? JSON.stringify(s.extra) : '' })));
     });
     const planObj = { PlanID: planId, Username: v.username, PlanName: v.planName, Goal: v.goal, Level: v.level, Active: active,
-      CreatedAt: createdAt, UpdatedAt: now, CreatedBy: createdBy, CoachNotes: v.coachNotes, Audience:v.audience };
+      CreatedAt: createdAt, UpdatedAt: now, CreatedBy: createdBy, CoachNotes: v.coachNotes, Audience:v.audience, DaysJSON:daysJSON };
     if (editing) {
       sfRewrite_(SF.PLANS, o => o.PlanID !== planId, [planObj]);
       sfRewrite_(SF.BLOCKS, o => o.PlanID !== planId, blockRows);
@@ -677,6 +680,21 @@ function sfAdminSavePlan(token, input) {
   });
 }
 
+function sfPlanDaysSpec_(spec, blocks) {
+  if (!Array.isArray(spec) || !spec.length || spec.length > 14) throw new Error('روزهای برنامه معتبر نیست.');
+  const seen = {};
+  const days = spec.map(d => {
+    const dayNo = Number(d.dayNo);
+    if (!Number.isInteger(dayNo) || dayNo < 1 || dayNo > 14 || seen[dayNo]) throw new Error('شمارهٔ روز برنامه معتبر نیست.');
+    seen[dayNo] = true;
+    const hasBlocks = blocks.some(b => Number(b.dayNo) === dayNo);
+    if (d.isRest === true ? hasBlocks : !hasBlocks) throw new Error('روز استراحت باید بدون حرکت و روز تمرین باید دارای حرکت باشد.');
+    return {dayNo:dayNo,title:sfText_(d.title,160) || ('روز '+dayNo),isRest:d.isRest === true};
+  });
+  if (blocks.some(b => !seen[b.dayNo])) throw new Error('روز حرکت در فهرست روزهای برنامه نیست.');
+  return days;
+}
+
 function sfBuildPlans_(planObjs, bank) {
   if (!planObjs.length) return { plans: [], exercises: {} };
   const ids = {}; planObjs.forEach(p => { ids[p.PlanID] = 1; });
@@ -686,8 +704,15 @@ function sfBuildPlans_(planObjs, bank) {
   const exercises = {};
   const plans = planObjs.map(p => {
     const days = {};
+    // Old plans have no metadata and retain their existing projection.
+    let declaredDays = []; try { declaredDays = JSON.parse(p.DaysJSON || '[]'); } catch(e) {}
+    if (Array.isArray(declaredDays)) declaredDays.forEach(d => {
+      if (Number.isInteger(Number(d.dayNo)) && Number(d.dayNo)>0 && Number(d.dayNo)<=14)
+        days[d.dayNo] = {dayNo:Number(d.dayNo),title:d.title,isRest:d.isRest === true,blocks:[]};
+    });
     blocks.filter(b => b.PlanID === p.PlanID).sort((a, b) => Number(a.DayNo) - Number(b.DayNo) || Number(a.OrderNo) - Number(b.OrderNo)).forEach(b => {
       const day = days[b.DayNo] || (days[b.DayNo] = { dayNo: Number(b.DayNo), title: b.DayTitle, blocks: [] });
+      if (days[b.DayNo] && p.DaysJSON) { day.title=b.DayTitle || day.title; day.isRest=false; }
       const tech = sfTechnique_(b.Technique) || { key: b.Technique, label: b.Technique };
       const its = items.filter(i => i.BlockID === b.BlockID).sort((a, c) => Number(a.PosNo) - Number(c.PosNo)).map(i => {
         const ex = bank[i.ExerciseID];
@@ -713,7 +738,7 @@ function sfBuildPlans_(planObjs, bank) {
     });
     return { planId: p.PlanID, username: p.Username, planName: p.PlanName, goal: p.Goal, level: p.Level, active: sfIsTrue_(p.Active),
       createdAt: p.CreatedAt, updatedAt: p.UpdatedAt, coachNotes: p.CoachNotes, audience:p.Audience || '',
-      days: Object.keys(days).map(k => days[k]).sort((a, b) => a.dayNo - b.dayNo) };
+      days: Object.keys(days).map(k => days[k]).filter(d => !p.DaysJSON || d.isRest === true || d.blocks.length).sort((a, b) => a.dayNo - b.dayNo) };
   });
   return { plans, exercises };
 }
@@ -1107,7 +1132,7 @@ function sfPlansAsLegacy_(username) {
           });
         });
       });
-      return { title: normalize_(d.title) || ('روز ' + d.dayNo), isRest: false, exercises: exercises };
+      return { title: normalize_(d.title) || ('روز ' + d.dayNo), isRest: d.isRest === true && !exercises.length, exercises: exercises };
     });
     const notes = [];
     if (normalize_(p.coachNotes)) notes.push(normalize_(p.coachNotes));
@@ -1990,7 +2015,7 @@ function sfFoodObj_(r) {
 }
 
 /* افزوده‌شده در v2: ردیف‌های واقعی بانک غذا از شیت (sfFoodRows_ فقط آرایهٔ دادهٔ اولیهٔ seed را برمی‌گرداند و برای جستجو مناسب نبود). */
-function sfFoodSheetRows_() { return sfObjects_(sfRead_(SF.FOODS)); }
+function sfFoodSheetRows_() { var rows=sfObjects_(sfRead_(SF.FOODS));return typeof sfPackFoodsCached_==='function'?rows.concat(sfPackFoodsCached_()):rows; }
 
 function sfFoodBank(token, opts) {
   requireSession_(token);
@@ -2125,7 +2150,7 @@ function sfLogFood(token, input, clientToday) {
   let fromBank = false;
 
   if (foodId) {
-    const r = sfObjects_(sfRead_(SF.FOODS)).filter(function (o) { return normalize_(o.FoodID) === foodId; })[0];
+    const r = sfFoodSheetRows_().filter(function (o) { return normalize_(o.FoodID) === foodId; })[0];
     if (!r) throw new Error('این غذا در بانک پیدا نشد.');
     if (!grams) grams = Number(normalize_(r.ServingGrams)) || 100;
     const k = grams / 100;
