@@ -19,7 +19,7 @@
   "vars": {
     "RELEASE": "design-review-v2",
     "DESIGN_PREVIEW": "true",
-    "GAS_URL": "https://script.google.com/macros/s/AKfycbzFoSJEDDO2aZ2uzlha1heDAa-0wS5P-2ue4qlBUkWYXlC48poJuOsUchfZz589fNFG/exec"
+    "GAS_URL": "https://script.google.com/macros/s/AKfycbzO_LMU-DubcWtLc2ediWJJVO5lAHwPBQPoV0LzGq9MOJ8g8pYgviCHkDy2LwbVyxNs/exec"
   },
   "d1_databases": [
     {
