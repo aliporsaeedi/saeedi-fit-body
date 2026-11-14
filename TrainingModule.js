@@ -1690,14 +1690,12 @@ function sfDietPdfHtml_(username, planName) {
   const plan = planName ? plans.filter(function (p) { return p.name === planName; })[0] : plans[0];
   if (!plan) throw new Error('برنامهٔ غذایی پیدا نشد.');
   const prof = getProfile_(username);
-  let total = 0;
-  (plan.sections || []).forEach(function (s) { (s.items || []).forEach(function (i) { if (i.kcal) total += Number(i.kcal); }); });
-  let h = sfPdfHeader_('برنامهٔ غذایی: ' + plan.name, 'ورزشکار: ' + (prof.name || username) + ' — کالری هدف: ' + (prof.targetCalories || '-') + ' kcal — جمع اقلام: ' + total + ' kcal');
+  let h = sfPdfHeader_('برنامهٔ غذایی: ' + plan.name, 'ورزشکار: ' + (prof.name || username) + ' — کالری هدف: ' + (prof.targetCalories || '-') + ' kcal — کالری هر گزینه جداست؛ جایگزین‌ها جمع روزانه نیستند.');
   (plan.sections || []).forEach(function (s) {
     h += '<h2>' + sfEsc_(s.title) + '</h2>';
     h += '<table><tr><th style="width:38%">قلم</th><th>توضیح</th><th style="width:14%">کالری</th></tr>';
     (s.items || []).forEach(function (i) {
-      h += '<tr><td>' + sfEsc_(i.title) + '</td><td>' + sfEsc_(i.description || '') + '</td><td>' + sfEsc_(i.kcal == null ? '-' : i.kcal) + '</td></tr>';
+      h += '<tr><td>' + sfEsc_(i.title) + '</td><td>' + sfEsc_(i.description || '') + '</td><td>' + sfEsc_(i.kcal == null ? '-' : i.kcal) + (i.nutrition&&i.nutrition.status==='estimated'?' (تخمینی)':i.nutrition&&i.nutrition.status==='needs_review'?' (نیازمند بررسی)':'') + '</td></tr>';
     });
     h += '</table>';
   });
@@ -2240,6 +2238,7 @@ function sfAdminSaveDiet(token, input) {
       });
     });
     const u = v.username.toLowerCase();
+    if(typeof sfDnPrepareWrite_==='function')sfDnPrepareWrite_(rows,u,v.planName);
     sfRewrite_('SF_Diets', function (o) {
       return !(normalize_(o.Username).toLowerCase() === u && normalize_(o.PlanName) === v.planName);
     }, rows);
@@ -2292,8 +2291,9 @@ function sfDietsAsLegacy_(username) {
     const desc = normalize_(r.Description);
     const kRaw = normalize_(r.Kcal);
     const num = function (v) { const s = normalize_(v); return s === '' ? null : Number(s); };
+    var nutrition=r.NutritionJSON?sfJson_(r.NutritionJSON):null;
     sec.items.push({
-      title: title, description: desc,
+      title: title, description: desc, nutrition:nutrition,
       kcal: kRaw === '' ? null : Number(kRaw),
       foodId: normalize_(r.FoodID), grams: num(r.Grams),
       protein: num(r.Protein), carbs: num(r.Carbs), fat: num(r.Fat)

@@ -24,6 +24,7 @@ const ADM_MENU = [
     { id: 'plans.create', title: 'برنامه‌ساز (برنامهٔ تازه)', roles: ['admin'] },
     { id: 'plans.edit', title: 'ویرایش ست و تکرار', roles: ['admin'] },
     { id: 'plans.bank', title: 'بانک جامع و قالب‌ها' },
+    { id: 'plans.nutrition', title: 'قالب و مواد اولیهٔ تغذیه', roles:['admin'] },
     { id: 'plans.anatomy', title: 'آناتومی و تعادل عضلانی' },
     { id: 'plans.supp', title: 'برنامه‌های مکمل', roles: ['admin'] }
   ] },

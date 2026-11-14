@@ -1,3 +1,4 @@
+import {AvatarStudio} from './AvatarStudio';
 import {isDemo,resetDemo} from '@/lib/fit/demo';
 import {locale,changeLocale,tr} from '@/lib/fit/locale';
 import {AssessmentScreen} from './AssessmentScreen';
@@ -12,7 +13,7 @@ import {SupplementsScreen} from "./SupplementsScreen";
 import {PlanFiles} from "./PlanFiles";
 import {ReminderRuntime} from "./ReminderRuntime";
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
-import { Apple, ArrowRight, Dumbbell, Flame, Home, LayoutGrid, LineChart, Pause, Plus, RefreshCw } from "lucide-react";
+import { Apple, ArrowRight, Dumbbell, Flame, Home, LayoutGrid, Pill, Pause, Plus, RefreshCw } from "lucide-react";
 import { BootProvider, useFit, useSession } from "./store";
 import { LoginScreen } from "./LoginScreen";
 import { HomeScreen } from "./HomeScreen";
@@ -29,18 +30,18 @@ import { addRest, stopRest, useRest } from "./restTimer";
 import { greeting, jalaliLong, latinStamp } from "@/lib/fit/format";
 import { cn } from "@/lib/utils";
 
-type Tab = "home" | "train" | "fuel" | "progress" | "more" | "membership" | "coach" | "reminders" | "supplements" | "files" | "receipt" | "offline" | "assessment" | "shopping";
+type Tab = "avatar" | "home" | "train" | "fuel" | "progress" | "more" | "membership" | "coach" | "reminders" | "supplements" | "files" | "receipt" | "offline" | "assessment" | "shopping";
 export type Go = (t: Tab) => void;
 const TABS: { id: Tab; label: string; icon: typeof Home }[] = [
   { id: "home", label: tr("خانه"), icon: Home },
   { id: "train", label: tr("تمرین"), icon: Dumbbell },
   { id: "fuel", label: tr("تغذیه"), icon: Apple },
-  { id: "progress", label: tr("پیشرفت"), icon: LineChart },
+  { id: "supplements", label: tr("مکمل‌ها"), icon: Pill },
   { id: "more", label: tr("بیشتر"), icon: LayoutGrid },
 ];
-const TITLES: Record<Tab, string> = { home: tr("خانه"), train: tr("تمرین"), fuel: tr("تغذیه"), progress: tr("پیشرفت"), more: tr("پروفایل"), membership: tr("اشتراک"), coach: tr("مربی هوشمند"), reminders:tr("یادآورها"), supplements:tr("مکمل‌ها"), files:tr("برنامه‌های PDF"), receipt:tr("استودیو استوری"), offline:tr("برنامه‌های آفلاین"), assessment:tr("ارزیابی و سلامت"), shopping:tr("لیست خرید") };
-const KICKER: Record<Tab, string> = { home: "", train: "TRAINING", fuel: "NUTRITION", progress: "PROGRESS", more: "PROFILE", membership: "MEMBERSHIP", coach: "AI COACH", reminders:"REMINDERS", supplements:"SUPPLEMENTS", files:"MY PROGRAMS", receipt:"STORY STUDIO", offline:"OFFLINE PLANS", assessment:"YOUR PROFILE", shopping:"SHOPPING LIST" };
-const SUB: Tab[] = ["membership", "coach", "reminders", "supplements", "files", "receipt", "offline", "assessment", "shopping"];
+const TITLES: Record<Tab, string> = { home: tr("خانه"), train: tr("تمرین"), fuel: tr("تغذیه"), progress: tr("پیشرفت"), more: tr("پروفایل"), membership: tr("اشتراک"), coach: tr("مربی هوشمند"), reminders:tr("یادآورها"), supplements:tr("مکمل‌ها"), files:tr("برنامه‌های PDF"), receipt:tr("استودیو استوری"), offline:tr("برنامه‌های آفلاین"), assessment:tr("ارزیابی و سلامت"), shopping:tr("لیست خرید"), avatar:tr("آواتار ورزشی","Fitness avatar") };
+const KICKER: Record<Tab, string> = { home: "", train: "TRAINING", fuel: "NUTRITION", progress: "PROGRESS", more: "PROFILE", membership: "MEMBERSHIP", coach: "AI COACH", reminders:"REMINDERS", supplements:"SUPPLEMENTS", files:"MY PROGRAMS", receipt:"STORY STUDIO", offline:"OFFLINE PLANS", assessment:"YOUR PROFILE", shopping:"SHOPPING LIST",avatar:"FITNESS AVATAR" };
+const SUB: Tab[] = ["progress", "membership", "coach", "reminders", "files", "receipt", "offline", "assessment", "shopping", "avatar"];
 
 export function FitApp() {
   const { token, signIn, signOut } = useSession();
@@ -79,7 +80,8 @@ function Shell() {
   const name = boot.profile.name || boot.user.username;
 
   let screen: ReactNode;
-  if (tab === "home") screen = <HomeScreen go={setTab} openChat={() => setChat(true)} />;
+  if (tab === "avatar") screen=<AvatarStudio/>;
+  else if (tab === "home") screen = <HomeScreen go={setTab} openChat={() => setChat(true)} />;
   else if (tab === "membership") screen = <MembershipScreen />;
   else if (tab === "coach") screen = <CoachAiScreen openMembership={() => setTab("membership")} />;
   else if (tab === "reminders") screen = <RemindersScreen go={setTab}/>;
@@ -96,14 +98,14 @@ function Shell() {
   if(isDemo()&&['membership','coach','reminders','files','offline','assessment','shopping'].includes(tab))screen=<div className="card-surface p-5"><span className="kicker text-volt">PERSONAL ACCOUNT</span><h2 className="mt-3 text-xl font-bold">{tr('این بخش برای حساب شخصی است.','This feature needs a personal account.')}</h2><p className="mt-3 text-sm leading-7 text-muted-foreground">{tr('دمو به پرداخت، اطلاعات سلامت، دانلود خصوصی و اعلان واقعی دسترسی ندارد. تمرین، تغذیه، پیشرفت و استوری را با دادهٔ نمونه امتحان کنید.','The demo has no access to payments, health records, private downloads or real notifications. Explore training, nutrition, progress and stories with sample data.')}</p><a className="mt-5 block text-sm text-volt" href={'/?lang='+locale()} target="_top">{tr('بازگشت به سایت','Back to the website')}</a></div>;
 
   return (
-    <div className={cn("mx-auto min-h-dvh max-w-[460px] px-4", isSub ? "pb-[calc(24px+env(safe-area-inset-bottom))]" : "pb-[calc(120px+env(safe-area-inset-bottom))]")}>
+    <div className={cn("sf-athlete-shell mx-auto min-h-dvh max-w-[460px] px-4", isSub ? "pb-[calc(24px+env(safe-area-inset-bottom))]" : "pb-[calc(120px+env(safe-area-inset-bottom))]")}>
       {isDemo()?<div className="v4-demo-banner"><b>DEMO</b><span>{tr('اطلاعات فرضی؛ ثبت‌ها فقط در این صفحه‌اند.','Sample data. Changes stay in this page.')}</span><button onClick={()=>{resetDemo();location.reload();}}>{tr('شروع مجدد','Reset')}</button><a href={'/?lang='+locale()} target="_top">{tr('خروج','Exit')}</a></div>:null}<header className="flex items-center gap-3 pt-[calc(18px+env(safe-area-inset-top))] pb-4">
         {isSub ? (
           <button type="button" onClick={() => setTab(back)} aria-label={tr("بازگشت")} className="glass pressable grid size-12 shrink-0 place-items-center rounded-2xl"><ArrowRight className="size-5" /></button>
         ) : (
           <button type="button" onClick={() => setTab("home")} aria-label={tr("خانه")} className="relative shrink-0">
             <span aria-hidden className="absolute inset-0 rounded-full bg-volt/20 blur-xl" />
-            <Logo className="relative h-[112px] w-[104px]" />
+            <Logo className="relative h-[68px] w-[64px]" />
           </button>
         )}
         <div className="min-w-0 flex-1">
@@ -115,7 +117,7 @@ function Shell() {
             {tab === "home" ? <>{locale()==='en'?"Your next starts here":greeting(now)}{locale()==='en'?', ':'، '}<span className="text-volt-metal">{name}</span></> : tr(TITLES[tab])}
           </h1>
         </div>
-        <button className="v4-app-language" aria-label={locale()==='en'?'Switch to Persian':'Switch to English'} onClick={()=>changeLocale(locale()==='en'?'fa':tr("en"))}>{locale()==='en'?'FA':'EN'}</button>{tab === "home" ? <button type="button" onClick={()=>setTab("more")} className="sfx-profile-entry" aria-label={tr("مشاهدهٔ پروفایل شخصی")}><Avatar url={boot.profile.avatarUrl} name={name}/><small>{tr("پروفایل شما")}</small></button> : <span className="glass inline-flex h-12 items-center gap-1.5 rounded-2xl px-3" title={tr("روزهای پیاپی")}>
+        <button className="v4-app-language" aria-label={locale()==='en'?'Switch to Persian':'Switch to English'} onClick={()=>changeLocale(locale()==='en'?'fa':tr("en"))}>{locale()==='en'?'FA':'EN'}</button>{tab === "home" ? <button type="button" onClick={()=>setTab("more")} className="sfx-profile-entry" aria-label={tr("مشاهدهٔ پروفایل شخصی")}><Avatar design={boot.profile.avatarDesign} url={boot.profile.avatarUrl} name={name}/><small>{tr("پروفایل شما")}</small></button> : <span className="glass inline-flex h-12 items-center gap-1.5 rounded-2xl px-3" title={tr("روزهای پیاپی")}>
           <Flame className="size-5 text-ember" /><span className="num text-2xl">{boot.streak}</span>
         </span>}
       </header>

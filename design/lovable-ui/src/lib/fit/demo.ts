@@ -15,6 +15,8 @@ export async function demoRpc(fn:string,args:any[]):Promise<any>{
  switch(fn){
  case 'getBootstrap':return copy(b);
  case 'logout':resetDemo();return {ok:true};
+ case 'sfAvatarState':return {design:b.profile.avatarDesign||null,mode:b.profile.avatarDesign?'avatar':'photo',revision:0,aiGenerationAvailable:false};
+ case 'sfAvatarSave':b.profile.avatarDesign=args[1].mode==='avatar'?args[1].design:null;return {ok:true,design:args[1].design,mode:args[1].mode,revision:1};
  case 'sfErrorReport':return {ok:true};
  case 'setWater':b.water.glasses=Math.max(0,Math.min(60,Number(args[1])||0));return {water:copy(b.water)};
  case 'setExerciseDone':{const [,key,done]=args;b.doneToday=done?[...new Set([...b.doneToday,key])]:b.doneToday.filter(k=>k!==key);return {ok:true};}

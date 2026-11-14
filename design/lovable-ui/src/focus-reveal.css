@@ -1,0 +1,61 @@
+/* ============================================================
+   Focus Reveal — blur-to-sharp cinematic reveal (Saeedi Fit Body)
+   - opacity + small blur + subtle depth/position, GPU friendly
+   - progressive: nothing is hidden unless <html class="fr-js"> is set
+   - hidden state is an animation fill, so there is no layout shift
+   - respects prefers-reduced-motion and [data-reduce-motion="true"]
+   RULE: never put .fr on an element that already has its own
+   `animation:` (e.g. .sfx-feature-layout, .animate-rise). Wrap or
+   reveal its children instead.
+   ============================================================ */
+:root{
+  --fr-ease:cubic-bezier(.16,1,.3,1);
+  --fr-d:.85s;       /* duration */
+  --fr-blur:10px;    /* start blur (small elements only) */
+  --fr-y:18px;       /* start offset */
+  --fr-step:70ms;    /* stagger step */
+}
+@media (max-width:640px){:root{--fr-blur:6px;--fr-y:12px;--fr-step:55ms;--fr-d:.7s}}
+
+@keyframes fr-focus{from{opacity:0;filter:blur(var(--fr-blur));transform:translate3d(0,var(--fr-y),0) scale(.985)}to{opacity:1;filter:blur(0);transform:none}}
+@keyframes fr-depth{from{opacity:0;filter:blur(calc(var(--fr-blur)*1.4));transform:perspective(900px) translate3d(0,var(--fr-y),-70px) scale(1.05)}to{opacity:1;filter:blur(0);transform:none}}
+@keyframes fr-soft{from{opacity:0;filter:blur(var(--fr-blur))}to{opacity:1;filter:blur(0)}}
+@keyframes fr-lite{from{opacity:0;transform:translate3d(0,var(--fr-y),0)}to{opacity:1;transform:none}}  /* large blocks: no blur */
+@keyframes fr-pull{from{opacity:0;transform:perspective(1100px) translate3d(0,0,-90px) scale(1.06)}to{opacity:1;transform:none}} /* hero image / avatar */
+@keyframes fr-ring{0%{opacity:.7;transform:scale(.92)}100%{opacity:0;transform:scale(1.5)}}
+
+/* ---- single element ---- */
+html.fr-js .fr{animation:fr-focus var(--fr-d) var(--fr-ease) calc(var(--fr-delay,0ms) + var(--fr-i,0)*var(--fr-step)) both paused}
+html.fr-js .fr.fr-on{animation-play-state:running;will-change:opacity,transform,filter}
+html.fr-js .fr.fr-depth{animation-name:fr-depth}
+html.fr-js .fr.fr-soft{animation-name:fr-soft}
+html.fr-js .fr.fr-lite{animation-name:fr-lite;will-change:opacity,transform}
+html.fr-js .fr.fr-pull{animation-name:fr-pull;will-change:opacity,transform}
+html.fr-js .fr.fr-slow{--fr-d:1.15s}
+html.fr-js .fr.fr-fast{--fr-d:.55s}
+
+/* ---- stagger group: children animate, parent only toggles .fr-on ---- */
+html.fr-js .fr-stagger>*,html.fr-js .fr-words>.fr-w{animation:fr-focus var(--fr-d) var(--fr-ease) calc(var(--fr-delay,0ms) + var(--fr-i,0)*var(--fr-step)) both paused}
+html.fr-js .fr-stagger.fr-on>*,html.fr-js .fr-words.fr-on>.fr-w{animation-play-state:running}
+html.fr-js .fr-stagger>.fr-depth{animation-name:fr-depth}
+html.fr-js .fr-stagger>.fr-lite{animation-name:fr-lite}
+html.fr-js .fr-stagger>.fr-pull{animation-name:fr-pull}
+html.fr-js .fr-stagger>.fr-soft{animation-name:fr-soft}
+.fr-stagger>:nth-child(1){--fr-i:0}.fr-stagger>:nth-child(2){--fr-i:1}.fr-stagger>:nth-child(3){--fr-i:2}.fr-stagger>:nth-child(4){--fr-i:3}.fr-stagger>:nth-child(5){--fr-i:4}.fr-stagger>:nth-child(6){--fr-i:5}.fr-stagger>:nth-child(7){--fr-i:6}.fr-stagger>:nth-child(8){--fr-i:7}.fr-stagger>:nth-child(9){--fr-i:8}.fr-stagger>:nth-child(10){--fr-i:9}.fr-stagger>:nth-child(11){--fr-i:10}.fr-stagger>:nth-child(n+12){--fr-i:11}
+
+/* ---- word-level headline (word split only: safe for Persian joined letters) ---- */
+.fr-words .fr-w{display:inline-block}
+
+/* ---- finished: release will-change and the animation ---- */
+html.fr-js .fr.fr-done,html.fr-js .fr-stagger.fr-done>*,html.fr-js .fr-words.fr-done>.fr-w{animation:none;will-change:auto}
+
+/* ---- milestone (achievement) ---- */
+.fr-milestone{position:relative;isolation:isolate;border:1px solid color-mix(in oklab,var(--volt) 55%,transparent);border-radius:20px;padding:18px 20px;background:linear-gradient(135deg,color-mix(in oklab,var(--volt) 14%,transparent),transparent 70%);box-shadow:var(--glow-volt)}
+.fr-milestone:after{content:"";position:absolute;inset:-1px;border-radius:inherit;border:1px solid var(--volt);opacity:0;pointer-events:none}
+html.fr-js .fr-milestone.fr-on:after{animation:fr-ring 1.1s var(--fr-ease) .35s 1 both}
+
+/* ---- reduced motion: everything visible, no animation ---- */
+@media (prefers-reduced-motion:reduce){
+  html.fr-js .fr,html.fr-js .fr-stagger>*,html.fr-js .fr-words>.fr-w,.fr-milestone:after{animation:none!important;opacity:1;filter:none;transform:none;will-change:auto}
+}
+html[data-reduce-motion="true"].fr-js .fr,html[data-reduce-motion="true"].fr-js .fr-stagger>*,html[data-reduce-motion="true"].fr-js .fr-words>.fr-w,html[data-reduce-motion="true"] .fr-milestone:after{animation:none!important;opacity:1;filter:none;transform:none;will-change:auto}

@@ -5,13 +5,13 @@ export type Exercise = {
 };
 export type WorkoutDay = { title: string; isRest: boolean; exercises: Exercise[] };
 export type Workout = { name: string; days: WorkoutDay[]; notes?: string[] };
-export type DietItem = { title: string; description: string; kcal: number | null; protein: number | null; carbs: number | null; fat: number | null };
+export type DietItem = { nutrition?:{status:string;knownTotals:{kcal:number;protein:number;carbs:number;fat:number}|null;unresolved:{name:string;reason:string}[];components:any[]}|null; title: string; description: string; kcal: number | null; protein: number | null; carbs: number | null; fat: number | null };
 export type Diet = { name: string; sections: { title: string; items: DietItem[] }[] };
 export type Supplement = { name: string; schedule: { timing: string; items: string[] }[]; groups: { title: string; items: { name: string; timings: string[] }[] }[];items?:{category:string;name:string;dosage:string;timing:string;instructions:string}[] };
 export type Meal = { id: string; title: string; kcal: number; protein: number; carbs: number; fat: number };
 export type BodyLog = { date: string; jalali: string; weight: number | null; waist: number | null; bodyFat: number | null; calories: number | null; notes: string };
 export type Profile = {
-  username: string; name: string; gender: string; age: number; height: number; weight: number; goalWeight: number;
+  avatarDesign?: Record<string,unknown>|null; username: string; name: string; gender: string; age: number; height: number; weight: number; goalWeight: number;
   goal: string; bmr: number; tdee: number; targetCalories: number; targetProtein: number; targetCarbs: number; targetFat: number;
   waterGoal: number; avatarUrl: string; bmi: number;
 };

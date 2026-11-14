@@ -40,7 +40,7 @@ export const FitButton = forwardRef<HTMLButtonElement, FitButtonProps>(
       onPointerDown?.(e);
     };
     return (
-      <button ref={ref} aria-busy={loading || undefined} className={cn(fitButton({ variant, size }), loading && "cursor-wait", className)} onPointerDown={down} {...p}>
+      <button ref={ref} aria-busy={loading || undefined} className={cn("sf-liquid-button",fitButton({ variant, size }), loading && "cursor-wait", className)} onPointerDown={down} {...p}>
         {solid ? <span aria-hidden className="animate-shine pointer-events-none absolute inset-y-0 left-0 w-1/3 bg-gradient-to-r from-transparent via-foreground/35 to-transparent" /> : null}
         {loading ? <span aria-hidden className="animate-stripes pointer-events-none absolute inset-0" /> : null}
         {ripples.map((r) => (
