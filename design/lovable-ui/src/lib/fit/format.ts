@@ -1,3 +1,4 @@
+import {locale} from './locale';
 export function todayISO(d = new Date()) {
   const p = (n: number) => String(n).padStart(2, "0");
   return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
@@ -9,7 +10,7 @@ export function addDays(iso: string, n: number) {
 }
 export function isISODate(s: string) { return /^\d{4}-\d{2}-\d{2}$/.test(s); }
 
-const faDate = (opts: Intl.DateTimeFormatOptions) => new Intl.DateTimeFormat("fa-IR-u-ca-persian-nu-latn", opts);
+const faDate = (opts: Intl.DateTimeFormatOptions) => new Intl.DateTimeFormat(locale()==='en'?'en-GB':"fa-IR-u-ca-persian-nu-latn", opts);
 export function jalaliLong(d = new Date()) { return faDate({ weekday: "long", day: "numeric", month: "long" }).format(d); }
 export function jalaliShort(iso: string) { return isISODate(iso) ? faDate({ day: "numeric", month: "short" }).format(new Date(iso + "T12:00:00")) : iso; }
 export function latinStamp(d = new Date()) {

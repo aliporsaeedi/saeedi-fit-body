@@ -1,3 +1,4 @@
+import {locale} from '@/lib/fit/locale';
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { gas, getToken, isSessionError, setToken } from "@/lib/fit/api";
@@ -5,6 +6,7 @@ import { todayISO } from "@/lib/fit/format";
 import type { Boot } from "@/lib/fit/types";
 import {clearOfflinePack,sessionPartition} from '@/lib/fit/offline';
 import {OfflineFallback} from './OfflinePlans';
+import {isDemo} from '@/lib/fit/demo';
 
 type Ctx = {
   token: string;
@@ -25,7 +27,7 @@ export function useSession() {
   const qc=useQueryClient();
   const [token, setTok] = useState<string>(() => getToken());
   const signIn = useCallback((t: string) => { void clearOfflinePack();qc.clear();setToken(t); setTok(t); }, [qc]);
-  const signOut = useCallback(() => { void clearOfflinePack();qc.clear();setToken(""); setTok(""); }, [qc]);
+  const signOut = useCallback(() => { if(isDemo()){location.assign('/?lang='+locale());return;}void clearOfflinePack();qc.clear();setToken(""); setTok(""); }, [qc]);
   return { token, signIn, signOut };
 }
 

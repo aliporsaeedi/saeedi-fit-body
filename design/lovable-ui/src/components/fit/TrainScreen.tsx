@@ -1,3 +1,4 @@
+import {tr} from '@/lib/fit/locale';
 import { useEffect, useMemo, useState } from "react";
 import { Check, Clock, Dumbbell, Info, Moon, Timer } from "lucide-react";
 import { useFit } from "./store";
@@ -56,7 +57,7 @@ export function TrainScreen() {
               className={cn("pressable relative grid min-h-[72px] min-w-[64px] shrink-0 place-content-center gap-0.5 rounded-xl border px-3 text-center",
                 i === di ? "border-volt bg-volt text-volt-foreground shadow-[var(--glow-volt)]" : "card-surface text-muted-foreground")}>
               <b className="num text-[26px]">{d.isRest ? <Moon className="mx-auto size-5" /> : String(i + 1).padStart(2, "0")}</b>
-              <span className="max-w-[72px] truncate text-[11px] font-bold">{d.isRest ? "استراحت" : d.title}</span>
+              <span className="max-w-[72px] truncate text-[11px] font-bold">{d.isRest ? tr("استراحت") : d.title}</span>
               {allDone ? <i className="absolute top-1.5 end-1.5 grid size-4 place-items-center rounded-full bg-volt text-volt-foreground"><Check className="size-3" strokeWidth={4} /></i> : null}
             </button>
           );
@@ -70,7 +71,7 @@ export function TrainScreen() {
           <div className="flex items-center gap-3 px-5 pt-5 pb-3">
             <div className="flex-1">
               <h3 className="text-2xl font-black">{day.title}</h3>
-              <p className="text-xs text-muted-foreground">{day.exercises.length} حرکت · برای جزئیات و ثبت وزنه روی هر حرکت بزن</p>
+              <p className="text-xs text-muted-foreground">{day.exercises.length} {tr('حرکت · برای جزئیات و ثبت وزنه روی هر حرکت بزن','exercises · tap a movement for instructions and set logging')}</p>
             </div>
             <div dir="ltr"><span className="num text-3xl text-volt">{finished}</span><span className="num text-lg text-faint">/{keys.length}</span></div>
           </div>
@@ -78,7 +79,7 @@ export function TrainScreen() {
           <ol>
             {day.exercises.map((ex, i) => {
               const k = keys[i]!, isDone = done.includes(k), isNext = !isDone && keys.findIndex((x) => !done.includes(x)) === i;
-              const img = exerciseImages(ex)[0];
+              const img = ex.bank?.preview || exerciseImages(ex)[0];
               const combo=!!(ex.training && ex.training.size>1), combined=combo||ex.name.includes("+")||/سوپر\s*ست|superset/i.test(ex.notes||"");
               return (
                 <li key={k} className={cn("relative flex items-center gap-3 border-t border-line px-4 py-3 transition-colors", combined && "sfx-combo-row", isNext && "bg-gradient-to-l from-volt/[0.12] to-transparent", isDone && "opacity-55")}>
@@ -89,17 +90,17 @@ export function TrainScreen() {
                       {img ? <img src={img} alt="" loading="lazy" className="size-full object-cover" /> : <Dumbbell className="m-auto mt-4 size-6 text-ink" />}
                     </span>
                     <span className="min-w-0 flex-1">
-                      {combined?<span className="mb-1 block text-[11px] font-black text-aqua">{ex.training?.label||(/سوپر\s*ست|superset/i.test(ex.notes||"")?"سوپرست":"حرکت ترکیبی")}{combo?` · ${ex.training!.position}/${ex.training!.size}`:""}</span>:null}
+                      {combined?<span className="mb-1 block text-[11px] font-black text-aqua">{ex.training?.label||(/سوپر\s*ست|superset/i.test(ex.notes||"")?"سوپرست":tr("حرکت ترکیبی"))}{combo?` · ${ex.training!.position}/${ex.training!.size}`:""}</span>:null}
                       <b className={cn("block truncate text-[15px]", isNext && "text-volt", isDone && "line-through")}>{ex.name}</b>
                       <span className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-0.5 text-xs text-muted-foreground">
-                        <span><span className="num text-sm text-foreground">{ex.sets}</span> ست</span>
-                        <span><span className="num text-sm text-foreground">{ex.reps}</span> تکرار</span>
+                        <span><span className="num text-sm text-foreground">{ex.sets}</span> {tr("ست")}</span>
+                        <span><span className="num text-sm text-foreground">{ex.reps}</span> {tr("تکرار")}</span>
                         <span className="flex items-center gap-1"><Clock className="size-3" /><span className="num text-sm">{restSeconds(ex)}S</span></span>
                       </span>
                       {ex.notes ? <span className="mt-1 block truncate text-[11px] text-ember">{ex.notes}</span> : null}
                     </span>
                   </button>
-                  <button onClick={() => onToggle(i)} aria-label={isDone ? "برگرداندن" : "انجام شد"} aria-pressed={isDone}
+                  <button onClick={() => onToggle(i)} aria-label={isDone ? "برگرداندن" : tr("انجام شد")} aria-pressed={isDone}
                     className={cn("grid size-11 shrink-0 place-items-center rounded-full border-2 transition-all duration-500 ease-[var(--ease-spring)]",
                       isDone ? "rotate-[360deg] scale-105 border-volt bg-volt text-volt-foreground" : "border-foreground/25 text-transparent hover:border-volt/60")}>
                     <Check className="size-5" strokeWidth={3.4} />
@@ -122,7 +123,7 @@ export function TrainScreen() {
         </>
       ) : null}
 
-      <p className="mt-6 flex items-center justify-center gap-1.5 text-xs text-faint"><Timer className="size-3.5" />تایمر استراحت پس از حرکت مستقل یا آخرین حرکت گروه شروع می‌شود</p>
+      <p className="mt-6 flex items-center justify-center gap-1.5 text-xs text-faint"><Timer className="size-3.5" />{tr("تایمر استراحت پس از حرکت مستقل یا آخرین حرکت گروه شروع می‌شود")}</p>
 
       <ExerciseSheet dayIndex={di} item={open} workoutName={w.name} onClose={() => setOpen(null)}
         done={open ? done.includes(keys[open.i] ?? "") : false} onToggle={() => open && onToggle(open.i)} />

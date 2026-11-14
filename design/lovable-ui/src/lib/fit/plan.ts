@@ -1,9 +1,10 @@
+import {isDemo} from './demo';
 import type { Boot, Exercise, Workout } from "./types";
 import { addDays, isISODate, todayISO } from "./format";
 
 const PLAN_KEY = "sfb_plan", DAY_KEY = "sfb_day";
-const read = (k: string) => { try { return localStorage.getItem('sfb:'+ (localStorage.getItem('sfb_plan_owner')||'')+':'+k) || ""; } catch { return ""; } };
-const write = (k: string, v: string) => { try { localStorage.setItem('sfb:'+ (localStorage.getItem('sfb_plan_owner')||'')+':'+k, v); } catch { /* ignore */ } };
+const read = (k: string) => { try { return localStorage.getItem('sfb:'+ (isDemo()?'isolated-demo':(localStorage.getItem('sfb_plan_owner')||''))+':'+k) || ""; } catch { return ""; } };
+const write = (k: string, v: string) => { try { localStorage.setItem('sfb:'+ (isDemo()?'isolated-demo':(localStorage.getItem('sfb_plan_owner')||''))+':'+k, v); } catch { /* ignore */ } };
 
 export function activeWorkoutIndex(b: Boot) {
   const n = Number(read(PLAN_KEY));

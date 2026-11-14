@@ -1,3 +1,4 @@
+import {tr} from '@/lib/fit/locale';
 import { forwardRef, useEffect, useRef, useState, type ButtonHTMLAttributes, type ReactNode } from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { Drawer as V } from "vaul";
@@ -123,7 +124,7 @@ export function Sheet({ open, onOpenChange, title, children, footer }: { open: b
           <div className="mx-auto mt-3 h-1.5 w-12 rounded-full bg-foreground/20" />
           <div className="flex items-center gap-3 px-5 pt-4 pb-2">
             <V.Title className="flex-1 text-lg font-black">{title}</V.Title>
-            <V.Close className="pressable grid size-9 place-items-center rounded-full bg-foreground/5 text-muted-foreground" aria-label="بستن"><X className="size-4" /></V.Close>
+            <V.Close className="pressable grid size-9 place-items-center rounded-full bg-foreground/5 text-muted-foreground" aria-label={tr("بستن")}><X className="size-4" /></V.Close>
           </div>
           <V.Description className="sr-only">جزئیات</V.Description>
           <div className="hide-scrollbar flex-1 overflow-y-auto px-5 pb-6">{children}</div>

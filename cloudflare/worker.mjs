@@ -45,10 +45,18 @@ export default {
     let response=new Response(result.body,result);
     if(env.DESIGN_PREVIEW==='true' && result.headers.get('Content-Type')?.includes('text/html')) {
       const html=await result.text();
-      response=new Response(html.replace('<body>','<body><aside style="position:relative;z-index:50;background:#172116;color:#e2f2d5;text-align:center;padding:10px 14px;font:12px/1.8 sans-serif" role="note">پیش‌نمایش طراحی • متصل به حساب واقعی؛ ثبت اطلاعات، حساب اصلی شما را تغییر می‌دهد.</aside>'),result);
+      const demoNotice=url.searchParams.get('demo')==='1',english=url.searchParams.get('lang')==='en';
+      const previewMessage=demoNotice?(english?'Sample demo • no member account data is used or changed.':'دموی فرضی • اطلاعات حساب واقعی خوانده یا تغییر داده نمی‌شود.'):(english?'Design preview • connected to real accounts; saving changes your actual data.':'پیش‌نمایش طراحی • متصل به حساب واقعی؛ ثبت اطلاعات، حساب اصلی شما را تغییر می‌دهد.');
+      response=new Response(html.replace('<body>','<body><aside style="position:relative;z-index:50;background:#172116;color:#e2f2d5;text-align:center;padding:10px 14px;font:12px/1.8 sans-serif" role="note">'+previewMessage+'</aside>'),result);
       response.headers.set('X-Robots-Tag','noindex, nofollow');response.headers.set('Cache-Control','no-store');
     }
     for(const[k,v]of Object.entries(headers))response.headers.set(k,v);
+    if(url.searchParams.get('demo')==='1'&&url.pathname==='/'){
+      response.headers.set('X-Frame-Options','SAMEORIGIN');
+      response.headers.set('Content-Security-Policy',"frame-ancestors 'self'");
+      response.headers.set('Cache-Control','no-store');
+      response.headers.set('X-Robots-Tag','noindex, nofollow');
+    }
     if(adminHost||url.pathname==='/admin'||url.pathname.startsWith('/admin/')||url.pathname==='/admin.html') {
       response.headers.set('Cache-Control','no-store');response.headers.set('X-Robots-Tag','noindex, nofollow');
     }

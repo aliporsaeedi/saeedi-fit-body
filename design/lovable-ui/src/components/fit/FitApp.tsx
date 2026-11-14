@@ -1,3 +1,5 @@
+import {isDemo,resetDemo} from '@/lib/fit/demo';
+import {locale,changeLocale,tr} from '@/lib/fit/locale';
 import {AssessmentScreen} from './AssessmentScreen';
 import {ShoppingScreen} from './ShoppingScreen';
 import {OfflinePlans} from './OfflinePlans';
@@ -30,19 +32,21 @@ import { cn } from "@/lib/utils";
 type Tab = "home" | "train" | "fuel" | "progress" | "more" | "membership" | "coach" | "reminders" | "supplements" | "files" | "receipt" | "offline" | "assessment" | "shopping";
 export type Go = (t: Tab) => void;
 const TABS: { id: Tab; label: string; icon: typeof Home }[] = [
-  { id: "home", label: "خانه", icon: Home },
-  { id: "train", label: "تمرین", icon: Dumbbell },
-  { id: "fuel", label: "تغذیه", icon: Apple },
-  { id: "progress", label: "پیشرفت", icon: LineChart },
-  { id: "more", label: "بیشتر", icon: LayoutGrid },
+  { id: "home", label: tr("خانه"), icon: Home },
+  { id: "train", label: tr("تمرین"), icon: Dumbbell },
+  { id: "fuel", label: tr("تغذیه"), icon: Apple },
+  { id: "progress", label: tr("پیشرفت"), icon: LineChart },
+  { id: "more", label: tr("بیشتر"), icon: LayoutGrid },
 ];
-const TITLES: Record<Tab, string> = { home: "خانه", train: "تمرین", fuel: "تغذیه", progress: "پیشرفت", more: "پروفایل", membership: "اشتراک", coach: "مربی هوشمند", reminders:"یادآورها", supplements:"مکمل‌ها", files:"برنامه‌های PDF", receipt:"استودیو استوری", offline:"برنامه‌های آفلاین", assessment:"ارزیابی و سلامت", shopping:"لیست خرید" };
+const TITLES: Record<Tab, string> = { home: tr("خانه"), train: tr("تمرین"), fuel: tr("تغذیه"), progress: tr("پیشرفت"), more: tr("پروفایل"), membership: tr("اشتراک"), coach: tr("مربی هوشمند"), reminders:tr("یادآورها"), supplements:tr("مکمل‌ها"), files:tr("برنامه‌های PDF"), receipt:tr("استودیو استوری"), offline:tr("برنامه‌های آفلاین"), assessment:tr("ارزیابی و سلامت"), shopping:tr("لیست خرید") };
 const KICKER: Record<Tab, string> = { home: "", train: "TRAINING", fuel: "NUTRITION", progress: "PROGRESS", more: "PROFILE", membership: "MEMBERSHIP", coach: "AI COACH", reminders:"REMINDERS", supplements:"SUPPLEMENTS", files:"MY PROGRAMS", receipt:"STORY STUDIO", offline:"OFFLINE PLANS", assessment:"YOUR PROFILE", shopping:"SHOPPING LIST" };
 const SUB: Tab[] = ["membership", "coach", "reminders", "supplements", "files", "receipt", "offline", "assessment", "shopping"];
 
 export function FitApp() {
   const { token, signIn, signOut } = useSession();
-  if (!token) return <LoginScreen onSignedIn={signIn} />;
+  const [publicView,setPublicView]=useState(()=>{try{return !isDemo()&&['landing','login'].includes(new URLSearchParams(window.location.search).get('view')||'');}catch{return false;}});
+  const leavePublic=()=>{const u=new URL(location.href);u.searchParams.delete('view');history.replaceState(null,'',u.href);setPublicView(false);};
+  if (!token||publicView) return <LoginScreen onSignedIn={t=>{signIn(t);leavePublic();}} onResume={token&&new URLSearchParams(window.location.search).get('view')!=='login'?leavePublic:undefined}/>;
   return (
     <BootProvider token={token} onSignedOut={signOut} fallback={<BrandLoading />} errorView={(retry, msg) => <ErrorView retry={retry} message={msg} />}>
       <Shell />
@@ -89,14 +93,15 @@ function Shell() {
   else if (tab === "fuel") screen = <FuelScreen />;
   else if (tab === "progress") screen = <ProgressScreen />;
   else screen = <MoreScreen go={setTab} openChat={() => setChat(true)} />;
+  if(isDemo()&&['membership','coach','reminders','files','offline','assessment','shopping'].includes(tab))screen=<div className="card-surface p-5"><span className="kicker text-volt">PERSONAL ACCOUNT</span><h2 className="mt-3 text-xl font-bold">{tr('این بخش برای حساب شخصی است.','This feature needs a personal account.')}</h2><p className="mt-3 text-sm leading-7 text-muted-foreground">{tr('دمو به پرداخت، اطلاعات سلامت، دانلود خصوصی و اعلان واقعی دسترسی ندارد. تمرین، تغذیه، پیشرفت و استوری را با دادهٔ نمونه امتحان کنید.','The demo has no access to payments, health records, private downloads or real notifications. Explore training, nutrition, progress and stories with sample data.')}</p><a className="mt-5 block text-sm text-volt" href={'/?lang='+locale()} target="_top">{tr('بازگشت به سایت','Back to the website')}</a></div>;
 
   return (
     <div className={cn("mx-auto min-h-dvh max-w-[460px] px-4", isSub ? "pb-[calc(24px+env(safe-area-inset-bottom))]" : "pb-[calc(120px+env(safe-area-inset-bottom))]")}>
-      <header className="flex items-center gap-3 pt-[calc(18px+env(safe-area-inset-top))] pb-4">
+      {isDemo()?<div className="v4-demo-banner"><b>DEMO</b><span>{tr('اطلاعات فرضی؛ ثبت‌ها فقط در این صفحه‌اند.','Sample data. Changes stay in this page.')}</span><button onClick={()=>{resetDemo();location.reload();}}>{tr('شروع مجدد','Reset')}</button><a href={'/?lang='+locale()} target="_top">{tr('خروج','Exit')}</a></div>:null}<header className="flex items-center gap-3 pt-[calc(18px+env(safe-area-inset-top))] pb-4">
         {isSub ? (
-          <button type="button" onClick={() => setTab(back)} aria-label="بازگشت" className="glass pressable grid size-12 shrink-0 place-items-center rounded-2xl"><ArrowRight className="size-5" /></button>
+          <button type="button" onClick={() => setTab(back)} aria-label={tr("بازگشت")} className="glass pressable grid size-12 shrink-0 place-items-center rounded-2xl"><ArrowRight className="size-5" /></button>
         ) : (
-          <button type="button" onClick={() => setTab("home")} aria-label="خانه" className="relative shrink-0">
+          <button type="button" onClick={() => setTab("home")} aria-label={tr("خانه")} className="relative shrink-0">
             <span aria-hidden className="absolute inset-0 rounded-full bg-volt/20 blur-xl" />
             <Logo className="relative h-[112px] w-[104px]" />
           </button>
@@ -104,13 +109,13 @@ function Shell() {
         <div className="min-w-0 flex-1">
           <p className="flex items-center gap-2 truncate text-xs text-muted-foreground">
             {KICKER[tab] ? <span className="kicker text-volt">{KICKER[tab]}</span> : <span className="num text-sm tracking-wider text-faint">{latinStamp(now).toUpperCase()}</span>}
-            <span className="size-1 rounded-full bg-gold" /><span>{jalaliLong(now)}</span>
+            <span className="size-1 rounded-full bg-gold" /><span>{locale()==='en'?now.toLocaleDateString('en-GB',{month:'short',day:'numeric'}):jalaliLong(now)}</span>
           </p>
           <h1 key={tab} className="animate-rise text-[22px] font-black leading-tight tracking-tight">
-            {tab === "home" ? <>{greeting(now)}، <span className="text-volt-metal">{name}</span></> : TITLES[tab]}
+            {tab === "home" ? <>{locale()==='en'?"Your next starts here":greeting(now)}{locale()==='en'?', ':'، '}<span className="text-volt-metal">{name}</span></> : tr(TITLES[tab])}
           </h1>
         </div>
-        {tab === "home" ? <button type="button" onClick={()=>setTab("more")} className="sfx-profile-entry" aria-label="مشاهدهٔ پروفایل شخصی"><Avatar url={boot.profile.avatarUrl} name={name}/><small>پروفایل شما</small></button> : <span className="glass inline-flex h-12 items-center gap-1.5 rounded-2xl px-3" title="روزهای پیاپی">
+        <button className="v4-app-language" aria-label={locale()==='en'?'Switch to Persian':'Switch to English'} onClick={()=>changeLocale(locale()==='en'?'fa':tr("en"))}>{locale()==='en'?'FA':'EN'}</button>{tab === "home" ? <button type="button" onClick={()=>setTab("more")} className="sfx-profile-entry" aria-label={tr("مشاهدهٔ پروفایل شخصی")}><Avatar url={boot.profile.avatarUrl} name={name}/><small>{tr("پروفایل شما")}</small></button> : <span className="glass inline-flex h-12 items-center gap-1.5 rounded-2xl px-3" title={tr("روزهای پیاپی")}>
           <Flame className="size-5 text-ember" /><span className="num text-2xl">{boot.streak}</span>
         </span>}
       </header>
@@ -125,16 +130,16 @@ function Shell() {
 function Dock({ tab, setTab }: { tab: Tab; setTab: (t: Tab) => void }) {
   const i = TABS.findIndex((t) => t.id === tab);
   return (
-    <nav aria-label="منوی اصلی" className="glass fixed inset-x-0 bottom-[calc(12px+env(safe-area-inset-bottom))] z-40 mx-auto grid w-[min(420px,calc(100%-24px))] grid-cols-5 rounded-[22px] p-1.5">
+    <nav aria-label={tr("منوی اصلی")} className="glass fixed inset-x-0 bottom-[calc(12px+env(safe-area-inset-bottom))] z-40 mx-auto grid w-[min(420px,calc(100%-24px))] grid-cols-5 rounded-[22px] p-1.5">
       <span aria-hidden className="absolute inset-y-1.5 start-1.5 w-[calc((100%-12px)/5)] rounded-2xl shadow-[var(--glow-volt)] [background:var(--gradient-volt)] transition-transform duration-500 ease-[var(--ease-spring)]"
-        style={{ transform: `translateX(${-i * 100}%)` }} />
+        style={{ transform: `translateX(${(locale()==='en'?1:-1)*i*100}%)` }} />
       {TABS.map((t) => {
         const on = t.id === tab, I = t.icon;
         return (
           <button key={t.id} onClick={() => setTab(t.id)} aria-current={on ? "page" : undefined}
             className={cn("relative z-10 flex h-14 flex-col items-center justify-center gap-0.5 text-[11px] font-bold transition-colors", on ? "text-volt-foreground" : "text-muted-foreground")}>
             <I className={cn("size-[22px] transition-transform duration-500 ease-[var(--ease-spring)]", on && "-translate-y-0.5 scale-110")} strokeWidth={on ? 2.5 : 2} />
-            {t.label}
+            {tr(t.label)}
           </button>
         );
       })}
@@ -149,7 +154,7 @@ function RestPill() {
   return (
     <div className="animate-rise glass fixed inset-x-0 bottom-[calc(96px+env(safe-area-inset-bottom))] z-40 mx-auto flex w-[min(320px,calc(100%-48px))] items-center gap-3 overflow-hidden rounded-2xl px-3 py-2">
       <span aria-hidden className="absolute inset-y-0 start-0 bg-volt/15 transition-[width] duration-300" style={{ width: `${(left / Math.max(1, total)) * 100}%` }} />
-      <span className="relative text-xs font-bold text-muted-foreground">استراحت</span>
+      <span className="relative text-xs font-bold text-muted-foreground">{tr("استراحت")}</span>
       <span className="num relative flex-1 text-center text-3xl text-volt">{m}:{s}</span>
       <button onClick={() => addRest(15)} className="pressable relative grid size-9 place-items-center rounded-lg bg-foreground/10" aria-label="۱۵ ثانیه بیشتر"><Plus className="size-4" /></button>
       <button onClick={stopRest} className="pressable relative grid size-9 place-items-center rounded-lg bg-foreground/10" aria-label="توقف"><Pause className="size-4" /></button>
@@ -164,7 +169,7 @@ function ErrorView({ retry, message }: { retry: () => void; message: string }) {
         <Logo className="mx-auto h-24 opacity-60" />
         <p className="mt-4 font-bold">اطلاعات بارگذاری نشد</p>
         <p className="mt-1 text-sm text-muted-foreground">{message || "اتصال اینترنت را بررسی کن."}</p>
-        <FitButton size="md" className="mt-5" onClick={retry}><RefreshCw className="size-4" />تلاش دوباره</FitButton>
+        <FitButton size="md" className="mt-5" onClick={retry}><RefreshCw className="size-4" />{tr("تلاش دوباره")}</FitButton>
       </div>
     </div>
   );

@@ -43,7 +43,7 @@
     ]
   },
   "vars": {
-    "RELEASE": "cloudflare-ui-v2",
+    "RELEASE": "landing-v4-demo",
     "GAS_URL": "https://script.google.com/macros/s/AKfycbzFoSJEDDO2aZ2uzlha1heDAa-0wS5P-2ue4qlBUkWYXlC48poJuOsUchfZz589fNFG/exec"
   },
   "triggers": {

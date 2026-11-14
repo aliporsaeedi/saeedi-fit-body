@@ -1,3 +1,4 @@
+import {tr} from '@/lib/fit/locale';
 import { useState } from "react";
 import { ChevronDown, Copy, Pill, Plus, RotateCcw, ScanLine, Search, Trash2, Utensils } from "lucide-react";
 import { FoodSheet } from "./FoodSheet";
@@ -26,9 +27,9 @@ export function FuelScreen() {
   const over = t.kcal > (p.targetCalories || 0) && p.targetCalories > 0;
 
   const macros = [
-    { k: "protein", l: "پروتئین", v: t.protein, g: p.targetProtein, tone: "volt" as const },
-    { k: "carbs", l: "کربوهیدرات", v: t.carbs, g: p.targetCarbs, tone: "aqua" as const },
-    { k: "fat", l: "چربی", v: t.fat, g: p.targetFat, tone: "ember" as const },
+    { k: "protein", l: tr("پروتئین"), v: t.protein, g: p.targetProtein, tone: "volt" as const },
+    { k: "carbs", l: tr("کربوهیدرات"), v: t.carbs, g: p.targetCarbs, tone: "aqua" as const },
+    { k: "fat", l: tr("چربی"), v: t.fat, g: p.targetFat, tone: "ember" as const },
   ];
 
   const save = async () => {
@@ -42,11 +43,11 @@ export function FuelScreen() {
       <Card className="flex items-center gap-5 p-5">
         <TickRing size={150} ticks={48} value={p.targetCalories ? t.kcal / p.targetCalories : 0} tone={over ? "ember" : "volt"}>
           <CountUp value={over ? t.kcal - p.targetCalories : left} className="text-[46px]" />
-          <small className="text-xs text-muted-foreground">{over ? "مازاد" : "باقی‌مانده"}</small>
+          <small className="text-xs text-muted-foreground">{over ? "مازاد" : tr("باقی‌مانده")}</small>
         </TickRing>
         <div className="flex-1 space-y-3">
-          <div><div className="text-xs text-muted-foreground">مصرف‌شده</div><div className="num text-3xl">{fmt(t.kcal)} <small className="text-sm text-faint">KCAL</small></div></div>
-          <div><div className="text-xs text-muted-foreground">هدف روزانه</div><div className="num text-xl text-muted-foreground">{fmt(p.targetCalories)}</div></div>
+          <div><div className="text-xs text-muted-foreground">{tr("مصرف‌شده")}</div><div className="num text-3xl">{fmt(t.kcal)} <small className="text-sm text-faint">KCAL</small></div></div>
+          <div><div className="text-xs text-muted-foreground">{tr("هدف روزانه")}</div><div className="num text-xl text-muted-foreground">{fmt(p.targetCalories)}</div></div>
         </div>
       </Card>
 
@@ -63,14 +64,14 @@ export function FuelScreen() {
       <div className="mt-2.5 grid grid-cols-[1fr_auto] gap-2.5">
         <button type="button" onClick={() => setFood("search")} className="card-surface volt-edge animate-rise pressable flex h-16 items-center gap-3 px-4 text-start" style={{ ["--d" as string]: "200ms" }}>
           <span className="grid size-10 place-items-center rounded-xl bg-volt text-volt-foreground shadow-[var(--glow-volt)]"><Search className="size-5" strokeWidth={2.6} /></span>
-          <span className="min-w-0"><b className="block text-sm">جستجوی غذا</b><span className="text-xs text-muted-foreground">کالری و ماکرو با یک لمس</span></span>
+          <span className="min-w-0"><b className="block text-sm">{tr("جستجوی غذا")}</b><span className="text-xs text-muted-foreground">{tr("کالری و ماکرو با یک لمس")}</span></span>
         </button>
         <button type="button" onClick={() => setFood("scan")} aria-label="اسکن بارکد" className="card-surface animate-rise pressable grid h-16 w-[76px] place-items-center text-volt" style={{ ["--d" as string]: "260ms" }}>
-          <ScanLine className="size-7" /><span className="-mt-2 text-[10px] font-bold text-muted-foreground">بارکد</span>
+          <ScanLine className="size-7" /><span className="-mt-2 text-[10px] font-bold text-muted-foreground">{tr("بارکد")}</span>
         </button>
       </div>
 
-      <Section en="TODAY'S INTAKE" title="امروز خوردم" aside={<button onClick={meals.copyYesterday} className="pressable inline-flex items-center gap-1 text-xs font-bold text-volt"><Copy className="size-3.5" />کپی دیروز</button>} />
+      <Section en="TODAY'S INTAKE" title={tr("امروز خوردم")} aside={<button onClick={meals.copyYesterday} className="pressable inline-flex items-center gap-1 text-xs font-bold text-volt"><Copy className="size-3.5" />{tr("کپی دیروز")}</button>} />
       {boot.meals.today.length ? (
         <Card className="divide-y divide-line">
           {boot.meals.today.map((m) => (
@@ -78,14 +79,14 @@ export function FuelScreen() {
               <div className="min-w-0 flex-1"><b className="block truncate text-sm">{m.title}</b>
                 <span className="num text-xs text-muted-foreground">P{fmt(m.protein)} · C{fmt(m.carbs)} · F{fmt(m.fat)}</span></div>
               <span className="num text-xl">{fmt(m.kcal)}</span>
-              <button onClick={() => meals.remove(m.id)} className="pressable grid size-9 place-items-center rounded-lg text-muted-foreground hover:bg-destructive/10 hover:text-destructive" aria-label="حذف"><Trash2 className="size-4" /></button>
+              <button onClick={() => meals.remove(m.id)} className="pressable grid size-9 place-items-center rounded-lg text-muted-foreground hover:bg-destructive/10 hover:text-destructive" aria-label={tr("حذف")}><Trash2 className="size-4" /></button>
             </div>
           ))}
         </Card>
-      ) : <p className="card-surface px-4 py-5 text-center text-sm text-muted-foreground">هنوز وعده‌ای ثبت نکردی. غذا را جستجو کن، بارکدش را اسکن کن یا از برنامهٔ غذایی پایین انتخاب کن.</p>}
-      <FitButton variant="outline" size="md" className="mt-2.5 w-full" onClick={() => setDraft({ ...blank })}><Plus className="size-4" />ثبت وعدهٔ دلخواه</FitButton>
+      ) : <p className="card-surface px-4 py-5 text-center text-sm text-muted-foreground">{tr("هنوز وعده‌ای ثبت نکردی. غذا را جستجو کن، بارکدش را اسکن کن یا از برنامهٔ غذایی پایین انتخاب کن.")}</p>}
+      <FitButton variant="outline" size="md" className="mt-2.5 w-full" onClick={() => setDraft({ ...blank })}><Plus className="size-4" />{tr("ثبت وعدهٔ دلخواه")}</FitButton>
 
-      <Section title="آب" aside={<><span dir="ltr" className="num text-sm text-foreground">{water.glasses} / {water.goal}</span> لیوان</>} />
+      <Section title={tr("آب")} aside={<><span dir="ltr" className="num text-sm text-foreground">{water.glasses} / {water.goal}</span> {tr("لیوان")}</>} />
       <Card className="p-3.5">
         <div className="grid grid-cols-8 gap-1.5">
           {Array.from({ length: Math.min(16, Math.max(water.goal, water.glasses)) }, (_, i) => {
@@ -100,12 +101,12 @@ export function FuelScreen() {
           })}
         </div>
         <div className="mt-3 flex items-center justify-between">
-          <button onClick={() => water.set(0)} className="pressable inline-flex items-center gap-1 text-xs text-muted-foreground"><RotateCcw className="size-3.5" />صفر کردن</button>
-          <FitButton size="sm" variant="glass" onClick={() => water.set(water.glasses + 1)}><Plus className="size-4" />یک لیوان</FitButton>
+          <button onClick={() => water.set(0)} className="pressable inline-flex items-center gap-1 text-xs text-muted-foreground"><RotateCcw className="size-3.5" />{tr("صفر کردن")}</button>
+          <FitButton size="sm" variant="glass" onClick={() => water.set(water.glasses + 1)}><Plus className="size-4" />{tr("یک لیوان")}</FitButton>
         </div>
       </Card>
 
-      <Section title={diet ? diet.name : "برنامهٔ غذایی"} />
+      <Section title={diet ? diet.name : tr("برنامهٔ غذایی")} />
       {diet ? (
         <div className="space-y-2">
           {diet.sections.map((s, si) => (
@@ -113,7 +114,7 @@ export function FuelScreen() {
               <button onClick={() => setOpenSec(openSec === si ? -1 : si)} className="flex w-full items-center gap-3 px-4 py-3.5 text-start">
                 <span className="grid size-9 place-items-center rounded-lg bg-volt/10 text-volt"><Utensils className="size-4" /></span>
                 <b className="flex-1">{s.title}</b>
-                <span className="text-xs text-muted-foreground">{s.items.length} گزینه</span>
+                <span className="text-xs text-muted-foreground">{s.items.length} {tr("گزینه")}</span>
                 <ChevronDown className={cn("size-4 text-muted-foreground transition-transform", openSec === si && "rotate-180")} />
               </button>
               {openSec === si ? (
@@ -122,12 +123,12 @@ export function FuelScreen() {
                     <div key={ii} className="rounded-xl border border-line bg-ink/40 p-3">
                       <p className="text-sm leading-7 text-foreground/90">{it.description}</p>
                       <div className="mt-2 flex items-center gap-2">
-                        {it.kcal ? <span className="num rounded-md bg-foreground/5 px-2 py-1 text-xs">{fmt(it.kcal)} KCAL · P{fmt(it.protein)} C{fmt(it.carbs)} F{fmt(it.fat)}</span> : <span className="text-xs text-faint">بدون اطلاعات کالری</span>}
+                        {it.kcal ? <span className="num rounded-md bg-foreground/5 px-2 py-1 text-xs">{fmt(it.kcal)} KCAL · P{fmt(it.protein)} C{fmt(it.carbs)} F{fmt(it.fat)}</span> : <span className="text-xs text-faint">{tr("بدون اطلاعات کالری")}</span>}
                         <button onClick={() => it.kcal
                           ? meals.log({ title: `${s.title} · ${it.title}`, kcal: it.kcal || 0, protein: it.protein || 0, carbs: it.carbs || 0, fat: it.fat || 0 })
                           : setDraft({ ...blank, title: `${s.title} · ${it.title}` })}
                           className="pressable ms-auto inline-flex h-9 items-center gap-1 rounded-lg bg-volt px-3 text-xs font-black text-volt-foreground">
-                          <Plus className="size-3.5" strokeWidth={3} />خوردم
+                          <Plus className="size-3.5" strokeWidth={3} />{tr("خوردم")}
                         </button>
                       </div>
                     </div>
@@ -141,7 +142,7 @@ export function FuelScreen() {
 
       {supp ? (
         <>
-          <Section title="مکمل‌ها" aside={supp.name} />
+          <Section title={tr("مکمل‌ها")} aside={supp.name} />
           <Card className="p-4">
             <ol className="relative space-y-4 border-s border-line ps-5">
               {supp.schedule.map((s, i) => (
@@ -170,18 +171,18 @@ export function FuelScreen() {
       ) : null}
 
       <FoodSheet open={!!food} mode={food || "search"} onOpenChange={(o) => !o && setFood(null)} />
-      <Sheet open={!!draft} onOpenChange={(o) => !o && setDraft(null)} title="ثبت وعده"
-        footer={<FitButton className="w-full" onClick={save}>ذخیره</FitButton>}>
+      <Sheet open={!!draft} onOpenChange={(o) => !o && setDraft(null)} title={tr("ثبت وعده")}
+        footer={<FitButton className="w-full" onClick={save}>{tr("ذخیره")}</FitButton>}>
         {draft ? (
           <div className="space-y-3">
-            <label className="block"><span className="mb-1.5 block text-xs font-bold text-muted-foreground">عنوان</span>
+            <label className="block"><span className="mb-1.5 block text-xs font-bold text-muted-foreground">{tr("عنوان")}</span>
               <input value={draft.title} onChange={(e) => setDraft({ ...draft, title: e.target.value })} placeholder="مثلاً ناهار"
                 className="h-12 w-full rounded-xl border border-line bg-ink/60 px-3 text-base outline-none focus:border-volt/70" /></label>
-            <Field label="کالری" suffix="KCAL" inputMode="numeric" value={draft.kcal} onChange={(e) => setDraft({ ...draft, kcal: e.target.value })} />
+            <Field label={tr("کالری")} suffix="KCAL" inputMode="numeric" value={draft.kcal} onChange={(e) => setDraft({ ...draft, kcal: e.target.value })} />
             <div className="grid grid-cols-3 gap-2">
-              <Field label="پروتئین" suffix="G" inputMode="numeric" value={draft.protein} onChange={(e) => setDraft({ ...draft, protein: e.target.value })} />
+              <Field label={tr("پروتئین")} suffix="G" inputMode="numeric" value={draft.protein} onChange={(e) => setDraft({ ...draft, protein: e.target.value })} />
               <Field label="کربو" suffix="G" inputMode="numeric" value={draft.carbs} onChange={(e) => setDraft({ ...draft, carbs: e.target.value })} />
-              <Field label="چربی" suffix="G" inputMode="numeric" value={draft.fat} onChange={(e) => setDraft({ ...draft, fat: e.target.value })} />
+              <Field label={tr("چربی")} suffix="G" inputMode="numeric" value={draft.fat} onChange={(e) => setDraft({ ...draft, fat: e.target.value })} />
             </div>
           </div>
         ) : null}

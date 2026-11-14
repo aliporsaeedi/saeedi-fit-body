@@ -1,4 +1,5 @@
 // The reference components use the existing Apps Script account and Sheet APIs.
+import {isDemo,demoRpc} from './demo';
 declare global { interface Window { google:any; SF_APP_URL:string; } }
 const TOKEN_KEY = "fc_session";
 let reportedFailures=0;
@@ -6,15 +7,18 @@ let reportedFailures=0;
 export class GasError extends Error {constructor(message:string,public status=0,public network=false){super(message);}}
 
 export function getToken(): string {
+  if(isDemo())return 'isolated-demo';
   if (typeof window === "undefined") return "";
   try { return localStorage.getItem(TOKEN_KEY) || ""; } catch { return ""; }
 }
 export function setToken(t: string) {
+  if(isDemo())return;
   try { if (t) localStorage.setItem(TOKEN_KEY, t); else localStorage.removeItem(TOKEN_KEY); } catch { /* ignore */ }
 }
 
 export function classicUrl(path='/classic') { const query=path.split('?')[1];return window.SF_APP_URL+'?classic=1'+(query?'&'+query:''); }
 export function gas<T = unknown>(fn: string, ...args: unknown[]): Promise<T> {
+  if(isDemo())return demoRpc(fn,args) as Promise<T>;
   // Standalone Cloudflare builds use a same-origin API. Apps Script keeps its
   // original transport during the staged migration; never retry mutations.
   if (!window.google?.script?.run) return httpRpc<T>(fn, args);

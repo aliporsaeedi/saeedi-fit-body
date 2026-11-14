@@ -1,3 +1,6 @@
+import {locale,tr} from '@/lib/fit/locale';
+import {Logo} from './Logo';
+import {X} from 'lucide-react';
 import {PremiumLanding} from './PremiumLanding';
 import { useEffect, useRef, useState } from "react";
 import { ArrowLeft, Eye, EyeOff, Lock, User } from "lucide-react";
@@ -6,7 +9,7 @@ import { FitButton } from "./primitives";
 import { cn } from "@/lib/utils";
 
 
-export function LoginScreen({ onSignedIn }: { onSignedIn: (token: string) => void }) {
+export function LoginScreen({ onSignedIn,onResume }: { onSignedIn: (token: string) => void;onResume?:()=>void }) {
   const [u, setU] = useState("");
   const [pw, setPw] = useState("");
   const [show, setShow] = useState(false);
@@ -15,6 +18,10 @@ export function LoginScreen({ onSignedIn }: { onSignedIn: (token: string) => voi
   const [err, setErr] = useState("");
   const [shake, setShake] = useState(0);
   const formRef = useRef<HTMLFormElement>(null);
+  const dialog=useRef<HTMLDialogElement>(null);
+  const [loginOpen,setLoginOpen]=useState(()=>{try{return new URLSearchParams(window.location.search).get('view')==='login';}catch{return false;}});
+  useEffect(()=>{if(loginOpen)dialog.current?.showModal();else dialog.current?.close();},[loginOpen]);
+  const openLogin=()=>{if(onResume){onResume();return;}setLoginOpen(true);};
 
   useEffect(() => {
     if (!shake) return undefined;
@@ -27,7 +34,7 @@ export function LoginScreen({ onSignedIn }: { onSignedIn: (token: string) => voi
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (busy || done) return;
-    if (!u.trim() || !pw) { fail("نام کاربری و رمز عبور را وارد کن."); return; }
+    if (!u.trim() || !pw) { fail(tr("نام کاربری و رمز عبور را وارد کن.")); return; }
     setBusy(true); setErr("");
     try {
       const r = await gas<{ token: string }>("login", u.trim(), pw);
@@ -36,19 +43,19 @@ export function LoginScreen({ onSignedIn }: { onSignedIn: (token: string) => voi
       setTimeout(() => onSignedIn(r.token), 650);
     } catch (x) {
       setBusy(false);
-      fail(x instanceof Error ? x.message : "ورود ناموفق بود");
+      fail(x instanceof Error ? x.message : tr("ورود ناموفق بود"));
     }
   };
 
-  return <PremiumLanding onEnter={()=>{document.getElementById('sf-member-access')?.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'center'});formRef.current?.querySelector('input')?.focus({preventScroll:true});}}>          <form ref={formRef} onSubmit={submit} className={cn("sfx-signin space-y-3",shake&&"animate-shake")}>
+  return <PremiumLanding onEnter={openLogin}><dialog ref={dialog} className="v4-signin-dialog" aria-labelledby="sf-login-title" onClose={()=>setLoginOpen(false)} onClick={e=>{if(e.target===dialog.current)setLoginOpen(false);}}><button type="button" className="v4-close-login" aria-label={tr('بستن ورود','Close sign in')} onClick={()=>setLoginOpen(false)}><X size={20}/></button><div className="v4-signin-layout"><aside className="v4-signin-art" aria-hidden="true"><div className="v4-signin-logo"><Logo/></div><span>YOUR PLAN.<br/><em>YOUR NEXT.</em></span></aside><div className="v4-signin-form"><form ref={formRef} onSubmit={submit} className={cn("sfx-signin space-y-3",shake&&"animate-shake")}>
             <span className="kicker text-volt">YOUR PERSONAL TRAINING SPACE</span>
-            <h2>ورود به حساب ورزشکار</h2><p>برای دسترسی به برنامه‌ها و ادامهٔ مسیر شخصی خود وارد شوید.</p>
-            <FloatField icon={<User className="size-5"/>} label="نام کاربری" value={u} onChange={setU} autoComplete="username" invalid={!!err&&!u.trim()}/>
-            <FloatField icon={<Lock className="size-5"/>} label="رمز عبور" value={pw} onChange={setPw} type={show?'text':'password'} autoComplete="current-password" invalid={!!err&&!pw} trailing={<button type="button" onClick={()=>setShow(!show)} className="pressable grid size-9 place-items-center rounded-lg text-muted-foreground" aria-label={show?'پنهان کردن رمز':'نمایش رمز'}>{show?<EyeOff className="size-5"/>:<Eye className="size-5"/>}</button>}/>
+            <h2 id="sf-login-title">{tr("ورود به حساب ورزشکار")}</h2><p>{tr("برای دسترسی به برنامه‌ها و ادامهٔ مسیر شخصی خود وارد شوید.")}</p>
+            <FloatField icon={<User className="size-5"/>} label={tr("نام کاربری")} value={u} onChange={setU} autoComplete="username" invalid={!!err&&!u.trim()}/>
+            <FloatField icon={<Lock className="size-5"/>} label={tr("رمز عبور")} value={pw} onChange={setPw} type={show?'text':'password'} autoComplete="current-password" invalid={!!err&&!pw} trailing={<button type="button" onClick={()=>setShow(!show)} className="pressable grid size-9 place-items-center rounded-lg text-muted-foreground" aria-label={show?tr("پنهان کردن رمز"):tr("نمایش رمز")}>{show?<EyeOff className="size-5"/>:<Eye className="size-5"/>}</button>}/>
             {err?<div role="alert" className="rounded-xl bg-destructive/10 px-3 py-2 text-sm leading-7 text-destructive">{err}</div>:null}
-            <FitButton type="submit" className="w-full" loading={busy} success={done} disabled={busy||done}>{busy?'در حال بررسی حساب…':'ورود به فضای اختصاصی'}<ArrowLeft className="size-5"/></FitButton>
-            <p className="sfx-landing-note">اگر حساب فعالی ندارید، برای دریافت برنامه و ایجاد حساب با مربی خود هماهنگ کنید.</p>
-          </form></PremiumLanding>;
+            <FitButton type="submit" className="w-full" loading={busy} success={done} disabled={busy||done}>{busy?tr("در حال بررسی حساب…"):tr("ورود به فضای اختصاصی")}<ArrowLeft className="size-5"/></FitButton>
+            <p className="sfx-landing-note">{tr("اگر حساب فعالی ندارید، برای دریافت برنامه و ایجاد حساب با مربی خود هماهنگ کنید.")}</p>
+          </form></div></div></dialog></PremiumLanding>;
 }
 
 function FloatField({ icon, label, value, onChange, trailing, invalid, ...p }: {

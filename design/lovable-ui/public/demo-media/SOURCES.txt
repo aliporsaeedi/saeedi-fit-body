@@ -1,0 +1,6 @@
+Demo exercise media from the user-supplied ExerciseGymGifsDB archive.
+Source: https://github.com/JahelCuadrado/ExerciseGymGifsDB
+The source organizer does not own the media copyright; original creators retain their rights.
+1: pectorals/barbell-bench-press.gif
+2: pectorals/cable-standing-fly.gif
+3: quads/squat-to-overhead-reach.gif

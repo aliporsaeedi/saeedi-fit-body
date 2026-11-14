@@ -13,6 +13,7 @@
 @import "./receipt.css";
 @import "./editorial.css";
 @import "./compact.css";
+@import "./landing-v4.css";
 
 @custom-variant dark (&:is(.dark *));
 

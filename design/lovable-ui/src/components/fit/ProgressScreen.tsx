@@ -1,3 +1,4 @@
+import {tr} from '@/lib/fit/locale';
 import { useEffect, useRef, useState } from "react";
 import { Camera, ImagePlus, Medal, Trash2, TrendingDown, TrendingUp } from "lucide-react";
 import { toast } from "sonner";
@@ -10,7 +11,7 @@ import { gas } from "@/lib/fit/api";
 import { useBodyLog, toastError } from "./useActions";
 import { cn } from "@/lib/utils";
 
-const TABS = ["وزن", "اندازه‌ها", "عکس"] as const;
+const TABS = [tr("وزن"), tr("اندازه‌ها"), tr("عکس")] as const;
 
 export function ProgressScreen() {
   const { boot, token, patch } = useFit();
@@ -54,20 +55,20 @@ export function ProgressScreen() {
                   {diff <= 0 ? <TrendingDown className="size-4" /> : <TrendingUp className="size-4" />}<span className="num">{diff > 0 ? "+" : ""}{fmt(diff, 1)}</span>
                 </span>
               ) : null}
-              <span className="ms-auto mb-3 text-xs text-muted-foreground">هدف <span className="num text-base text-foreground">{fmt(p.goalWeight)}</span></span>
+              <span className="ms-auto mb-3 text-xs text-muted-foreground">{tr("هدف")} <span className="num text-base text-foreground">{fmt(p.goalWeight)}</span></span>
             </div>
             <WeightChart points={series.map((s) => Number(s.weight))} goal={p.goalWeight} />
-            {series.length < 2 ? <p className="mt-2 text-center text-xs text-muted-foreground">با ثبت وزن در روزهای مختلف، نمودار پیشرفتت اینجا ساخته می‌شود.</p> : null}
+            {series.length < 2 ? <p className="mt-2 text-center text-xs text-muted-foreground">{tr("با ثبت وزن در روزهای مختلف، نمودار پیشرفتت اینجا ساخته می‌شود.")}</p> : null}
           </Card>
-          <Section title="ثبت امروز" />
+          <Section title={tr("ثبت امروز")} />
           <Card className="space-y-3 p-4">
-            <Field label="وزن" suffix="KG" inputMode="decimal" placeholder={fmt(cur, 1)} value={form.weight} onChange={(e) => setForm({ ...form, weight: e.target.value })} />
-            <FitButton className="w-full" onClick={save}>ذخیرهٔ وزن امروز</FitButton>
+            <Field label={tr("وزن")} suffix="KG" inputMode="decimal" placeholder={fmt(cur, 1)} value={form.weight} onChange={(e) => setForm({ ...form, weight: e.target.value })} />
+            <FitButton className="w-full" onClick={save}>{tr("ذخیرهٔ وزن امروز")}</FitButton>
           </Card>
           {board.data ? (
             <Card className="mt-3 flex items-center gap-4 p-4">
               <div className="grid size-12 place-items-center rounded-xl bg-gold/15 text-gold"><Medal className="size-6" /></div>
-              <div className="flex-1"><b className="text-sm">رتبه بین شاگردها</b><p className="text-xs text-muted-foreground">بر اساس روزهای فعال اخیر</p></div>
+              <div className="flex-1"><b className="text-sm">{tr("رتبه بین شاگردها")}</b><p className="text-xs text-muted-foreground">{tr("بر اساس روزهای فعال اخیر")}</p></div>
               <div className="num text-4xl text-gold">#{board.data.rank}<span className="text-lg text-faint">/{board.data.total}</span></div>
             </Card>
           ) : null}
@@ -82,10 +83,10 @@ export function ProgressScreen() {
               <Field label="درصد چربی" suffix="%" inputMode="decimal" value={form.bodyFat} onChange={(e) => setForm({ ...form, bodyFat: e.target.value })} />
             </div>
             <Field label="وزن (اختیاری)" suffix="KG" inputMode="decimal" value={form.weight} onChange={(e) => setForm({ ...form, weight: e.target.value })} />
-            <label className="block"><span className="mb-1.5 block text-xs font-bold text-muted-foreground">یادداشت</span>
+            <label className="block"><span className="mb-1.5 block text-xs font-bold text-muted-foreground">{tr("یادداشت")}</span>
               <textarea rows={2} value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} placeholder="حس امروز، خواب، انرژی…"
                 className="w-full rounded-xl border border-line bg-ink/60 p-3 text-sm outline-none focus:border-volt/70" /></label>
-            <FitButton className="w-full" onClick={save}>ثبت اندازه‌ها</FitButton>
+            <FitButton className="w-full" onClick={save}>{tr("ثبت اندازه‌ها")}</FitButton>
           </Card>
           <Section title="تاریخچه" aside={`${boot.logs.length} ثبت`} />
           {boot.logs.length ? (
@@ -98,11 +99,11 @@ export function ProgressScreen() {
                     {l.waist != null ? <span>{fmt(l.waist, 1)}<small className="text-xs text-faint">CM</small></span> : null}
                     {l.bodyFat != null ? <span>{fmt(l.bodyFat, 1)}<small className="text-xs text-faint">%</small></span> : null}
                   </div>
-                  <button onClick={() => body.remove(l.date)} className="pressable grid size-9 place-items-center rounded-lg text-muted-foreground hover:text-destructive" aria-label="حذف"><Trash2 className="size-4" /></button>
+                  <button onClick={() => body.remove(l.date)} className="pressable grid size-9 place-items-center rounded-lg text-muted-foreground hover:text-destructive" aria-label={tr("حذف")}><Trash2 className="size-4" /></button>
                 </div>
               ))}
             </Card>
-          ) : <p className="card-surface p-5 text-center text-sm text-muted-foreground">هنوز چیزی ثبت نشده.</p>}
+          ) : <p className="card-surface p-5 text-center text-sm text-muted-foreground">{tr("هنوز چیزی ثبت نشده.")}</p>}
         </>
       ) : null}
 
@@ -162,7 +163,7 @@ function Photos({ photos, token, onAdded }: { photos: { date: string; label: str
         ) : <Empty icon={<Camera className="size-6" />} title="هنوز عکسی نداری" hint="هر دو هفته یک عکس در نور یکسان بگیر تا تغییرات را ببینی." />}
       </div>
       {view ? (
-        <button onClick={() => setView(null)} className="fixed inset-0 z-[60] grid place-items-center bg-ink/95 p-4 backdrop-blur" aria-label="بستن">
+        <button onClick={() => setView(null)} className="fixed inset-0 z-[60] grid place-items-center bg-ink/95 p-4 backdrop-blur" aria-label={tr("بستن")}>
           <img src={view} alt="" referrerPolicy="no-referrer" className="max-h-full max-w-full rounded-2xl" />
         </button>
       ) : null}

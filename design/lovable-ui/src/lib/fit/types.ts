@@ -1,7 +1,7 @@
 export type Exercise = {
   name: string; sets: string; reps: string; notes?: string;
   training?: {blockId:string;technique:string;label:string;exerciseId:string;position:number;size:number;peers:string[];betweenRest:number;description:string;sets:{setNo:number;reps:string;weight:string;rest:number}[]};
-  bank?: { sets?: string; reps?: string; rest?: number; gif?: string[]; frames?: string[][] };
+  bank?: { preview?: string; sets?: string; reps?: string; rest?: number; gif?: string[]; frames?: string[][] };
 };
 export type WorkoutDay = { title: string; isRest: boolean; exercises: Exercise[] };
 export type Workout = { name: string; days: WorkoutDay[]; notes?: string[] };

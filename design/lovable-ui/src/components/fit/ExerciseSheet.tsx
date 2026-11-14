@@ -1,3 +1,4 @@
+import {tr} from '@/lib/fit/locale';
 import {ExerciseGuide} from "./ExerciseGuide";
 import { useEffect, useRef, useState } from "react";
 import { Check, Minus, Plus, Timer, Trophy } from "lucide-react";
@@ -51,7 +52,7 @@ export function ExerciseSheet({ item, workoutName, dayIndex, onClose, done, onTo
       const r = await gas<{ history: H[] }>("logExerciseSet", token, { exerciseName: ex.name, workoutName, weight, reps });
       setHist(r.history);
       const pr = best > 0 && weight * (1 + reps / 30) > best;
-      toast.success(pr ? "رکورد جدید! " : `ست ${todaySets.length + 1} ثبت شد`);
+      toast.success(pr?tr('رکورد جدید! ','New personal best!'):tr(`ست ${todaySets.length+1} ثبت شد`,`Set ${todaySets.length+1} logged`));
       if(!ex.training || ex.training.size < 2 || ex.training.position === ex.training.size) startRest(restSeconds(ex));
     } catch (e) { toastError(e); } finally { setBusy(false); }
   };
@@ -64,8 +65,8 @@ export function ExerciseSheet({ item, workoutName, dayIndex, onClose, done, onTo
     <Sheet open={!!item} onOpenChange={(o) => !o && onClose()} title={ex?.name}
       footer={
         <div className="flex gap-2">
-          <FitButton className="flex-1" onClick={log} disabled={busy}>ثبت ست {todaySets.length + 1}</FitButton>
-          <FitButton variant={done ? "outline" : "glass"} size="lg" className="w-14 px-0" onClick={onToggle} aria-label="انجام شد">
+          <FitButton className="flex-1" onClick={log} disabled={busy}>{tr("ثبت ست")} {todaySets.length + 1}</FitButton>
+          <FitButton variant={done ? "outline" : "glass"} size="lg" className="w-14 px-0" onClick={onToggle} aria-label={tr("انجام شد")}>
             <Check className={cn("size-5", done && "text-volt")} strokeWidth={3} />
           </FitButton>
         </div>
@@ -75,31 +76,31 @@ export function ExerciseSheet({ item, workoutName, dayIndex, onClose, done, onTo
           {!ex.name.includes("+")?<div className="relative aspect-[4/3] overflow-hidden rounded-2xl border border-line bg-foreground">
             {imgs[0] ? <img src={imgs[0]} alt={ex.name} className="absolute inset-0 size-full object-contain" /> : null}
             {imgs[1] ? <img src={imgs[1]} alt="" className="animate-frames absolute inset-0 size-full object-contain" /> : null}
-            <span className="skew-tag absolute top-3 start-3"><span>{imgs.length > 1 ? "حرکت نمایشی" : "راهنما"}</span></span>
+            <span className="skew-tag absolute top-3 start-3"><span>{imgs.length > 1 ? "حرکت نمایشی" : tr("راهنما")}</span></span>
           </div>:null}
 
           <div className="grid grid-cols-3 gap-2">
-            {[[ex.sets, "ست"], [ex.reps, "تکرار"], [`${restSeconds(ex)}S`, "استراحت"]].map(([v, l]) => (
+            {[[ex.sets, tr("ست")], [ex.reps, tr("تکرار")], [`${restSeconds(ex)}S`, tr("استراحت")]].map(([v, l]) => (
               <div key={l} className="card-surface p-3 text-center"><div className="num text-2xl">{v}</div><div className="text-[11px] text-muted-foreground">{l}</div></div>
             ))}
           </div>
           <ExerciseGuide ex={ex} planName={workoutName} dayIndex={dayIndex} index={item!.i}/>
 
           <div className="grid grid-cols-2 gap-3">
-            <Stepper label="وزنه (کیلو)" value={weight} step={2.5} onChange={v=>{edited.current=true;setWeight(v);}} />
-            <Stepper label="تکرار" value={reps} step={1} onChange={v=>{edited.current=true;setReps(v);}} />
+            <Stepper label={tr("وزنه (کیلو)")} value={weight} step={2.5} onChange={v=>{edited.current=true;setWeight(v);}} />
+            <Stepper label={tr("تکرار")} value={reps} step={1} onChange={v=>{edited.current=true;setReps(v);}} />
           </div>
           <button onClick={() => startRest(restSeconds(ex))} className="pressable flex w-full items-center justify-center gap-2 rounded-xl border border-line py-3 text-sm font-bold text-muted-foreground">
-            <Timer className="size-4" />شروع تایمر استراحت
+            <Timer className="size-4" />{tr("شروع تایمر استراحت")}
           </button>
 
           <div>
             <div className="mb-2 flex items-center gap-2 text-sm font-black">
               سابقهٔ این حرکت
-              {best > 0 ? <span className="ms-auto flex items-center gap-1 text-xs text-gold"><Trophy className="size-3.5" />بهترین <span className="num text-sm">{fmt(best, 0)}KG</span> 1RM</span> : null}
+              {best > 0 ? <span className="ms-auto flex items-center gap-1 text-xs text-gold"><Trophy className="size-3.5" />{tr("بهترین")} <span className="num text-sm">{fmt(best, 0)}KG</span> 1RM</span> : null}
             </div>
             {hist == null ? <div className="h-24 animate-pulse rounded-xl bg-foreground/5" /> : hist.length === 0 ? (
-              <p className="rounded-xl bg-foreground/5 p-4 text-center text-sm text-muted-foreground">اولین ست را ثبت کن تا نمودار پیشرفتت ساخته شود.</p>
+              <p className="rounded-xl bg-foreground/5 p-4 text-center text-sm text-muted-foreground">{tr("اولین ست را ثبت کن تا نمودار پیشرفتت ساخته شود.")}</p>
             ) : (
               <div className="card-surface p-3">
                 {series.length > 1 ? (
@@ -129,10 +130,10 @@ function Stepper({ label, value, step, onChange }: { label: string; value: numbe
     <div className="card-surface p-3">
       <div className="mb-2 text-center text-xs font-bold text-muted-foreground">{label}</div>
       <div className="flex items-center gap-1">
-        <button onClick={() => onChange(Math.max(0, +(value - step).toFixed(2)))} className="pressable grid size-10 place-items-center rounded-lg bg-foreground/5" aria-label="کم"><Minus className="size-4" /></button>
+        <button onClick={() => onChange(Math.max(0, +(value - step).toFixed(2)))} className="pressable grid size-10 place-items-center rounded-lg bg-foreground/5" aria-label={tr("کم")}><Minus className="size-4" /></button>
         <input inputMode="decimal" value={value} onChange={(e) => { const n = Number(e.target.value.replace(/[^\d.]/g, "")); if (isFinite(n)) onChange(n); }}
           className="num h-10 w-full min-w-0 bg-transparent text-center text-3xl outline-none" aria-label={label} />
-        <button onClick={() => onChange(+(value + step).toFixed(2))} className="pressable grid size-10 place-items-center rounded-lg bg-volt/15 text-volt" aria-label="زیاد"><Plus className="size-4" /></button>
+        <button onClick={() => onChange(+(value + step).toFixed(2))} className="pressable grid size-10 place-items-center rounded-lg bg-volt/15 text-volt" aria-label={tr("زیاد")}><Plus className="size-4" /></button>
       </div>
     </div>
   );
